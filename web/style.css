@@ -237,6 +237,8 @@ dialog p{font-size:.94rem;color:#595b51;margin-top:4px}
 .other-path summary{cursor:pointer;font-weight:700;color:#67412f}
 .other-path p{margin-top:9px}
 .free-records-link{display:block;margin:15px auto;color:#f2e3b9;text-decoration:underline}
+.archive-next{display:block;margin:24px 0 0;padding:16px 18px;background:#edf1e6;border:1px solid #a2ae93;border-radius:6px;color:#304d3e;font-weight:700}
+.archive-next small{display:block;margin-top:3px;color:#55654f;font-weight:500;font-size:.88rem}
 .library-intro{margin-bottom:42px;padding:22px;border:1px solid var(--line);border-radius:6px;background:var(--card)}
 .library-intro p{margin:8px 0;max-width:65ch}
 .library-intro a,.public-back,.public-more a,.public-reading .public-prose a,.service-note a{color:var(--rust);text-decoration:underline;text-underline-offset:4px}
