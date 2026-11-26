@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f5ec">
+  <meta name="description" content="얼굴 관상과 생년월일, 성씨와 삶의 단서를 엮어 나만의 전생 이야기와 풀이를 읽어 보세요.">
+  <title>전생록 — 나의 전생 풀이</title>
+  <link rel="icon" href="./assets/seal.svg" type="image/svg+xml">
+  <link rel="preload" as="image" href="./assets/landscape.jpg">
+  <link rel="preload" as="font" href="./assets/myeongjo-bold.ttf" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap bar">
+      <a class="brand" href="#home" aria-label="전생록 처음으로"><img src="./assets/seal.svg" alt="" width="36" height="36"><span>전생록</span></a>
+      <nav aria-label="주 메뉴">
+        <a href="#reading" class="nav-current" id="readingNav">전생 풀이</a>
+        <button type="button" data-example>예시 기록</button>
+        <button type="button" id="guideOpen">이용 안내</button>
+      </nav>
+    </div>
+  </header>
+  <main id="home">
+    <div id="entry">
+      <section class="hero" aria-labelledby="heroTitle">
+        <div class="wrap hero-inner">
+          <div class="hero-copy">
+            <h1 id="heroTitle">나의 전생은<br>어떤 삶이었을까<span class="hero-question">?</span></h1>
+            <p>얼굴에 남은 흔적과 오늘의 삶을 엮어<br>당신만의 전생 한 장면을 펼칩니다.</p>
+          </div>
+        </div>
+      </section>
+      <div class="wrap studio" id="reading">
+        <section class="work-area" aria-labelledby="workTitle">
+          <div class="section-title">
+            <div class="heading-wrap"><i data-icon="book"></i><h2 id="workTitle">나의 전생 풀이</h2></div>
+            <div class="steps" aria-label="입력 단계"><span id="progressOne" class="current"><b>1</b> 얼굴과 뿌리</span><span class="step-line"></span><span id="progressTwo"><b>2</b> 지금의 나</span></div>
+          </div>
+          <form class="form-card" id="profileForm" novalidate>
+            <div id="firstStep">
+              <div class="card-heading"><h3 tabindex="-1" id="firstTitle">얼굴과 뿌리</h3><span class="step-count">1 / 2</span></div>
+              <p class="form-intro">얼굴 사진과 태어난 날, 성씨와 본관을 알려주세요.</p>
+              <div class="field photo-field">
+                <label for="portrait">얼굴 사진 <em>*</em></label>
+                <div id="dropzone" class="upload-zone">
+                  <label for="portrait" class="upload-trigger" id="uploadTrigger">
+                    <span class="face-symbol"><i data-icon="face"></i></span>
+                    <span><strong>얼굴 사진 올리기</strong><small>정면 사진을 선택하거나 여기에 놓아주세요.</small></span>
+                    <span class="plus" aria-hidden="true">＋</span>
+                  </label>
+                  <div id="uploaded" class="uploaded" hidden>
+                    <img id="photoPreview" alt="입력한 얼굴 미리보기">
+                    <div class="uploaded-copy"><strong id="photoName"></strong><small id="photoStatus" role="status"></small></div>
+                    <button type="button" class="icon-btn remove" id="photoRemove" aria-label="사진 삭제"><i data-icon="close"></i></button>
+                  </div>
+                  <input type="file" accept="image/jpeg,image/png,image/webp" id="portrait" class="file-input" aria-describedby="photoHelp">
+                </div>
+                <div class="field-help" id="photoHelp"><i data-icon="lock"></i>사진은 이 기기에서만 분석합니다.<span class="file-spec">JPG · PNG · WEBP, 최대 12MB</span></div>
+              </div>
+              <div class="field"><label for="birth">생년월일 <em>*</em></label><input id="birth" name="birth" type="date" min="1900-01-01" required></div>
+              <div class="row">
+                <div class="field"><label for="surname">성씨 <em>*</em></label><input type="text" id="surname" name="surname" maxlength="16" placeholder="예) 신" required></div>
+                <div class="field"><label for="clan">본관 <span class="optional">선택</span></label><input type="text" id="clan" name="clan" maxlength="32" placeholder="예) 평산"></div>
+              </div>
+              <p id="errOne" class="error" role="alert" hidden></p>
+              <button type="submit" class="primary wide" id="nextBtn">다음 단계</button>
+            </div>
+            <div id="secondStep" hidden>
+              <div class="card-heading"><h3 tabindex="-1" id="secondTitle">지금의 나</h3><span class="step-count">2 / 2</span></div>
+              <p class="form-intro">지금 가진 복과 성격이 전생의 역할과 선택을 결정해요.</p>
+              <div class="row">
+                <div class="field"><label for="wealth">내 재산 <em>*</em></label>
+                  <select id="wealth" required><option value="" disabled selected>순자산 구간 선택</option><option value="debt">빚이 더 많음</option><option value="under50">0원 이상 ~ 5천만 원 미만</option><option value="to200">5천만 원 ~ 2억 원 미만</option><option value="to500">2억 원 ~ 5억 원 미만</option><option value="to1000">5억 원 ~ 10억 원 미만</option><option value="over1000">10억 원 이상</option><option value="private">밝히지 않을래요</option></select>
+                </div>
+                <div class="field"><label for="family">집안 형편 <em>*</em></label>
+                  <select id="family" required><option value="" disabled selected>자란 집의 형편 선택</option><option value="struggle">살림이 빠듯했어요</option><option value="modest">대체로 평범했어요</option><option value="comfortable">비교적 여유로웠어요</option><option value="affluent">매우 넉넉했어요</option><option value="private">밝히지 않을래요</option></select>
+                </div>
+              </div>
+              <div class="field"><label for="job">직업 또는 주로 하는 일 <em>*</em></label><input type="text" id="job" maxlength="90" required placeholder="예) 프로그램 오류의 원인을 찾는 개발자"></div>
+              <div class="field"><label for="personality">내 성격 <em>*</em></label><textarea id="personality" rows="3" maxlength="260" required placeholder="예) 평소엔 느긋하지만 급한 순간엔 집중해요. 친구들에게 밥 사는 걸 좋아해요."></textarea></div>
+              <div class="traits" aria-label="성격 예시 더하기"><button type="button" data-trait="느긋해요">＋ 느긋함</button><button type="button" data-trait="사람을 잘 챙겨요">＋ 다정함</button><button type="button" data-trait="조심스러워요">＋ 신중함</button><button type="button" data-trait="끝까지 파고들어요">＋ 끈기</button></div>
+              <p id="errTwo" class="error" role="alert" hidden></p>
+              <div class="actions"><button type="button" class="secondary" id="backBtn">이전 단계</button><button type="submit" class="primary" id="revealBtn"><i data-icon="book"></i> 전생 기록 펼치기</button></div>
+            </div>
+          </form>
+        </section>
+        <aside class="aside">
+          <div class="section-title"><div class="heading-wrap"><i data-icon="scroll"></i><h2>예시 기록</h2></div></div>
+          <button type="button" data-example class="example-card">
+            <div class="example-image"><img src="./assets/scribe.jpg" alt="붓을 들고 장부를 기록하는 옛 서기의 초상"><span class="folio-seal" aria-hidden="true">前<br>生</span></div>
+            <div class="example-body"><span class="era"><i></i>조선 · 임진왜란</span><h3>적장의 성을 이어받은 서기</h3><p>전생에 적장의 이름을 썼던 손으로,<br>이번 생에는 내 이름을 씁니다.</p><span class="read-sample"><i data-icon="book"></i>예시 기록 읽기</span></div>
+          </button>
+        </aside>
+      </div>
+    </div>
+    <section id="resultView" hidden aria-labelledby="resultTitle">
+      <div class="result-banner"><div class="wrap"><p class="result-kicker" id="resultKind"></p><h1 id="resultTitle" tabindex="-1"></h1><p id="resultEra"></p></div></div>
+      <div class="result-wrap">
+        <div class="record-tools"><button type="button" id="resultBack" class="text-button"><i data-icon="return"></i><span>입력으로 돌아가기</span></button><button type="button" id="saveCard" class="text-button"><i data-icon="download"></i>결과 카드 저장</button></div>
+        <article class="reading-paper"><span class="page-seal" aria-hidden="true">錄</span><h2>전생 이야기</h2><div id="storyText" class="story-text"></div><p id="storyQuote" class="pullquote"></p></article>
+        <details id="explain" class="explain" open><summary><i data-icon="scroll"></i>왜 이런 전생이 나왔을까?<span class="chevron"></span></summary><dl id="clues"></dl></details>
+        <section class="history"><h2>기록과 창작 사이</h2><p id="historyText"></p><div id="sourceLinks"></div></section>
+        <button type="button" id="again" class="primary wide">새 전생 풀이 시작</button><div id="resultMessage" role="status"></div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer"><div class="wrap"><a class="foot-brand" href="#home">전생록 <span>前生錄</span></a><span>역사와 전통 관상에서 영감을 얻은 창작 이야기</span></div></footer>
+  <dialog id="guide"><div class="dialog-top"><h2>전생록 이용 안내</h2><button type="button" id="guideClose" class="icon-btn" aria-label="닫기"><i data-icon="close"></i></button></div>
+    <p>정면 얼굴 사진 한 장과 현생의 단서를 입력하면 전생의 한 장면과 그 풀이가 열립니다.</p>
+    <h3>얼굴은 어떻게 읽나요?</h3><p>기기 안의 얼굴 인식 모델이 코와 턱의 특징점을 찾습니다. 전통 관상에서 쓰던 상징을 이야기 소재로 삼습니다.</p>
+    <h3>이야기는 어떻게 만드나요?</h3><p>역사 자료와 미리 구성한 장면을 바탕으로, 입력한 성향과 형편에 맞춰 인물의 선택과 결말을 엮습니다. 전생의 인물과 사연은 창작입니다.</p>
+    <h3>내 정보는 어디에 남나요?</h3><p>사진과 입력은 브라우저 메모리에서 처리되며 새로고침하면 지워집니다. 저장하는 결과 카드에는 얼굴 사진이나 재산 구간이 들어가지 않습니다.</p>
+    <button type="button" id="guideDone" class="primary wide">확인</button>
+  </dialog>
+</body></html>

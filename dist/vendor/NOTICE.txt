@@ -1,0 +1,13 @@
+face-api.js 0.22.2 (browser bundle, tiny face detector and tiny 68-point landmark model)
+Copyright (c) 2018 Vincent Mühler. MIT License: face-api-LICENSE.txt
+https://github.com/justadudewhohacks/face-api.js/tree/0.22.2
+
+TensorFlow.js Core 1.7.0, included in face-api.js
+Copyright 2020 Google LLC. All Rights Reserved.
+Apache License 2.0: tensorflow-LICENSE.txt
+https://github.com/tensorflow/tfjs/tree/tfjs-v1.7.0
+
+TypeScript helpers, included in face-api.js
+Copyright (c) Microsoft Corporation. All rights reserved.
+Apache License 2.0: tslib-LICENSE.txt
+https://github.com/microsoft/tslib/tree/1.11.1
