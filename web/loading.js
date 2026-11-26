@@ -9,12 +9,12 @@ const title = document.getElementById('writingTitle');
 const status = document.getElementById('writingStatus');
 let active;
 
-function showRetry(message) {
-  title.textContent = '전생록을 잠시 덮었습니다';
+function showRetry(message, reviewInput = false) {
+  title.textContent = reviewInput ? '입력을 다시 살펴봐 주세요' : '전생록을 잠시 덮었습니다';
   status.textContent = message;
   track.hidden = true;
-  retry.hidden = false;
-  retry.focus();
+  retry.hidden = reviewInput;
+  (reviewInput ? document.getElementById('stopWriting') : retry).focus();
 }
 
 async function start(session) {
@@ -35,7 +35,9 @@ async function start(session) {
     location.replace(resultUrl);
   } catch (error) {
     if (controller.signal.aborted) return;
-    showRetry(error.message || '전생 이야기를 마치지 못했습니다. 다시 시도해주세요.');
+    const message = error.message || '전생 이야기를 마치지 못했습니다. 다시 시도해주세요.';
+    if (error.reviewInput) writeSession({...session,stage:'review',message});
+    showRetry(message, error.reviewInput);
   } finally {
     if (active === controller) active = null;
   }
@@ -47,6 +49,7 @@ function enter() {
   if (session.stage === 'done' && session.reading) { location.replace(resultUrl); return; }
   if (session.version !== readingVersion) { location.replace(formUrl); return; }
   if (session.stage === 'ready') { start(session); return; }
+  if (session.stage === 'review') { showRetry(session.message,true); return; }
   showRetry('이전 풀이가 중단됐습니다. 같은 입력으로 다시 펼칠 수 있어요.');
 }
 

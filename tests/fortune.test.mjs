@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { api } from '../worker/api.mjs';
 import { describeProfile } from '../web/profile.js';
 import { candidateContexts } from '../web/history.js';
+import { describePersonality, traitGroups } from '../web/traits.js';
 
 const base = {
   birth:'1997-06-15', season:'여름', surname:'김', clan:'김해',
@@ -18,14 +19,16 @@ const generated = {
   faceIndex:0, focusFace:'그 짐이 오가던 날입니다.', focusHabit:'누구 차례인지 따져 보았습니다.', focusBirth:'',
 };
 
-async function run(profile) {
+function makeRequest(profile) {
   const candidates=candidateContexts(profile).map(({era,place,work,detail})=>({era,place,work,detail}));
-  const request=new Request('https://site.test/api/reading',{
+  return new Request('https://site.test/api/reading',{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({...describeProfile(profile),candidates}),
   });
+}
+async function run(profile) {
   let input;
-  const response=await api(request,{OPENAI_API_KEY:'test'},async (_url,options)=>{
+  const response=await api(makeRequest(profile),{OPENAI_API_KEY:'test'},async (_url,options)=>{
     input=JSON.parse(JSON.parse(options.body).input);
     return Response.json({output:[{content:[{type:'output_text',text:JSON.stringify(generated)}]}]});
   });
@@ -51,4 +54,34 @@ test('private fields are omitted, and an undisclosed profile has no fortune expl
   const hidden=await run({...base,job:'',wealthLabel:'',familyLabel:'비공개'});
   assert.equal(hidden.input.presentLife,undefined);
   assert.equal(hidden.reading.clues.some(clue=>clue.label==='전생에 쌓은 복'),false);
+});
+
+test('all behavior badges and a full free-text note reach the model together with the job left blank', async ()=>{
+  const traits = traitGroups.flatMap(group => group.traits);
+  const labels = traits.map(([label]) => label);
+  assert.equal(new Set(labels).size,labels.length);
+  const note = '가'.repeat(260);
+  const personality = describePersonality(note,labels);
+  const {input} = await run({...base,job:'',personality});
+  assert.equal(input.personality,[note,...traits.map(([,sentence])=>sentence)].join(' '));
+  assert.equal(input.presentLife.job,undefined);
+});
+
+test('a note containing a badge sentence stays intact when the badge is selected or removed', ()=>{
+  const [label,sentence] = traitGroups[0].traits[0];
+  const note = '저는 '+sentence+' 가끔은 혼자 있고 싶어요.';
+  assert.equal(describePersonality(note,[label]),note);
+  assert.equal(describePersonality(note,[]),note);
+});
+
+test('a declined input lets the reader return to the form', async ()=>{
+  const failures=[
+    Response.json({error:{code:'invalid_prompt'}},{status:400}),
+    Response.json({output:[{content:[{type:'refusal',refusal:'declined'}]}]}),
+  ];
+  for(const failure of failures){
+    const response=await api(makeRequest(base),{OPENAI_API_KEY:'test'},async ()=>failure);
+    assert.equal(response.status,422);
+    assert.match((await response.json()).error,/입력으로 돌아가/);
+  }
 });

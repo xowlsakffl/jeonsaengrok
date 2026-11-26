@@ -71,7 +71,7 @@
             </div>
             <div id="secondStep" hidden>
               <div class="card-heading"><h3 tabindex="-1" id="secondTitle">지금의 나</h3><span class="step-count">2 / 2</span></div>
-              <p class="form-intro">평소에 자주 하는 행동 하나를 적어주세요. 그 버릇이 이야기 속에서 다시 나타납니다.</p>
+              <p class="form-intro">지금의 살림과 생업은 전생에 쌓은 복으로, 평소 버릇은 이야기 속 선택으로 풀이합니다.</p>
               <div class="row">
                 <div class="field"><label for="wealth">내 재산 <em>*</em></label>
                   <select id="wealth" required><option value="" disabled selected>순자산 구간 선택</option><option value="debt">빚이 더 많음</option><option value="under50">0원 이상 ~ 5천만 원 미만</option><option value="to200">5천만 원 ~ 2억 원 미만</option><option value="to500">2억 원 ~ 5억 원 미만</option><option value="to1000">5억 원 ~ 10억 원 미만</option><option value="over1000">10억 원 이상</option><option value="private">밝히지 않을래요</option></select>
@@ -80,9 +80,21 @@
                   <select id="family" required><option value="" disabled selected>자란 집의 형편 선택</option><option value="struggle">살림이 빠듯했어요</option><option value="modest">대체로 평범했어요</option><option value="comfortable">비교적 여유로웠어요</option><option value="affluent">매우 넉넉했어요</option><option value="private">밝히지 않을래요</option></select>
                 </div>
               </div>
-              <div class="field"><label for="job">직업 <small>(선택)</small></label><input type="text" id="job" maxlength="90" placeholder="직업을 입력해주세요"></div>
-              <div class="field"><label for="personality">내 성격 <em>*</em></label><textarea id="personality" rows="3" maxlength="260" required placeholder="예) 평소엔 느긋하지만 급한 순간엔 집중해요. 친구들에게 밥 사는 걸 좋아해요."></textarea></div>
-              <div class="traits" aria-label="성격 예시 더하기"><button type="button" data-trait="사람을 잘 챙겨요">＋ 다정함</button><button type="button" data-trait="조심스러워요">＋ 신중함</button><button type="button" data-trait="끝까지 파고들어요">＋ 끈기</button><button type="button" data-trait="마지막까지 일을 미뤄요">＋ 미루기</button><button type="button" data-trait="틀려도 제 주장을 굽히기 어려워요">＋ 고집</button><button type="button" data-trait="일이 꼬이면 남 탓부터 해요">＋ 남 탓</button></div>
+              <div class="field"><label for="job">직업 <small class="optional">선택 입력</small></label><input type="text" id="job" maxlength="90" placeholder="직업을 입력해주세요"></div>
+              <fieldset class="personality-field" aria-describedby="traitHelp">
+                <legend>내 성격 <em>*</em></legend>
+                <p id="traitHelp">나와 닮은 행동을 골라주세요. 직접 적어도 좋아요.</p>
+                <div class="trait-picker">
+                  <div class="trait-tabs" id="traitTabs" role="tablist" aria-label="행동 주제"></div>
+                  <div id="traitPanels"></div>
+                  <div class="trait-selection">
+                    <span id="traitCount" role="status">고른 행동 0개</span>
+                    <div id="chosenTraits" aria-label="선택한 행동"></div>
+                  </div>
+                </div>
+                <label class="trait-note-label" for="personality">내 말로 적기</label>
+                <textarea id="personality" rows="2" maxlength="260" placeholder="예) 친구들 밥값은 제가 내는데, 곤란한 부탁을 받으면 답장을 미뤄요."></textarea>
+              </fieldset>
               <small class="field-help">이야기를 펼치면 입력한 직업명과 공개한 재산·집안 형편, 성격 등 풀이 단서를 OpenAI에 보냅니다. 사진 원본과 생년월일은 이 기기에 남습니다.</small>
               <p id="errTwo" class="error" role="alert" hidden></p>
               <div class="actions"><button type="button" class="secondary" id="backBtn">이전 단계</button><button type="submit" class="primary" id="revealBtn"><i data-icon="book"></i> 내 전생 펼치기</button></div>

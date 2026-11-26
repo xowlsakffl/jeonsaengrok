@@ -86,9 +86,29 @@ textarea{resize:vertical}
 .secondary{background:var(--paper);border-color:#cfc8b9}
 .wide{width:100%;margin-top:23px}
 .actions{margin-top:22px;gap:10px}.actions .primary{flex:1}
-.traits{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
-.traits button{border:1px solid #d8d1c2;border-radius:18px;padding:3px 10px;font-size:.8rem;background:#f5f2e9;color:#625d4e}
-.traits button[aria-pressed=true]{background:#eae1d3;border-color:#a67762}
+.personality-field{min-width:0;margin:22px 0 15px;padding:0;border:0}
+.personality-field legend{padding:0;font-size:.98rem;font-weight:750}
+.personality-field legend em{font-style:normal;color:var(--rust)}
+#traitHelp{margin:3px 0 10px;color:var(--muted);font-size:.9rem}
+.trait-picker{container-type:inline-size;border:1px solid #d8d1c2;border-radius:7px;background:#fbf9f2}
+.trait-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;padding:4px;background:#eeeade;border-radius:6px 6px 0 0}
+.trait-tabs button{min-height:40px;padding:5px 2px;border:1px solid transparent;border-radius:4px;background:transparent;color:#625d4e;font-size:.9rem;font-weight:650}
+.trait-tabs [aria-selected=true]{background:#fffdf7;border-color:#d4ccb9;color:#29473b;box-shadow:0 1px 2px #29251a13}
+.trait-options,#chosenTraits{display:flex;flex-wrap:wrap;gap:7px}
+.trait-options{padding:15px 14px}
+.trait-options button,#chosenTraits button{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:20px;font-size:.9rem;line-height:1.25}
+.trait-options button{min-height:37px;padding:6px 11px;border:1px solid #cdc9b9;background:#fffdf8;color:#403f35}
+.trait-options button::before{content:'+';width:12px;text-align:center;color:#777362;font-weight:600}
+.trait-options button[aria-pressed=true]{color:#fffdf4;border-color:#325446;background:#325446}
+.trait-options button[aria-pressed=true]::before{content:'✓';color:#fffdf4}
+.trait-selection{border-top:1px solid #dfdacd;padding:10px 14px;color:#4a584a}
+#traitCount{font-size:.86rem;font-weight:650}
+#chosenTraits:not(:empty){margin-top:7px}
+#chosenTraits button{min-height:32px;padding:5px 10px;background:#e9eee5;color:#304d3e;border:1px solid #c1cdbd}
+#chosenTraits button::after{content:'×';font-size:1.05rem}
+.trait-note-label{display:block;margin:13px 0 5px;font-size:.9rem;font-weight:650}
+@container (max-width:290px){.trait-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.trait-options{padding:12px 10px}}
+@media(pointer:coarse){.trait-options button,#chosenTraits button,.trait-tabs button{min-height:44px}}
 .error{margin-top:12px;color:#9b3328;font-size:.89rem;font-weight:650}
 .example-card{display:block;width:100%;padding:0;overflow:hidden;text-align:left;transition:border-color .2s,transform .2s}
 .example-card:hover{border-color:#a77e62;transform:translateY(-2px)}

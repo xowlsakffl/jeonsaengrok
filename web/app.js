@@ -2,9 +2,14 @@ import './site.js';
 import { analyzeFace } from './face.js';
 import { birthDate } from './profile.js';
 import { example } from './sample.js';
+import { describePersonality, mountTraitPicker } from './traits.js';
 import { readSession, writeSession, readingVersion } from './reading-session.js';
 
 const $ = id => document.getElementById(id);
+const traitPicker = mountTraitPicker(() => {
+  clearError('errTwo');
+  $('personality').removeAttribute('aria-invalid');
+});
 $('sampleRole').textContent=example.role;
 $('sampleTeaser').textContent=example.summary;
 
@@ -103,6 +108,7 @@ const fieldIds = ['birth','surname','clan','job','personality','wealth','family'
 
 function makeDraft() {
   const values = Object.fromEntries(fieldIds.map(id => [id,$(id).value]));
+  values.traits = traitPicker.selected();
   const photo = $('photoPreview');
   let preview = '';
   if (features && photo.naturalWidth) {
@@ -125,7 +131,7 @@ function getProfile() {
   const label = field => field.value === 'private' ? '' : field.selectedOptions[0].textContent;
   return {
     birth:date.iso, season:date.season, surname:$('surname').value.trim(), clan:$('clan').value.trim(),
-    face:features, job:$('job').value.trim(), personality:$('personality').value.trim(),
+    face:features, job:$('job').value.trim(), personality:describePersonality($('personality').value,traitPicker.selected()),
     wealthLabel:label($('wealth')), familyLabel:label($('family'))
   };
 }
@@ -133,6 +139,7 @@ function getProfile() {
 function restoreDraft(draft) {
   if (!draft) { changeStep(1); return; }
   for (const id of fieldIds) $(id).value = draft.values[id] || '';
+  traitPicker.restore(draft.values.traits);
   refreshBirth();
   $('personality').dispatchEvent(new Event('input'));
   if (draft.features && draft.preview) {
@@ -158,8 +165,12 @@ $('profileForm').addEventListener('submit',e=>{
     changeStep(2,true);return;
   }
   clearError('errTwo');
-  for(const [id,message] of [['wealth','내 재산 구간을 선택해주세요.'],['family','집안 형편을 선택해주세요.'],['personality','성격을 적거나 아래 예시에서 골라주세요.']]) {
+  for(const [id,message] of [['wealth','내 재산 구간을 선택해주세요.'],['family','집안 형편을 선택해주세요.']]) {
     if(!$(id).value.trim()){feedback('errTwo',message,$(id));return;}
+  }
+  if (!$('personality').value.trim() && !traitPicker.selected().length) {
+    feedback('errTwo','나와 닮은 행동을 하나 고르거나 내 말로 적어주세요.',$('personality'));
+    return;
   }
 
   try {
@@ -179,20 +190,6 @@ $('profileForm').addEventListener('submit',e=>{
 });
 
 $('backBtn').addEventListener('click',()=>changeStep(1,true));
-for(const btn of document.querySelectorAll('[data-trait]')) btn.addEventListener('click',()=>{
-  const field=$('personality'), tag=btn.dataset.trait;
-  if(!field.value.includes(tag)) {
-    const next=(field.value.trim()?(field.value.trim()+' · '):'')+tag;
-    if(next.length>field.maxLength) return;
-    field.value=next;
-  } else {
-    field.value=field.value.split(' · ').filter(part=>part!==tag).join(' · ');
-  }
-  for(const b of document.querySelectorAll('[data-trait]')) b.setAttribute('aria-pressed',String(field.value.split(' · ').includes(b.dataset.trait)));
-  clearError('errTwo');
-  field.removeAttribute('aria-invalid');
-});
-$('personality').addEventListener('input',()=>{for(const b of document.querySelectorAll('[data-trait]')) b.setAttribute('aria-pressed',String($('personality').value.split(' · ').includes(b.dataset.trait)));});
 
 
 for (const button of document.querySelectorAll('[data-example]')) {
@@ -214,6 +211,7 @@ else if (location.hash === '#loading') location.replace('./loading.html');
 window.addEventListener('pageshow', event => {
   if (event.persisted && !readSession()) {
     $('profileForm').reset();
+    traitPicker.restore();
     clearPhoto();
     refreshBirth();
     $('personality').dispatchEvent(new Event('input'));
