@@ -1,5 +1,5 @@
 // Only the public library and editorial stories load the publisher's ad script.
-if (location.origin === 'https://jeonsaeng-rok.deftpiece16.chatgpt.site') {
+if (location.origin === 'https://jeonsaengrok.com') {
   try {
     if (!sessionStorage.getItem('jeonsaeng.reading-session.v1')) {
       const script = document.createElement('script');
