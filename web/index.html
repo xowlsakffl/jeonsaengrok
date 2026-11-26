@@ -41,6 +41,7 @@
           </div>
           <form class="form-card" id="profileForm" novalidate>
             <div id="firstStep">
+              <p id="availability" class="service-note" role="status" hidden>현재 서버 AI 연결을 준비하고 있습니다. 예시 기록은 바로 읽을 수 있어요.</p>
               <div class="card-heading"><h3 tabindex="-1" id="firstTitle">얼굴과 뿌리</h3><span class="step-count">1 / 2</span></div>
               <p class="form-intro">얼굴 사진과 태어난 날, 성씨와 본관을 알려주세요.</p>
               <div class="field photo-field">
@@ -82,7 +83,7 @@
               <div class="field"><label for="job">직업 <em>*</em></label><input type="text" id="job" maxlength="90" required placeholder="직업을 입력해주세요"></div>
               <div class="field"><label for="personality">내 성격 <em>*</em></label><textarea id="personality" rows="3" maxlength="260" required placeholder="예) 평소엔 느긋하지만 급한 순간엔 집중해요. 친구들에게 밥 사는 걸 좋아해요."></textarea></div>
               <div class="traits" aria-label="성격 예시 더하기"><button type="button" data-trait="느긋해요">＋ 느긋함</button><button type="button" data-trait="사람을 잘 챙겨요">＋ 다정함</button><button type="button" data-trait="조심스러워요">＋ 신중함</button><button type="button" data-trait="끝까지 파고들어요">＋ 끈기</button></div>
-              <div class="model-choice"><label for="mode">이야기를 쓰는 AI</label><select id="mode"><option value="server">서버 AI</option><option value="local">내 기기 AI</option></select><small id="modeNote" class="field-help"></small></div>
+              <small class="field-help">이야기를 펼치면 얼굴 묘사와 입력한 단서가 OpenAI로 전송됩니다. 사진 원본과 생년월일은 기기에 남습니다.</small>
               <p id="errTwo" class="error" role="alert" hidden></p>
               <div class="actions"><button type="button" class="secondary" id="backBtn">이전 단계</button><button type="submit" class="primary" id="revealBtn"><i data-icon="book"></i> 내 전생 펼치기</button></div>
               <div id="writing" hidden><span class="writing-dot" aria-hidden="true"></span><span id="writingStatus" role="status"></span><button type="button" id="stopWriting" class="text-button">중단</button></div>
@@ -115,7 +116,7 @@
     <p>정면 얼굴 사진 한 장과 현생의 단서를 입력하면 전생의 한 장면과 그 풀이가 열립니다.</p>
     <h3>얼굴은 어떻게 읽나요?</h3><p>이 기기에서 얼굴 특징점 68개를 찾고, 코·턱선·눈 사이·눈썹을 읽습니다. 사진에서 어느 지점을 보았는지 결과에서 눌러볼 수 있어요. 관상은 전통적인 상징 풀이입니다.</p>
     <h3>이야기는 어떻게 쓰나요?</h3><p>한국사 자료에서 당시 사람들이 쓰던 도구와 일거리를 찾고, 언어 모델이 당신이 적은 직업과 버릇을 읽어 사건과 결말을 씁니다. 인물과 사건은 역사소설처럼 즐기는 창작입니다.</p>
-    <h3>내 정보는 어디로 가나요?</h3><p>서버 AI는 출생 계절, 성씨·본관, 선택한 형편, 직업·성격, 얼굴의 묘사를 OpenAI로 보냅니다. 사진 원본과 생년월일 여섯 자리는 기기에 남습니다. 기기 AI는 모델 파일을 받은 뒤 이 브라우저에서 글을 씁니다. 두 방식 모두 전생록에는 입력을 저장하지 않습니다.</p>
+    <h3>내 정보는 어디로 가나요?</h3><p>서버 AI는 출생 계절, 성씨·본관, 선택한 형편, 직업·성격, 얼굴의 묘사를 OpenAI로 보냅니다. 사진 원본과 생년월일 여섯 자리는 기기에 남습니다. 전생록은 서버에 입력과 결과를 저장하지 않습니다.</p>
     <button type="button" id="guideDone" class="primary wide">확인</button>
   </dialog>
 </body></html>

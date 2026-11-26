@@ -50,7 +50,7 @@ export async function api(request,env,providerFetch=fetch) {
   if(path!=='/api/reading')return respond({error:'경로를 찾지 못했습니다.'},404);
   if(request.method!=='POST')return respond({error:'POST 요청만 가능합니다.'},405);
   if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return respond({error:'이 사이트에서 다시 시도해주세요.'},403);
-  if(!env.OPENAI_API_KEY)return respond({error:'서버 AI 연결을 준비하고 있어요. 내 기기 AI로 이야기를 읽을 수 있습니다.'},503);
+  if(!env.OPENAI_API_KEY)return respond({error:'서버 AI 연결을 준비하고 있어요. 잠시 후 다시 시도해주세요.'},503);
   if(!request.headers.get('content-type')?.includes('application/json'))return respond({error:'입력 형식을 확인해주세요.'},415);
   if(Number(request.headers.get('content-length'))>12000)return respond({error:'입력이 너무 깁니다.'},413);
   let profile;
@@ -65,7 +65,7 @@ export async function api(request,env,providerFetch=fetch) {
     const response=await providerFetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:'Bearer '+env.OPENAI_API_KEY,'Content-Type':'application/json'},
       body:JSON.stringify({model:'gpt-4.1-mini',store:false,instructions:instructions+' candidates에는 세 시대의 기록이 있다. 이 사람이 적은 행동에 가장 구체적으로 맞는 하나를 직접 고르고 해당 인덱스(0부터)를 background로 반환한다. 선택한 시대의 현장 안에서만 쓴다.',input:JSON.stringify(profile),max_output_tokens:2300,text:{format:{type:'json_schema',name:'korean_past_life',strict:true,schema}}}),
       signal:AbortSignal.any([request.signal,AbortSignal.timeout(65000)])});
-    if(!response.ok)return respond({error:response.status===429?'AI 사용 한도에 닿았어요. 잠시 후 다시 시도하거나 내 기기 AI를 선택해주세요.':'서버 AI 연결을 확인해야 합니다. 내 기기 AI로도 풀이할 수 있습니다.'},response.status===429?429:502);
+    if(!response.ok)return respond({error:response.status===429?'AI 사용 한도에 닿았어요. 잠시 후 다시 시도해주세요.':'서버 AI 연결을 확인해야 합니다. 잠시 후 다시 시도해주세요.'},response.status===429?429:502);
     const output=await response.json();
     const raw=output.output?.flatMap(part=>part.content||[]).filter(part=>part.type==='output_text').map(part=>part.text).join('');
     const reading=raw&&resultData(JSON.parse(raw),profile);

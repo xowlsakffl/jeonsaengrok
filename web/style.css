@@ -169,7 +169,7 @@ dialog p{font-size:.94rem;color:#595b51;margin-top:4px}
 .verdict-stamp{flex:none;font-size:1.5rem;margin-top:5px}
 .verdict h2{font:700 1.05rem/1.5 var(--serif);color:#90402d}.verdict p{font:700 1.11rem/1.7 var(--serif);margin-top:4px;color:#403d31;overflow-wrap:anywhere}
 .story-text p,.clue dd{overflow-wrap:anywhere}
-.model-choice{margin:20px 0 4px}.model-choice label{font-size:.93rem;font-weight:750;display:block;margin-bottom:5px}.model-choice select{width:100%}
+.service-note{padding:10px 13px;margin-bottom:16px;background:#efe7d6;color:#68402f;border-radius:4px;font-size:.93rem}
 #writing{display:flex;align-items:center;gap:10px;background:#edf0e4;padding:12px 14px;border-radius:5px;margin-top:12px;font-size:.93rem;color:#294638}
 #stopWriting{margin-left:auto;flex:none}.writing-dot{width:10px;height:10px;border:2px solid #93a48e;border-top-color:#284940;border-radius:50%;animation:writing-turn 1s linear infinite;flex:none}
 @keyframes writing-turn{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.writing-dot{animation:none}}

@@ -11,7 +11,7 @@ export function birthDate(input, now = new Date()) {
   return { iso: date.toISOString().slice(0,10), label: year+'년 '+month+'월 '+day+'일', season: seasonNames[month-1] };
 }
 
-export function describeProfile(profile, context) {
+export function describeProfile(profile) {
   const selected = id => {
     const field = document.getElementById(id);
     return field.value === 'private' ? '' : field.selectedOptions[0].textContent;
@@ -19,8 +19,7 @@ export function describeProfile(profile, context) {
   return {
     job:profile.job, personality:profile.personality, season:profile.season, surname:profile.surname, clan:profile.clan,
     wealth:selected('wealth'), family:selected('family'),
-    face:profile.face.observations.map(o => o.reading),
-    era:context.era, place:context.place, work:context.work, detail:context.detail
+    face:profile.face.observations.map(o => o.reading)
   };
 }
 

@@ -18,8 +18,6 @@ for (const el of document.querySelectorAll('[data-icon]')) {
 }
 
 let operation;
-let serverReady = false;
-let modeSelected = false;
 let savedProfile = '';
 let savedReading = null;
 const dateHint = '연·월·일 순서로 숫자 6자리를 입력해주세요.';
@@ -30,22 +28,9 @@ function refreshBirth() {
   $('birthHint').textContent = date ? date.label+'로 풀이합니다.' : field.value.length===6 ? '달력에 있는 날짜인지 확인해주세요.' : dateHint;
 }
 $('birth').addEventListener('input',refreshBirth);
-function describeMode(){
-  $('modeNote').textContent = $('mode').value==='local'
-    ? 'Qwen3 0.6B · 최초 1회 약 397 MB를 받습니다. 기기에서 직접 글을 쓰며 몇 분 걸릴 수 있어요.'
-    : '글로 입력한 단서와 얼굴 묘사를 OpenAI에 보내 이야기를 씁니다. 사진 원본은 기기에 남습니다.';
-}
-$('mode').addEventListener('change',()=>{modeSelected=true;describeMode();});
-function applyAvailability(ready){
-  serverReady=ready;
-  const option=$('mode').querySelector('option[value="server"]');
-  option.disabled=!ready;
-  option.textContent=ready?'서버 AI':'서버 AI · 연결 대기';
-  if(!modeSelected||(!ready&&$('mode').value==='server'))$('mode').value=ready?'server':'local';
-  describeMode();
-}
-applyAvailability(false);
-fetch('./api/availability',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(data=>applyAvailability(data?.server===true)).catch(()=>{});
+fetch('./api/availability',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(data=>{
+  if(data?.server===false)$('availability').hidden=false;
+}).catch(()=>{});
 let step = 1;
 let requestId = 0;
 let photoUrl = '';
@@ -149,16 +134,14 @@ $('profileForm').addEventListener('submit',async e=>{
   for(const [id,message] of [['wealth','내 재산 구간을 선택해주세요.'],['family','집안 형편을 선택해주세요.'],['job','직업이나 주로 하는 일을 입력해주세요.'],['personality','성격을 적거나 아래 예시에서 골라주세요.']]) {
     if(!$(id).value.trim()){feedback('errTwo',message,$(id));return;}
   }
-  const profile=getProfile(), mode=$('mode').value;
-  const identity=JSON.stringify([mode,requestId,profile]);
+  const profile=getProfile();
+  const identity=JSON.stringify([requestId,profile]);
   if(savedReading&&savedProfile===identity){showReading(savedReading,false,$('revealBtn'));return;}
   const controller=new AbortController();
   operation=controller;
   setWriting(true);
   try {
-    const result=await generateReading(profile,mode,controller.signal,text=>{
-      if(operation===controller)$('writingStatus').textContent=text;
-    });
+    const result=await generateReading(profile,controller.signal);
     if(!controller.signal.aborted){
       savedProfile=identity;savedReading=result;showReading(result,false,$('revealBtn'));
     }
@@ -283,7 +266,7 @@ $('again').addEventListener('click',()=>{
     document.querySelectorAll('[aria-invalid]').forEach(el=>el.removeAttribute('aria-invalid'));
     document.querySelectorAll('[data-trait]').forEach(el=>el.setAttribute('aria-pressed','false'));
     changeStep(1);
-    activeReading=null;savedReading=null;savedProfile='';refreshBirth();modeSelected=false;applyAvailability(serverReady);
+    activeReading=null;savedReading=null;savedProfile='';refreshBirth();
     $('clues').replaceChildren();
   }
   showEntry('reading');
