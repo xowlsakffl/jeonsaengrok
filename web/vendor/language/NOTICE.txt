@@ -1,0 +1,15 @@
+On-device language model
+
+Qwen3-0.6B by the Qwen Team, Apache License 2.0.
+https://huggingface.co/Qwen/Qwen3-0.6B
+Q4_K_M GGUF quantization by Unsloth.
+https://huggingface.co/unsloth/Qwen3-0.6B-GGUF/tree/50968a4468ef4233ed78cd7c3de230dd1d61a56b
+Qwen3-0.6B-Q4_K_M.gguf · 396,705,472 bytes
+SHA-256 ac2d97712095a558e31573f62f466a3f9d93990898b0ec79d7c974c1780d524a
+
+@wllama/wllama v2.3.7 by Xuan Son Nguyen (MIT)
+https://github.com/ngxson/wllama
+Bundled JavaScript has one local modification: its absolute URL helper supports
+module workers without a document.
+WebAssembly binary includes llama.cpp (MIT).
+https://github.com/ggml-org/llama.cpp

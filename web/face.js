@@ -29,6 +29,10 @@ function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
+function midpoint(a, b) {
+  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+}
+
 export async function analyzeFace(image) {
   const width = image.naturalWidth || image.width;
   const height = image.naturalHeight || image.height;
@@ -64,6 +68,11 @@ export async function analyzeFace(image) {
 
   const { detection, landmarks } = faces[0];
   const points = landmarks.positions;
+  if (points.length !== 68 || points.some(point =>
+    !Number.isFinite(point.x) || !Number.isFinite(point.y) ||
+    point.x <= 0 || point.y <= 0 || point.x >= inputWidth || point.y >= inputHeight)) {
+    throw new Error('눈썹에서 턱끝까지 얼굴 윤곽이 모두 보이는 사진을 골라 주세요.');
+  }
   const cheekSpan = distance(points[0], points[16]);
   const eyeSpan = distance(points[36], points[45]);
   if (detection.box.width < 50 || cheekSpan < 40 || eyeSpan < 18) {
@@ -73,23 +82,73 @@ export async function analyzeFace(image) {
   const noseTip = points[30];
   const leftReach = distance(points[0], noseTip);
   const rightReach = distance(points[16], noseTip);
-  const tilt = Math.abs(points[45].y - points[36].y) / eyeSpan;
-  if (Math.min(leftReach, rightReach) / Math.max(leftReach, rightReach) < 0.52 || tilt > 0.36) {
-    throw new Error('정면에서 얼굴 전체가 보이는 사진이 필요합니다. 고개를 바로 한 사진을 골라 주세요.');
+  const leftEyeWidth = distance(points[36], points[39]);
+  const rightEyeWidth = distance(points[42], points[45]);
+  const eyeWidth = (leftEyeWidth + rightEyeWidth) / 2;
+  if (Math.min(leftEyeWidth, rightEyeWidth) < 5) {
+    throw new Error('눈 주변의 윤곽이 충분히 보이는 정면 사진을 골라 주세요.');
+  }
+  const leftEyeCenter = midpoint(points[36], points[39]);
+  const rightEyeCenter = midpoint(points[42], points[45]);
+  const dx = rightEyeCenter.x - leftEyeCenter.x;
+  const dy = rightEyeCenter.y - leftEyeCenter.y;
+  const roll = Math.atan2(dy, dx);
+  if (Math.abs(roll) > 20 * Math.PI / 180) {
+    throw new Error('사진 속 눈높이가 많이 기울어졌습니다. 두 눈이 수평으로 보이는 사진을 골라 주세요.');
+  }
+  const cheekSymmetry = Math.min(leftReach, rightReach) / Math.max(leftReach, rightReach);
+  const eyeSymmetry = Math.min(leftEyeWidth, rightEyeWidth) / Math.max(leftEyeWidth, rightEyeWidth);
+  if (cheekSymmetry < 0.55 || eyeSymmetry < 0.60) {
+    throw new Error('한쪽 얼굴이 더 크게 보입니다. 양쪽 볼과 두 눈이 함께 보이는 정면 사진을 골라 주세요.');
   }
 
   // Relative, dimensionless shape cues for the fictional interpretation.
   // Jaw width samples the middle of the lower jaw, away from ears and hair.
   const noseRatio = distance(points[31], points[35]) / eyeSpan;
   const jawRatio = distance(points[3], points[13]) / cheekSpan;
+  const eyeGap = distance(points[39], points[42]) / eyeWidth;
+  const leftLid = midpoint(points[37], points[38]);
+  const rightLid = midpoint(points[43], points[44]);
+  // Project onto the direction perpendicular to the eye line so a slight
+  // camera roll does not change the estimated brow-to-lid separation.
+  const verticalGap = (brow, lid) =>
+    -(lid.x - brow.x) * Math.sin(roll) + (lid.y - brow.y) * Math.cos(roll);
+  const browGap = (verticalGap(points[19], leftLid) + verticalGap(points[24], rightLid)) / (2 * eyeWidth);
+  if (browGap <= 0) {
+    throw new Error('눈과 눈썹의 위치를 구분하기 어렵습니다. 눈썹이 가려지지 않은 사진을 골라 주세요.');
+  }
   // Positions in the entire uncropped image for an overlay with the same aspect ratio.
   const normalize = point => ({
     x: Math.max(0, Math.min(1, point.x / inputWidth)),
     y: Math.max(0, Math.min(1, point.y / inputHeight)),
   });
+  const noseMark = normalize(noseTip);
+  const chinMark = normalize(points[8]);
   return {
     nose: noseRatio < 0.32 ? 'narrow' : noseRatio > 0.41 ? 'full' : 'balanced',
     jaw: jawRatio < 0.72 ? 'narrow' : jawRatio > 0.82 ? 'wide' : 'balanced',
-    marks: { nose: normalize(noseTip), jaw: normalize(points[8]) },
+    marks: { nose: noseMark, jaw: chinMark },
+    observations: [
+      {
+        name: '코',
+        reading: `이 사진에서 콧방울 양끝의 너비는 두 눈 바깥꼬리 사이 거리의 약 ${Math.round(noseRatio * 100)}%입니다.`,
+        mark: noseMark,
+      },
+      {
+        name: '턱선',
+        reading: `턱선 중간의 좌우 너비는 양쪽 볼 가장자리 사이 거리의 약 ${Math.round(jawRatio * 100)}%입니다.`,
+        mark: chinMark,
+      },
+      {
+        name: '눈 사이',
+        reading: `두 눈의 안쪽 눈머리 사이 간격은 한쪽 눈의 평균 가로 길이와 비교해 약 ${eyeGap.toFixed(1)}배입니다.`,
+        mark: normalize(midpoint(points[39], points[42])),
+      },
+      {
+        name: '눈썹',
+        reading: `눈썹 한가운데에서 윗눈꺼풀까지의 간격은 양쪽 평균으로 눈 가로 길이의 약 ${Math.round(browGap * 100)}%입니다.`,
+        mark: normalize(points[24]),
+      },
+    ],
   };
 }

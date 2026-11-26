@@ -1,5 +1,7 @@
 import { analyzeFace } from './face.js';
-import { generateReading } from './story.js';
+import { generateReading } from './reading.js';
+import { birthDate } from './profile.js';
+import { example } from './sample.js';
 
 const $ = id => document.getElementById(id);
 const icons = {
@@ -15,8 +17,35 @@ for (const el of document.querySelectorAll('[data-icon]')) {
   el.outerHTML = '<svg aria-hidden="true" class="icon" viewBox="0 0 24 24">'+icons[el.dataset.icon]+'</svg>';
 }
 
-const today = new Date();
-$('birth').max = [today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
+let operation;
+let serverReady = false;
+let modeSelected = false;
+let savedProfile = '';
+let savedReading = null;
+const dateHint = '연·월·일 순서로 숫자 6자리를 입력해주세요.';
+function refreshBirth() {
+  const field=$('birth');
+  field.value=field.value.replace(/[^0-9]/g,'').slice(0,6);
+  const date=birthDate(field.value);
+  $('birthHint').textContent = date ? date.label+'로 풀이합니다.' : field.value.length===6 ? '달력에 있는 날짜인지 확인해주세요.' : dateHint;
+}
+$('birth').addEventListener('input',refreshBirth);
+function describeMode(){
+  $('modeNote').textContent = $('mode').value==='local'
+    ? 'Qwen3 0.6B · 최초 1회 약 397 MB를 받습니다. 기기에서 직접 글을 쓰며 몇 분 걸릴 수 있어요.'
+    : '글로 입력한 단서와 얼굴 묘사를 OpenAI에 보내 이야기를 씁니다. 사진 원본은 기기에 남습니다.';
+}
+$('mode').addEventListener('change',()=>{modeSelected=true;describeMode();});
+function applyAvailability(ready){
+  serverReady=ready;
+  const option=$('mode').querySelector('option[value="server"]');
+  option.disabled=!ready;
+  option.textContent=ready?'서버 AI':'서버 AI · 연결 대기';
+  if(!modeSelected||(!ready&&$('mode').value==='server'))$('mode').value=ready?'server':'local';
+  describeMode();
+}
+applyAvailability(false);
+fetch('./api/availability',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(data=>applyAvailability(data?.server===true)).catch(()=>{});
 let step = 1;
 let requestId = 0;
 let photoUrl = '';
@@ -26,25 +55,6 @@ let lastTrigger = null;
 let currentView = 'entry';
 let savingCard = false;
 
-const example = {
-  title:'적장의 성을 이어받은 서기',era:'1592년 · 충주',summary:'전생에 적장의 이름을 썼던 손으로, 이번 생에는 내 이름을 씁니다.',
-  paragraphs:[
-    '탄금대 전투가 끝난 저녁, 당신은 일본군 진영의 등잔 아래 앉았습니다. 당신의 일은 장수가 보내온 글을 새 장부에 옮겨 적는 것이었습니다. 그날 마지막 줄에는 조선 장수 신립의 이름이 있었습니다.',
-    '장부를 덮으려는데 문밖에 아이 하나가 서 있었습니다. 징발한 쌀을 한 되만 돌려주면 어머니가 죽을 끓일 수 있다고 했습니다. 남들 앞에서는 말 한마디 보태기 어렵던 당신이었지만, 다른 이가 돌아간 뒤라면 이야기가 달랐습니다. 아이의 그릇을 채운 뒤 모자란 쌀은 당신 몫에서 냈습니다.',
-    '이번 생에 첫 집의 문을 열던 날, 모자랐던 보증금을 먼저 보태 준 사람은 부모님이었습니다. 그리고 계약서에 이름을 쓰며 그날 장부에 적었던 글자를 다시 썼습니다. 이제는 당신의 성인 신(申)이었습니다.'
-  ],
-  clues:[
-    {label:'얼굴 관상',detail:'가상 인물의 도톰한 코끝을 전통 관상의 재백궁 모티프로 읽어, 쌀 한 되를 건네는 장면을 골랐습니다.'},
-    {label:'생년월일',detail:'5월생의 늦봄을 창작 장면의 계절 단서로 썼습니다.'},
-    {label:'성씨·본관',detail:'신립과 같은 평산 신씨라는 단서에서, 한때 적군의 서기였던 사람이 현생에서 그 성을 쓰게 되는 반전을 만들었습니다.'},
-    {label:'내 재산',detail:'순자산 2억~5억 원 구간을 삶의 기반을 마련한 결말로 풀었습니다.'},
-    {label:'집안 형편',detail:'여유로운 집안에서 받은 도움을, 전생에 먼저 내어 준 한 사람의 몫이 돌아오는 장면으로 연결했습니다.'},
-    {label:'성격',detail:'소심하지만 남에게 돈 쓰는 데 너그럽다는 성격이 아무도 보지 않을 때 자기 몫을 내주는 행동으로 이어집니다.'},
-    {label:'직업',detail:'오류를 찾아 기록을 대조하는 개발자의 일에서 글과 장부를 다루는 서기의 역할을 골랐습니다.'}
-  ],
-  history:'신립의 본관은 평산이며 1592년 충주에서 일본군과 싸웠습니다. 서기와 아이, 두 생을 잇는 인연은 예시를 위해 창작했습니다.',
-  sources:[{label:'한국민족문화대백과사전 · 신립',url:'https://encykorea.aks.ac.kr/Article/E0032901'},{label:'전통 관상 풀이',url:'https://encykorea.aks.ac.kr/Article/E0004873'}]
-};
 
 function clearError(id) {
   $(id).hidden=true;
@@ -121,15 +131,17 @@ for (const name of ['dragenter','dragover']) $('dropzone').addEventListener(name
 $('dropzone').addEventListener('dragleave',()=>$('dropzone').classList.remove('drag'));
 $('dropzone').addEventListener('drop',e=>{e.preventDefault();$('dropzone').classList.remove('drag');choosePhoto(e.dataTransfer.files[0]);});
 function getProfile(){
-  return {face:features,birth:$('birth').value,surname:$('surname').value.trim(),clan:$('clan').value.trim(),job:$('job').value.trim(),personality:$('personality').value.trim(),wealth:$('wealth').value,family:$('family').value};
+  const date=birthDate($('birth').value);
+  return {face:features,birth:date.iso,season:date.season,surname:$('surname').value.trim(),clan:$('clan').value.trim(),job:$('job').value.trim(),personality:$('personality').value.trim(),wealth:$('wealth').value,family:$('family').value};
 }
 $('profileForm').addEventListener('input',e=>{e.target.removeAttribute('aria-invalid');clearError(step===1?'errOne':'errTwo');});
-$('profileForm').addEventListener('submit',e=>{
+$('profileForm').addEventListener('submit',async e=>{
   e.preventDefault();
+  if(operation)return;
   if (step===1) {
     clearError('errOne');
     if(!features){feedback('errOne','정면 얼굴 사진 한 장을 올리고 얼굴 인식을 마쳐주세요.',photoUrl?$('photoRemove'):$('portrait'));return;}
-    if(!$('birth').value||!$('birth').validity.valid){feedback('errOne','태어난 날짜를 확인해주세요.',$('birth'));return;}
+    if(!birthDate($('birth').value)){feedback('errOne','생년월일을 숫자 6자리로 확인해주세요.',$('birth'));return;}
     if(!$('surname').value.trim()){feedback('errOne','성씨를 입력해주세요. 본관은 비워둘 수 있어요.',$('surname'));return;}
     changeStep(2,true);return;
   }
@@ -137,13 +149,36 @@ $('profileForm').addEventListener('submit',e=>{
   for(const [id,message] of [['wealth','내 재산 구간을 선택해주세요.'],['family','집안 형편을 선택해주세요.'],['job','직업이나 주로 하는 일을 입력해주세요.'],['personality','성격을 적거나 아래 예시에서 골라주세요.']]) {
     if(!$(id).value.trim()){feedback('errTwo',message,$(id));return;}
   }
+  const profile=getProfile(), mode=$('mode').value;
+  const identity=JSON.stringify([mode,requestId,profile]);
+  if(savedReading&&savedProfile===identity){showReading(savedReading,false,$('revealBtn'));return;}
+  const controller=new AbortController();
+  operation=controller;
+  setWriting(true);
   try {
-    const reading=generateReading(getProfile());
-    showReading(reading,false,$('revealBtn'));
-  } catch {
-    feedback('errTwo','기록을 펼치지 못했습니다. 입력을 확인하고 다시 시도해주세요.');
+    const result=await generateReading(profile,mode,controller.signal,text=>{
+      if(operation===controller)$('writingStatus').textContent=text;
+    });
+    if(!controller.signal.aborted){
+      savedProfile=identity;savedReading=result;showReading(result,false,$('revealBtn'));
+    }
+  } catch(error) {
+    if(!controller.signal.aborted)feedback('errTwo',error.message||'이야기를 완성하지 못했어요. 다시 시도해주세요.');
+  } finally {
+    if(operation===controller){operation=null;setWriting(false);}
   }
 });
+function setWriting(busy) {
+  $('writing').hidden=!busy;
+  $('profileForm').setAttribute('aria-busy',String(busy));
+  for(const el of $('secondStep').querySelectorAll('input,select,textarea,button'))if(el.id!=='stopWriting')el.disabled=busy;
+  if(busy)$('writingStatus').textContent='이야기의 단서를 읽고 있어요…';
+}
+function cancelWriting(){
+  if(!operation)return;
+  operation.abort();operation=null;setWriting(false);
+}
+$('stopWriting').addEventListener('click',()=>{cancelWriting();feedback('errTwo','생성을 중단했습니다. 입력은 그대로 있어요.');$('revealBtn').focus();});
 $('backBtn').addEventListener('click',()=>changeStep(1,true));
 for(const btn of document.querySelectorAll('[data-trait]')) btn.addEventListener('click',()=>{
   const field=$('personality'), tag=btn.dataset.trait;
@@ -169,55 +204,53 @@ function makeFaceGuide(face, photo) {
   const canvas=node('canvas');
   canvas.width=560;
   canvas.height=400;
-  canvas.setAttribute('aria-label','입력한 사진의 코끝과 턱끝 위치');
-  const width=photo.naturalWidth, height=photo.naturalHeight;
-  const nose=face.marks.nose, jaw=face.marks.jaw;
-  const lowerFace=Math.hypot((nose.x-jaw.x)*width,(nose.y-jaw.y)*height);
-  const cropHeight=Math.min(height,width*5/7,Math.max(1,lowerFace*3.2));
-  const cropWidth=cropHeight*7/5;
-  const left=Math.max(0,Math.min(width-cropWidth,nose.x*width-cropWidth/2));
-  const top=Math.max(0,Math.min(height-cropHeight,nose.y*height-cropHeight*.5));
+  canvas.setAttribute('aria-label','사진에서 측정한 얼굴 부위 네 곳');
+  const width=photo.naturalWidth, height=photo.naturalHeight, points=face.observations;
+  const xs=points.map(o=>o.mark.x*width), ys=points.map(o=>o.mark.y*height);
+  const spread=Math.max(1,Math.max(...ys)-Math.min(...ys));
+  const cropHeight=Math.min(height,width*5/7,spread*1.95), cropWidth=cropHeight*7/5;
+  const left=Math.max(0,Math.min(width-cropWidth,(Math.min(...xs)+Math.max(...xs)-cropWidth)/2));
+  const top=Math.max(0,Math.min(height-cropHeight,(Math.min(...ys)+Math.max(...ys)-cropHeight)/2));
   canvas.getContext('2d').drawImage(photo,left,top,cropWidth,cropHeight,0,0,560,400);
   box.append(canvas);
-  const note=node('p',undefined,'face-note');
+  const note=node('p',undefined,'face-note'),tabs=node('div',undefined,'face-tabs');
   note.setAttribute('aria-live','polite');
-  const buttons=[];
-  const texts={
-    nose:'재백궁 · 코 폭을 눈 사이 너비와 대조한 특징에서 이야기 속 재물의 모티프를 골랐습니다.',
-    jaw:'지각 · 턱선의 상대적인 너비에서 이야기 속 인연을 지켜본 목격자를 골랐습니다.'
-  };
-  for (const [part,title] of [['nose','코'],['jaw','턱']]) {
-    const point=face.marks[part];
-    const button=node('button',title,'pin');
+  const buttons=[],markers=[];
+  points.forEach(({name,reading,mark},i)=>{
+    const pin=node('span',String(i+1),'pin'), button=node('button',(i+1)+' '+name);
+    pin.setAttribute('aria-hidden','true');
+    pin.style.left=((mark.x*width-left)/cropWidth*100)+'%';
+    pin.style.top=((mark.y*height-top)/cropHeight*100)+'%';
     button.type='button';
-    button.setAttribute('aria-label',title+' 위치의 관상 풀이');
-    button.style.left=((point.x*width-left)/cropWidth*100)+'%';
-    button.style.top=((point.y*height-top)/cropHeight*100)+'%';
     button.addEventListener('click',()=>{
-      for(const other of buttons)other.setAttribute('aria-pressed',String(other===button));
-      note.textContent=texts[part];
+      buttons.forEach((b,j)=>{b.setAttribute('aria-pressed',String(j===i));markers[j].hidden=j!==i;});
+      note.textContent=reading;
     });
-    buttons.push(button);
-    box.append(button);
-  }
+    buttons.push(button);markers.push(pin);box.append(pin);tabs.append(button);
+  });
   buttons[0].click();
-  details.append(box,note);
+  details.append(box,tabs,note);
   return details;
 }
 function showReading(reading,isExample,trigger) {
+  if(isExample)cancelWriting();
   activeReading=reading;
   currentView=isExample?'example':'personal';
   lastTrigger=trigger;
   $('entry').hidden=true;
   $('resultView').hidden=false;
-  $('resultKind').textContent=isExample?'예시 전생 기록':'나의 전생 기록';
+  $('resultKind').textContent=isExample?'전생 인물첩 · 예시':'전생 인물첩 · '+reading.engine+' 집필';
   $('resultTitle').textContent=reading.title;
   $('resultEra').textContent=reading.era;
+  $('resultPlace').textContent=reading.place;
+  $('resultRole').textContent=reading.role;
+  $('roast').textContent=reading.roast;
   $('storyText').replaceChildren(...reading.paragraphs.map(p=>node('p',p)));
   $('storyQuote').textContent=reading.summary;
   $('clues').replaceChildren(...reading.clues.map(clue=>{const div=node('div',undefined,'clue');div.append(node('dt',clue.label),node('dd',clue.detail));return div;}));
   if(!isExample&&features?.marks&&photoUrl){
-    $('clues').querySelector('dd').append(makeFaceGuide(features,$('photoPreview')));
+    const faceRow=Array.from($('clues').children).find(row=>row.querySelector('dt').textContent==='얼굴 관상');
+    faceRow?.querySelector('dd').append(makeFaceGuide(features,$('photoPreview')));
   }
   $('historyText').textContent=reading.history;
   $('sourceLinks').replaceChildren(...reading.sources.filter(s=>/^https:\/\//.test(s.url)).map(s=>{const a=node('a',s.label);a.href=s.url;a.target='_blank';a.rel='noopener noreferrer';return a;}));
@@ -231,6 +264,7 @@ function showReading(reading,isExample,trigger) {
   $('resultTitle').focus({preventScroll:true});
 }
 function showEntry(target, focus=false) {
+  cancelWriting();
   $('resultView').hidden=true;
   $('entry').hidden=false;
   $('readingNav').classList.add('nav-current');
@@ -249,7 +283,7 @@ $('again').addEventListener('click',()=>{
     document.querySelectorAll('[aria-invalid]').forEach(el=>el.removeAttribute('aria-invalid'));
     document.querySelectorAll('[data-trait]').forEach(el=>el.setAttribute('aria-pressed','false'));
     changeStep(1);
-    activeReading=null;
+    activeReading=null;savedReading=null;savedProfile='';refreshBirth();modeSelected=false;applyAvailability(serverReady);
     $('clues').replaceChildren();
   }
   showEntry('reading');
@@ -274,15 +308,29 @@ $('saveCard').addEventListener('click',async()=>{
   const reading=activeReading;
   try{
     await document.fonts.ready;
-    const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=780;
+    const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1280;
     const ctx=canvas.getContext('2d');
-    ctx.fillStyle='#f7f1e2';ctx.fillRect(0,0,1080,780);
-    const art=new Image();art.src='./assets/landscape.jpg';await art.decode();ctx.drawImage(art,0,0,1080,360);
-    ctx.fillStyle='#8a392b';ctx.font='700 29px LocalMyeongjo,serif';ctx.fillText('전생록',56,65);
-    ctx.fillStyle='#5a5649';ctx.font='25px LocalSuit,sans-serif';ctx.fillText(reading.era,58,426);
-    ctx.fillStyle='#292c25';ctx.font='700 51px LocalMyeongjo,serif';const y=canvasLines(ctx,reading.title,54,508,965,65);
-    ctx.fillStyle='#554f42';ctx.font='31px LocalSuit,sans-serif';canvasLines(ctx,reading.summary,57,y+6,958,46);
-    ctx.fillStyle='#7a7465';ctx.font='21px LocalSuit,sans-serif';ctx.fillText('전생록 · 역사에서 영감을 얻은 창작 이야기',57,738);
+    ctx.fillStyle='#29483f';ctx.fillRect(0,0,1080,1280);
+    ctx.fillStyle='#f3ebd9';ctx.fillRect(27,27,1026,1226);
+    const art=new Image();art.src='./assets/landscape.jpg';await art.decode();
+    const artHeight=350;
+    const crop=Math.min(art.naturalWidth,art.naturalHeight*1026/artHeight);
+    ctx.drawImage(art,art.naturalWidth-crop,0,crop,art.naturalHeight,27,27,1026,artHeight);
+    ctx.fillStyle='#294439';ctx.font='700 37px LocalMyeongjo,serif';ctx.fillText('전생록',74,108);
+    ctx.fillStyle='#924334';ctx.fillRect(935,65,61,61);ctx.fillStyle='#fff0d6';ctx.font='700 33px LocalMyeongjo,serif';ctx.fillText('錄',948,109);
+    ctx.strokeStyle='#ac9266';ctx.lineWidth=2;ctx.strokeRect(39,39,1002,1202);
+    ctx.fillStyle='#7a402e';ctx.font='700 25px LocalSuit,sans-serif';ctx.fillText('전생 인물첩',76,432);
+    ctx.fillStyle='#253b32';ctx.font='700 54px LocalMyeongjo,serif';
+    const y=canvasLines(ctx,reading.title,72,515,930,70);
+    ctx.fillStyle='#4c483b';ctx.font='31px LocalMyeongjo,serif';canvasLines(ctx,reading.summary,76,y+9,922,47);
+    ctx.fillStyle='#29483f';ctx.fillRect(42,787,996,255);
+    const facts=[['시대',reading.era],['무대',reading.place],['직업',reading.role]];
+    facts.forEach(([label,value],i)=>{
+      const yy=852+i*72;ctx.fillStyle='#d9c399';ctx.font='25px LocalSuit,sans-serif';ctx.fillText(label,78,yy);
+      ctx.fillStyle='#f9f2df';ctx.font='700 32px LocalMyeongjo,serif';ctx.fillText(value,190,yy,794);
+    });
+    ctx.fillStyle='#8d3d2d';ctx.font='700 26px LocalSuit,sans-serif';ctx.fillText('전생에서 온 팩폭',75,1096);
+    ctx.fillStyle='#393528';ctx.font='700 29px LocalMyeongjo,serif';canvasLines(ctx,reading.roast,75,1150,925,39);
     const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(),'image/png'));
     const url=URL.createObjectURL(blob),a=node('a');a.href=url;a.download='전생록-결과카드.png';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
     $('resultMessage').textContent='결과 카드를 이미지로 저장했습니다.';
