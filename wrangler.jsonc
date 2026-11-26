@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "jeonsaengrok",
+  "main": "worker/cloudflare.mjs",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./web",
+    "binding": "ASSETS",
+    "html_handling": "none",
+    "run_worker_first": ["/", "/api/*"]
+  },
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "jeonsaengrok-quota",
+    "database_id": "5a2fdd8d-27a7-4f2f-82f7-9e93ee155e04",
+    "migrations_dir": "drizzle"
+  }],
+  "observability": { "enabled": false }
+}
