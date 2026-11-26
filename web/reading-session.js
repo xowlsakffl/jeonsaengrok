@@ -1,6 +1,7 @@
 // The photo preview and draft stay in this tab while its documents navigate.
 const key = 'jeonsaeng.reading-session.v1';
 const maxAge = 60 * 60 * 1000;
+export const readingVersion = 2;
 
 export function clearSession() {
   sessionStorage.removeItem(key);

@@ -2,7 +2,7 @@ import './site.js';
 import { analyzeFace } from './face.js';
 import { birthDate } from './profile.js';
 import { example } from './sample.js';
-import { readSession, writeSession } from './reading-session.js';
+import { readSession, writeSession, readingVersion } from './reading-session.js';
 
 const $ = id => document.getElementById(id);
 $('sampleRole').textContent=example.role;
@@ -99,7 +99,7 @@ $('dropzone').addEventListener('dragleave',()=>$('dropzone').classList.remove('d
 $('dropzone').addEventListener('drop',e=>{e.preventDefault();$('dropzone').classList.remove('drag');choosePhoto(e.dataTransfer.files[0]);});
 
 
-const fieldIds = ['birth','surname','clan','job','personality','wealth','family','workLife'];
+const fieldIds = ['birth','surname','clan','job','personality','wealth','family'];
 
 function makeDraft() {
   const values = Object.fromEntries(fieldIds.map(id => [id,$(id).value]));
@@ -126,7 +126,7 @@ function getProfile() {
   return {
     birth:date.iso, season:date.season, surname:$('surname').value.trim(), clan:$('clan').value.trim(),
     face:features, job:$('job').value.trim(), personality:$('personality').value.trim(),
-    wealthLabel:label($('wealth')), familyLabel:label($('family')), workLife:$('workLife').value
+    wealthLabel:label($('wealth')), familyLabel:label($('family'))
   };
 }
 
@@ -166,12 +166,12 @@ $('profileForm').addEventListener('submit',e=>{
     const draft = makeDraft();
     const profile = getProfile();
     const previous = readSession();
-    if (previous?.reading && JSON.stringify(previous.profile) === JSON.stringify(profile)) {
+    if (previous?.version === readingVersion && previous.reading && JSON.stringify(previous.profile) === JSON.stringify(profile)) {
       writeSession({...previous,draft});
       location.assign('./result.html');
       return;
     }
-    writeSession({draft,profile,stage:'ready'});
+    writeSession({draft,profile,stage:'ready',version:readingVersion});
     location.assign('./loading.html');
   } catch {
     feedback('errTwo','이 탭에 입력을 잠시 보관할 수 없습니다. 브라우저의 사이트 데이터 설정을 확인한 뒤 다시 시도해주세요.');

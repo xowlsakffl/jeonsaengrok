@@ -13,7 +13,7 @@ export function birthDate(input, now = new Date()) {
 
 export function describeProfile(profile) {
   return {
-    workLife:profile.workLife, personality:profile.personality, season:profile.season, surname:profile.surname, clan:profile.clan,
+    job:profile.job, personality:profile.personality, season:profile.season, surname:profile.surname, clan:profile.clan,
     wealth:profile.wealthLabel, family:profile.familyLabel,
     face:profile.face.observations.map(o => o.reading)
   };

@@ -81,12 +81,9 @@
                 </div>
               </div>
               <div class="field"><label for="job">직업 <small>(선택)</small></label><input type="text" id="job" maxlength="90" placeholder="직업을 입력해주세요"></div>
-              <div class="field"><label for="workLife">지금 일자리의 여건 <small>(선택)</small></label>
-                <select id="workLife"><option value="">선택하지 않음</option><option value="hard">시간과 생활에 여유가 적어요</option><option value="mixed">좋은 점과 버거운 점이 섞여 있어요</option><option value="stable">안정적으로 일할 수 있어요</option><option value="free">시간과 일하는 방식을 정할 수 있어요</option></select>
-              </div>
               <div class="field"><label for="personality">내 성격 <em>*</em></label><textarea id="personality" rows="3" maxlength="260" required placeholder="예) 평소엔 느긋하지만 급한 순간엔 집중해요. 친구들에게 밥 사는 걸 좋아해요."></textarea></div>
               <div class="traits" aria-label="성격 예시 더하기"><button type="button" data-trait="사람을 잘 챙겨요">＋ 다정함</button><button type="button" data-trait="조심스러워요">＋ 신중함</button><button type="button" data-trait="끝까지 파고들어요">＋ 끈기</button><button type="button" data-trait="마지막까지 일을 미뤄요">＋ 미루기</button><button type="button" data-trait="틀려도 제 주장을 굽히기 어려워요">＋ 고집</button><button type="button" data-trait="일이 꼬이면 남 탓부터 해요">＋ 남 탓</button></div>
-              <small class="field-help">이야기를 펼치면 얼굴 묘사와 입력한 단서가 OpenAI로 전송됩니다. 사진 원본과 생년월일은 기기에 남습니다.</small>
+              <small class="field-help">이야기를 펼치면 입력한 직업명과 공개한 재산·집안 형편, 성격 등 풀이 단서를 OpenAI에 보냅니다. 사진 원본과 생년월일은 이 기기에 남습니다.</small>
               <p id="errTwo" class="error" role="alert" hidden></p>
               <div class="actions"><button type="button" class="secondary" id="backBtn">이전 단계</button><button type="submit" class="primary" id="revealBtn"><i data-icon="book"></i> 내 전생 펼치기</button></div>
             </div>

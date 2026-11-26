@@ -1,5 +1,5 @@
 import { generateReading } from './reading.js';
-import { readSession, writeSession } from './reading-session.js';
+import { readSession, writeSession, readingVersion } from './reading-session.js';
 
 const formUrl = './#reading';
 const resultUrl = './result.html';
@@ -18,6 +18,7 @@ function showRetry(message) {
 }
 
 async function start(session) {
+  if (session.version !== readingVersion) { location.replace(formUrl); return; }
   if (active) return;
   const controller = new AbortController();
   active = controller;
@@ -44,6 +45,7 @@ function enter() {
   const session = readSession();
   if (!session?.profile) { location.replace(formUrl); return; }
   if (session.stage === 'done' && session.reading) { location.replace(resultUrl); return; }
+  if (session.version !== readingVersion) { location.replace(formUrl); return; }
   if (session.stage === 'ready') { start(session); return; }
   showRetry('이전 풀이가 중단됐습니다. 같은 입력으로 다시 펼칠 수 있어요.');
 }

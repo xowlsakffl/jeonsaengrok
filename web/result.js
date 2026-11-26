@@ -56,8 +56,7 @@ function showReading(reading,isExample,session) {
   $('storyQuote').textContent=reading.summary;
   $('clues').replaceChildren(...reading.clues.map(clue=>{
     const div=node('div',undefined,'clue');
-    const job=!isExample && clue.label==='일자리 여건' && session?.profile?.job;
-    div.append(node('dt',job ? clue.label+' · '+job : clue.label),node('dd',clue.detail));
+    div.append(node('dt',clue.label),node('dd',clue.detail));
     return div;
   }));
   if(!isExample && session?.profile.face?.marks && session.draft.preview){
