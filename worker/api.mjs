@@ -1,4 +1,4 @@
-const fields = {personality:2400,season:2,surname:16,clan:32,wealth:60,family:60};
+const fields = {job:90,personality:2400,season:2,surname:16,clan:32,wealth:60,family:60};
 const respond = (obj,status=200) => new Response(JSON.stringify(obj),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff'}});
 const declinedReading = () => respond({error:'AI가 이번 입력으로 전생 풀이를 작성하지 못했습니다. 입력으로 돌아가 내용을 확인해주세요.'},422);
 const wealthBands = new Set([
@@ -12,7 +12,7 @@ const instructions = `한국어 역사 단편과 그 인물의 전생 풀이를 
 setting은 독자가 태어나기 이전으로 이미 정해진 시대와 현장이다. role은 그 현장의 work에 나온 실제 일거리에서 고르고, 자술한 버릇이 대가를 치르거나 사람을 움직이는 선택을 만든다. presentLife는 옛 역할을 정하는 데 쓰지 않는다. 특히 개발자라서 기록·계산·설계를 맡기는 식의 직업 번역이나 능력·지위의 대응은 피한다. 주인공은 허드렛일을 맡아도 좋다. 선사시대에는 한자 성씨, 문자, 관직, 화폐를 등장시키지 않는다.
 세 문단으로 읽히는 짧은 이야기다. opening은 주인공이 일손을 움직이는 장면과 갈등을 두세 문장으로 연다. deed는 갈림길에서 주인공이 누구에게 구체적으로 무엇을 했는지 보여주는 한 문장이다. middle은 그 행동 때문에 당장 누가 무엇을 얻거나 잃었는지 한두 문장으로 잇는다. ending은 남은 대가나 관계의 변화를 두세 문장으로 보여준다. deed는 둘째 문단 첫 문장에 편집되므로 다른 필드에 되풀이하지 않는다. 본문은 자연스러운 2인칭 존댓말로 쓰고 시대의 물건을 써라. 미루거나 남을 탓한 결과는 누가 대신 겪었는지 짚어라. 선행을 했어도 잘못의 대가는 남을 수 있다.
 presentLife에는 독자가 밝힌 현생 직업명(job), 본인 순자산 구간(wealth), 자랄 때의 집안 형편(family)만 들어온다. 세 단서를 따로 채점하거나 정해진 복의 등급표에 대입하지 말고, 함께 보고 이 사람에게 어울리는 선행과 되돌아온 복 하나를 상상한다. 자란 환경에서 받은 복, 지금 먹고사는 일, 본인 살림의 크기와 빚은 서로 다를 수 있다. 직업명은 실제로 풀이에 반영하되, 직업만으로 소득·대기업 근무·고용 안정·일 만족도를 단정하지 않는다. 상속이나 자수성가도 지어내지 않는다. 재산이 적거나 빚이 있다는 사실을 전생의 죄에 대한 벌로 돌리지 않는다.
-fortune은 deed 장면을 근거로 그때 남에게 남긴 몫이 현생에서 어떤 모습의 복이 되었는지 감각적인 두세 문장으로 풀어라. 입력된 직업명은 fortune에서 자연스럽게 명시하고, 재산과 자란 집도 주어졌다면 둘의 관계가 읽히게 한다. 금액·구간을 복사하거나 입력을 나열하지 말고, 막연한 '좋은 기회' 대신 사람·살림·쉴 틈처럼 구체적으로 말한다. 하나만 들어와도 그 하나로 풀고, 빠진 항목은 언급도 추정도 하지 않는다. presentLife가 없으면 fortune은 빈 문자열이고 deed는 성격을 보여주는 결정 한 가지다. 현대 직업과 형편은 풀이에만 쓰고 옛 장면에 끌어들이지 않는다.
+fortune은 deed 장면을 근거로 그때 남에게 남긴 몫이 현생에서 어떤 모습의 복이 되었는지 감각적인 두세 문장으로 풀어라. 입력된 직업명은 fortune에서 자연스럽게 명시하고, 재산과 자란 집도 주어졌다면 둘의 관계가 읽히게 한다. 금액·구간을 복사하거나 입력을 나열하지 말고, 막연한 '좋은 기회' 대신 사람·살림·쉴 틈처럼 구체적으로 말한다. 풀이의 마지막 문장까지 누가 베푼 무엇이 어떤 복으로 남았는지를 쓴다. 판단의 한계, 입력 절차, 점수나 재산 등급표에 대한 설명은 독자에게 쓰지 않는다. 재산이나 집안 형편을 비공개로 선택한 항목은 추정하지 않는다. ‘무직’은 현재 상태로 읽고 ‘현재 직업이 무직인 당신’처럼 직함으로 호칭하지 않는다. 무직인 이유나 소득, 전생의 잘못을 짐작하지 않는다. 현대 직업과 형편은 풀이에만 쓰고 옛 장면에 끌어들이지 않는다.
 title은 아이러니나 구체적인 물건이 들어간 짧은 제목, role은 간결한 옛 직업, summary는 결말을 다 밝히지 않는 한 문장이다. focusHabit은 자술한 버릇과 본문 속 행동을 연결한다. focusBirth는 계절과 장면이 맞닿을 때만 쓴다. 성씨와 본관에서 유명인·가계·민족성·원한을 추정하지 않는다.
 faceIndex는 실제 관찰값의 코(0), 턱선(1), 눈 사이(2), 눈썹과 눈 사이(3) 중 한 곳이다. focusFace는 그 부위의 전통 상징이나 시선의 이미지로 이야기 속 구체적 사건을 짚는다. 측정문은 화면에 붙으니 되풀이하지 않는다. 얼굴에서 현실의 성품·선악·능력·경제상태를 단정하거나 칭찬하지 않는다.`;
 const textField = {type:'string'};
@@ -28,8 +28,6 @@ function validateProfile(data) {
     if(typeof data[k]!=='string'||data[k].length>n)return null;
     selected[k]=data[k].trim();
   }
-  if(data.job!==undefined && (typeof data.job!=='string'||data.job.length>90))return null;
-  selected.job = data.job?.trim() || '';
   if(!['봄','여름','가을','겨울'].includes(selected.season)||!selected.personality||!selected.surname)return null;
   for (const key of ['wealth','family']) {
     if (['private','밝히지 않을래요','미공개','비공개'].includes(selected[key])) selected[key] = '';
@@ -52,17 +50,13 @@ function validateProfile(data) {
 
 function authorInput({job,wealth,family,candidates,...clues}) {
   // The first historical setting was ranked from birth and habits before the modern occupation is read.
-  const prompt = {...clues,setting:candidates[0]};
   const presentLife = Object.fromEntries(Object.entries({job,wealth,family}).filter(([,value]) => value));
-  if (Object.keys(presentLife).length) prompt.presentLife = presentLife;
-  return prompt;
+  return {...clues,setting:candidates[0],presentLife};
 }
 
 function resultData(t,p) {
   if(!t || !Number.isInteger(t.faceIndex) || t.faceIndex<0 || t.faceIndex>=p.face.length)return null;
-  const hasFortune = Boolean(p.job || p.wealth || p.family);
-  const limits = {title:80,role:64,summary:200,opening:750,deed:320,middle:750,ending:750,focusFace:600,focusHabit:600};
-  if (hasFortune) limits.fortune = 800;
+  const limits = {title:80,role:64,summary:200,opening:750,deed:320,middle:750,ending:750,focusFace:600,focusHabit:600,fortune:800};
   for (const [key,max] of Object.entries(limits)) {
     if (typeof t[key]!=='string' || !/[가-힣]/.test(t[key]) || t[key].length>max) return null;
   }
@@ -71,7 +65,7 @@ function resultData(t,p) {
     {label:'얼굴 관상',detail:p.face[t.faceIndex]+' '+t.focusFace.trim()},
     {label:'성격',detail:t.focusHabit.trim()},
   ];
-  if (hasFortune) clues.push({label:'전생에 쌓은 복',detail:'“'+t.deed.trim()+'” '+t.fortune.trim()});
+  clues.push({label:'전생에 쌓은 복',detail:'“'+t.deed.trim()+'” '+t.fortune.trim()});
   const familyName=p.clan ? '성은 '+p.surname+'씨, 본관은 '+p.clan+'입니다. 본관은 성의 연고를 전하는 단서입니다.' : '성은 '+p.surname+'씨입니다. 본관은 따로 적지 않았습니다.';
   clues.push({label:'생년월일',detail:t.focusBirth?.trim()||('태어난 때는 '+p.season+'입니다.')},{label:'성씨·본관',detail:familyName});
   return {background:0,faceIndex:t.faceIndex,title:t.title,role:t.role,summary:t.summary,paragraphs,clues};
@@ -91,7 +85,9 @@ export async function api(request,env,providerFetch=fetch) {
     const reader=request.body?.getReader();if(!reader)return respond({error:'입력이 비어 있습니다.'},400);
     let length=0;const chunks=[];
     while(true){const {done,value}=await reader.read();if(done)break;length+=value.byteLength;if(length>12000){await reader.cancel();return respond({error:'입력이 너무 깁니다.'},413);}chunks.push(value);}
-    profile=validateProfile(await new Response(new Blob(chunks)).json());
+    const data=await new Response(new Blob(chunks)).json();
+    if(typeof data?.job!=='string'||!data.job.trim())return respond({error:'직업을 입력해주세요. 현재 직업이 없으면 ‘무직’이라고 적어주세요.'},422);
+    profile=validateProfile(data);
   }catch{return respond({error:'입력을 확인해주세요.'},400);}
   if(!profile)return respond({error:'입력한 항목을 다시 확인해주세요.'},400);
   try {

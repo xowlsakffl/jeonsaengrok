@@ -80,7 +80,7 @@
                   <select id="family" required><option value="" disabled selected>자란 집의 형편 선택</option><option value="struggle">살림이 빠듯했어요</option><option value="modest">대체로 평범했어요</option><option value="comfortable">비교적 여유로웠어요</option><option value="affluent">매우 넉넉했어요</option><option value="private">밝히지 않을래요</option></select>
                 </div>
               </div>
-              <div class="field"><label for="job">직업 <small class="optional">선택 입력</small></label><input type="text" id="job" maxlength="90" placeholder="직업을 입력해주세요"></div>
+              <div class="field"><label for="job">직업 <em>*</em></label><input type="text" id="job" maxlength="90" required aria-describedby="jobHint" placeholder="직업을 입력해주세요"><small id="jobHint" class="field-help">현재 직업이 없으면 ‘무직’이라고 적어주세요.</small></div>
               <fieldset class="personality-field" aria-describedby="traitHelp">
                 <legend>내 성격 <em>*</em></legend>
                 <p id="traitHelp">나와 닮은 행동을 골라주세요. 직접 적어도 좋아요.</p>

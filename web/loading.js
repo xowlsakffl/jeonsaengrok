@@ -18,7 +18,7 @@ function showRetry(message, reviewInput = false) {
 }
 
 async function start(session) {
-  if (session.version !== readingVersion) { location.replace(formUrl); return; }
+  if (session.version !== readingVersion || !session.profile.job?.trim()) { location.replace(formUrl); return; }
   if (active) return;
   const controller = new AbortController();
   active = controller;
@@ -47,7 +47,7 @@ function enter() {
   const session = readSession();
   if (!session?.profile) { location.replace(formUrl); return; }
   if (session.stage === 'done' && session.reading) { location.replace(resultUrl); return; }
-  if (session.version !== readingVersion) { location.replace(formUrl); return; }
+  if (session.version !== readingVersion || !session.profile.job?.trim()) { location.replace(formUrl); return; }
   if (session.stage === 'ready') { start(session); return; }
   if (session.stage === 'review') { showRetry(session.message,true); return; }
   showRetry('이전 풀이가 중단됐습니다. 같은 입력으로 다시 펼칠 수 있어요.');

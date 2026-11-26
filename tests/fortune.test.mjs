@@ -48,23 +48,33 @@ test('the job and both disclosed bands reach the model together, independently o
   assert.ok(reading.paragraphs[1].startsWith(generated.deed));
 });
 
-test('private fields are omitted, and an undisclosed profile has no fortune explanation', async ()=>{
+test('private financial fields are omitted and unemployed is a valid occupation', async ()=>{
   const partial=await run({...base,wealthLabel:'밝히지 않을래요',familyLabel:''});
   assert.deepEqual(partial.input.presentLife,{job:'개발자'});
-  const hidden=await run({...base,job:'',wealthLabel:'',familyLabel:'비공개'});
-  assert.equal(hidden.input.presentLife,undefined);
-  assert.equal(hidden.reading.clues.some(clue=>clue.label==='전생에 쌓은 복'),false);
+  const hidden=await run({...base,job:' 무직 ',wealthLabel:'',familyLabel:'비공개'});
+  assert.deepEqual(hidden.input.presentLife,{job:'무직'});
+  assert.ok(hidden.reading.clues.some(clue=>clue.label==='전생에 쌓은 복'));
 });
 
-test('all behavior badges and a full free-text note reach the model together with the job left blank', async ()=>{
+test('missing, empty and whitespace-only occupations cannot start generation', async ()=>{
+  let calls=0;
+  for(const job of [undefined,'','   ','　']){
+    const response=await api(makeRequest({...base,job}),{OPENAI_API_KEY:'test'},async()=>{calls++;});
+    assert.equal(response.status,422);
+    assert.match((await response.json()).error,/직업/);
+  }
+  assert.equal(calls,0);
+});
+
+test('all behavior badges and a full free-text note reach the model together with the job', async ()=>{
   const traits = traitGroups.flatMap(group => group.traits);
   const labels = traits.map(([label]) => label);
   assert.equal(new Set(labels).size,labels.length);
   const note = '가'.repeat(260);
   const personality = describePersonality(note,labels);
-  const {input} = await run({...base,job:'',personality});
+  const {input} = await run({...base,personality});
   assert.equal(input.personality,[note,...traits.map(([,sentence])=>sentence)].join(' '));
-  assert.equal(input.presentLife.job,undefined);
+  assert.equal(input.presentLife.job,base.job);
 });
 
 test('a note containing a badge sentence stays intact when the badge is selected or removed', ()=>{

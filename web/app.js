@@ -165,7 +165,7 @@ $('profileForm').addEventListener('submit',e=>{
     changeStep(2,true);return;
   }
   clearError('errTwo');
-  for(const [id,message] of [['wealth','내 재산 구간을 선택해주세요.'],['family','집안 형편을 선택해주세요.']]) {
+  for(const [id,message] of [['wealth','내 재산 구간을 선택해주세요.'],['family','집안 형편을 선택해주세요.'],['job','직업을 입력해주세요. 현재 직업이 없으면 ‘무직’이라고 적어주세요.']]) {
     if(!$(id).value.trim()){feedback('errTwo',message,$(id));return;}
   }
   if (!$('personality').value.trim() && !traitPicker.selected().length) {
