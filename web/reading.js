@@ -1,9 +1,8 @@
-import { candidateContexts } from './history.js';
 import { describeProfile } from './profile.js';
 
-export async function generateReading(profile,signal) {
-  const choices=candidateContexts(profile);
-  const candidates=choices.map(({era,place,work,detail,history})=>({era,place,work,detail,history}));
+export async function generateReading(profile,context,signal) {
+  const {era,place,work,detail,history} = context;
+  const candidates=[{era,place,work,detail,history}];
   let response;
   try {
     response=await fetch('./api/reading',{
@@ -21,9 +20,7 @@ export async function generateReading(profile,signal) {
     throw error;
   }
   const reading=data.reading;
-  const context=choices[reading.background];
-  if(!context)throw new Error('AI가 기록의 시대를 마치지 못했어요. 다시 시도해주세요.');
   const clues=[{label:'시대 선택',detail:context.selectionNote},...reading.clues];
-  return {...reading,clues,era:context.era,place:context.place,history:context.history,sources:context.sources,engine:'서버 AI'};
+  return {...reading,clues,era,place,history,period:context.period,sources:context.sources,reverseChoices:Math.random()<0.5,engine:'서버 AI'};
 }
 

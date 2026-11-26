@@ -177,7 +177,7 @@ $('profileForm').addEventListener('submit',e=>{
     const draft = makeDraft();
     const profile = getProfile();
     const previous = readSession();
-    if (previous?.version === readingVersion && previous.reading && JSON.stringify(previous.profile) === JSON.stringify(profile)) {
+    if (previous?.version === readingVersion && previous.reading?.choiceMade && JSON.stringify(previous.profile) === JSON.stringify(profile)) {
       writeSession({...previous,draft});
       location.assign('./result.html');
       return;

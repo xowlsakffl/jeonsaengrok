@@ -1,8 +1,9 @@
 import './site.js';
-import { readSession, clearSession } from './reading-session.js';
+import { readSession, clearSession, writeSession } from './reading-session.js';
 import { example } from './sample.js';
 const $ = id => document.getElementById(id);
 let activeReading = null;
+let activeExample = false;
 let savingCard = false;
 function node(tag,text,className){
   const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(className)el.className=className;return el;
@@ -43,8 +44,36 @@ function makeFaceGuide(face, photo, selectedIndex) {
   return details;
 }
 
+const periodKeys = ['early','ancient','joseon','modern','recent'];
+function eraImage(period) {
+  return periodKeys.includes(period) ? './assets/era-'+period+'.jpg' : './assets/landscape.jpg';
+}
+
+function revealScene(pick,fromButton=false) {
+  const reading=activeReading;
+  const guessed = pick === 'choiceMade' || pick === 'choiceOther';
+  $('comparison').textContent = guessed
+    ? (pick === 'choiceMade' ? '전생의 당신도 같은 선택을 했습니다.' : '전생의 당신은 다른 쪽을 택했습니다.')
+    : '그날의 기록을 펼쳤습니다.';
+  $('dilemma').hidden = true;
+  $('outcome').hidden = false;
+  $('fortuneCard').hidden = !$('fortuneText').textContent;
+  if (fromButton) {
+    $('comparison').focus();
+    if (!activeExample) {
+      const session=readSession();
+      if (session?.reading?.title === reading.title && session.reading.place === reading.place) {
+        try { writeSession({...session,scenePick:pick}); } catch {}
+      }
+    }
+  }
+}
+$('skipChoice').addEventListener('click',()=>revealScene('skip',true));
+$('fortuneSource').append($('fortuneReference').content.cloneNode(true));
+
 function showReading(reading,isExample,session) {
   activeReading = reading;
+  activeExample = isExample;
   $('resultView').hidden = false;
   document.title=reading.role+' · 전생록';
   $('resultKind').textContent=isExample?'전생 인물첩 · 예시':'전생 인물첩 · '+reading.engine+' 집필';
@@ -52,13 +81,35 @@ function showReading(reading,isExample,session) {
   $('resultEra').textContent=reading.era;
   $('resultPlace').textContent=reading.place;
   $('resultRole').textContent=reading.role;
-  $('storyText').replaceChildren(...reading.paragraphs.map(p=>node('p',p)));
+  $('eraArt').src=eraImage(reading.period);
+  const [opening,action,...ending]=reading.paragraphs;
+  $('sceneOpening').textContent=opening;
+  $('sceneDeed').textContent=action;
+  $('habitEcho').hidden=!reading.habitCue;
+  $('habitEcho').textContent=reading.habitCue ? '내 성격에서 온 단서 · “'+reading.habitCue+'”' : '';
+  $('sceneEnding').textContent=ending.join('\n\n');
+  $('fortuneText').textContent=reading.fortune || reading.clues.find(clue=>clue.label==='전생에 쌓은 복')?.detail || '';
+  $('outcome').hidden=true;
+  $('fortuneCard').hidden=true;
+  $('dilemma').hidden=false;
+  $('sceneChoices').replaceChildren();
+  const keys=reading.reverseChoices ? ['choiceOther','choiceMade'] : ['choiceMade','choiceOther'];
+  if (keys.every(key=>reading[key]) && reading.choiceMade!==reading.choiceOther) {
+    for (const key of keys) {
+      const button=node('button',reading[key]);
+      button.type='button';
+      button.addEventListener('click',()=>revealScene(key,true));
+      $('sceneChoices').append(button);
+    }
+    if (!isExample && ['choiceMade','choiceOther','skip'].includes(session?.scenePick)) revealScene(session.scenePick);
+  } else {
+    revealScene('skip');
+  }
   $('storyQuote').textContent=reading.summary;
-  $('clues').replaceChildren(...reading.clues.map(clue=>{
+  $('clues').replaceChildren(...reading.clues.filter(clue=>clue.label!=='전생에 쌓은 복').map(clue=>{
     const div=node('div',undefined,'clue');
     const description=node('dd',clue.detail);
-    const reference = {'전생에 쌓은 복':'fortuneReference','얼굴 관상':'faceReference'}[clue.label];
-    if (reference) description.append($(reference).content.cloneNode(true));
+    if (clue.label==='얼굴 관상') description.append($('faceReference').content.cloneNode(true));
     div.append(node('dt',clue.label),description);
     return div;
   }));
@@ -75,7 +126,7 @@ function showReading(reading,isExample,session) {
   $('resultBack').querySelector('span').textContent=isExample?'풀이로 돌아가기':'입력 수정하기';
   $('again').textContent=isExample?'내 전생 풀이하기':'새 전생 풀이 시작';
   $('resultMessage').textContent='';
-  $('explain').open=true;
+  $('explain').open=false;
   $('readingNav').classList.toggle('nav-current',!isExample);
   document.querySelector('.masthead [data-example]').classList.toggle('nav-current',isExample);
   window.scrollTo(0,0);
@@ -112,10 +163,11 @@ $('saveCard').addEventListener('click',async()=>{
     const ctx=canvas.getContext('2d');
     ctx.fillStyle='#29483f';ctx.fillRect(0,0,1080,1280);
     ctx.fillStyle='#f3ebd9';ctx.fillRect(27,27,1026,1226);
-    const art=new Image();art.src='./assets/landscape.jpg';await art.decode();
+    const art=new Image();art.src=eraImage(reading.period);await art.decode();
     const artHeight=280;
-    const crop=Math.min(art.naturalWidth,art.naturalHeight*1026/artHeight);
-    ctx.drawImage(art,art.naturalWidth-crop,0,crop,art.naturalHeight,27,27,1026,artHeight);
+    const scale=Math.max(1026/art.naturalWidth,artHeight/art.naturalHeight);
+    const cropWidth=1026/scale,cropHeight=artHeight/scale;
+    ctx.drawImage(art,(art.naturalWidth-cropWidth)/2,(art.naturalHeight-cropHeight)/2,cropWidth,cropHeight,27,27,1026,artHeight);
     ctx.fillStyle='#294439';ctx.font='700 37px LocalMyeongjo,serif';ctx.fillText('전생록',74,108);
     ctx.fillStyle='#924334';ctx.fillRect(935,65,61,61);ctx.fillStyle='#fff0d6';ctx.font='700 33px LocalMyeongjo,serif';ctx.fillText('錄',948,109);
     ctx.strokeStyle='#ac9266';ctx.lineWidth=2;ctx.strokeRect(39,39,1002,1202);

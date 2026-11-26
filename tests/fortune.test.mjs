@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { api } from '../worker/api.mjs';
 import { describeProfile } from '../web/profile.js';
-import { candidateContexts } from '../web/history.js';
+import { drawContext } from '../web/history.js';
 import { describePersonality, traitGroups } from '../web/traits.js';
 
 const base = {
@@ -14,13 +14,16 @@ const base = {
 const generated = {
   title:'갈림길에서', role:'짐꾼', summary:'누구의 짐을 먼저 나를지 정하는 날입니다.',
   opening:'당신은 짐을 나를 차례를 기다렸습니다.', deed:'당신은 기다리던 이에게 자기 차례를 내주었습니다.',
+  choiceMade:'뒤에 선 이에게 차례를 내준다', choiceOther:'내 짐부터 배에 싣는다',
+  habitCue:'친구 부탁을 거절하기는 어렵습니다.',
   middle:'그는 해가 지기 전에 집에 닿았습니다.', ending:'그다음 날에는 그가 당신의 짐을 받아 들었습니다.',
   fortune:'옛날에 비워 준 자리 하나가 지금의 살림에 남았습니다.',
   faceIndex:0, focusFace:'그 짐이 오가던 날입니다.', focusHabit:'누구 차례인지 따져 보았습니다.', focusBirth:'',
 };
 
 function makeRequest(profile) {
-  const candidates=candidateContexts(profile).map(({era,place,work,detail,history})=>({era,place,work,detail,history}));
+  const {era,place,work,detail,history}=drawContext(profile.birth,()=>0.25);
+  const candidates=[{era,place,work,detail,history}];
   return new Request('https://site.test/api/reading',{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({...describeProfile(profile),candidates}),
@@ -42,22 +45,42 @@ test('the job and both disclosed bands reach the model together, independently o
   const changed=await run({...base,job:'택배 기사',wealthLabel:'빚이 더 많음',familyLabel:'매우 넉넉했어요'});
   assert.deepEqual(input.presentLife,{job:base.job,wealth:base.wealthLabel,family:base.familyLabel});
   assert.deepEqual(changed.input.setting,input.setting);
-  assert.equal(input.setting.history,candidateContexts(base)[0].history);
+  assert.equal(input.setting.history,drawContext(base.birth,()=>0.25).history);
   assert.deepEqual(changed.input.presentLife,{job:'택배 기사',wealth:'빚이 더 많음',family:'매우 넉넉했어요'});
   const [fortune]=reading.clues.filter(clue=>clue.label==='전생에 쌓은 복');
   assert.ok(fortune.detail.includes(generated.deed));
   assert.ok(reading.paragraphs[1].startsWith(generated.deed));
+  assert.equal(reading.choiceMade,generated.choiceMade);
+  assert.equal(reading.choiceOther,generated.choiceOther);
+  assert.equal(reading.fortune,generated.fortune);
+  assert.equal(reading.habitCue,generated.habitCue);
 });
 
-test('the setting explanation shows real matches and discloses ties when no behavior matches', ()=>{
-  const personality='저는 고장 난 물건을 직접 고치고 원인을 찾아 다시 시도합니다.';
-  const [matched]=candidateContexts({...base,personality});
-  assert.match(matched.place,/전곡리/);
-  assert.ok(matched.selectionNote.includes(personality));
-  assert.match(matched.selectionNote,/세 묶음 중 3개/);
-  const [unmatched]=candidateContexts({...base,personality:'가나다라마바사'});
-  assert.match(unmatched.selectionNote,/0점/);
-  assert.match(unmatched.selectionNote,/같은 점수의 배경 \d+곳/);
+test('equal-sized draw intervals reach every eligible period and all thirty settings, including the Paleolithic', ()=>{
+  const visited=new Set(), counts=new Map();
+  for (let i=0; i<100; i++) {
+    for (let j=0; j<10; j++) {
+      const sample=[(i+0.5)/100,(j+0.5)/10];
+      const {place,period}=drawContext('2024-01-01',()=>sample.shift());
+      visited.add(place);
+      counts.set(period,(counts.get(period)||0)+1);
+    }
+  }
+  assert.equal(visited.size,30);
+  assert.deepEqual([...counts.values()],[200,200,200,200,200]);
+  assert.match(drawContext(base.birth,()=>0).era,/구석기/);
+  assert.match(drawContext('1900-01-01',()=>0.999).era,/1898/);
+  assert.match(drawContext('1996-03-01',()=>0.999).era,/1983/);
+  assert.match(drawContext('2024-03-01',()=>0.999).era,/2023/);
+});
+
+test('changing personality reaches the writer while the same independent draw keeps its setting', async ()=>{
+  const a=await run(base);
+  const personality='내 잘못을 말하기 전에 친구 밥값부터 냅니다.';
+  const b=await run({...base,personality});
+  assert.deepEqual(a.input.setting,b.input.setting);
+  assert.equal(b.input.personality,personality);
+  assert.equal(b.reading.habitCue,'');
 });
 
 test('private financial fields are omitted and unemployed is a valid occupation', async ()=>{

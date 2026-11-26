@@ -1,8 +1,7 @@
-// 성격란에 적힌 행동을 이야기 속 선택과 연결한다. work는 가능한 행동, history는 출처로 확인한 배경이다.
+// Each entry describes a documented setting and the work a fictional character could do.
 const catalog = [
   {
     endYear: -10000,
-    actions: [/손재주|손으로만들|직접고치/, /원인.{0,4}찾|시행착오|다시시도|될때까지/, /고장|분해|부딪혀보|일단해보/],
     era: '구석기시대, 수만 년 전',
     place: '오늘날 연천 전곡리의 한탄강 자갈밭',
     work: '한 손에 쥘 만한 자갈을 찾아 옮기기, 먼저 돌을 깨는 사람 곁에서 떨어져 나온 쓸 만한 돌조각을 고르기',
@@ -12,7 +11,6 @@ const catalog = [
   },
   {
     endYear: -2000,
-    actions: [/장보기|끼니|요리|밥을챙/, /낚시|물때|바다|채집/, /나눠먹|나누어먹|음식.{0,4}(나눠|나누)|내몫.{0,3}(나눠|나누|양보)/],
     era: '신석기시대, 약 5천 년 전',
     place: '오늘날 부산 영도 동삼동의 바닷가',
     work: '물이 빠진 바위틈에서 조개를 줍기, 먹을 몫을 나누고 빈 껍데기를 거처 한쪽으로 치우기',
@@ -22,7 +20,6 @@ const catalog = [
   },
   {
     endYear: -300,
-    actions: [/수량|재고|계획|미리준비|미리챙/, /식물|작물|텃밭|키우는걸/, /아껴|절약|저축|비축|조금씩모/],
     era: '청동기시대 중기',
     place: '오늘날 부여 송국리의 벼농사 마을',
     work: '돌칼로 거둔 이삭을 나르기, 젖은 낟알을 펴 말리기, 남길 볍씨를 먹을 곡식과 갈라 두기',
@@ -32,7 +29,6 @@ const catalog = [
   },
   {
     endYear: -1,
-    actions: [/뜨개|바느질|실을|꼬인걸/, /매듭|묶기|꼼꼼/, /색을맞|손끝|손재주/],
     era: '초기 철기시대, 기원전 1세기',
     place: '영산강 가까이, 오늘날 광주 신창동의 마을',
     work: '가락바퀴로 섬유에 꼬임을 주기, 이어 놓은 실을 감기, 올이 끊어지면 처음 보는 사람도 따라 할 수 있게 손동작을 보여 주기',
@@ -42,7 +38,6 @@ const catalog = [
   },
   {
     endYear: 357,
-    actions: [/물긷|청소|뒷정리|뒤처리/, /챙겨먹|끼니|밥을차/, /동물|먹이를|돌보|말없이.{0,4}(돕|도와|챙)/],
     era: '고구려 357년',
     place: '황해도 안악 일대, 우물과 부엌이 따로 있는 집',
     work: '우물가에서 물을 길어 솥 옆에 채우기, 불 앞에 선 사람에게 식재료를 건네고 빈 그릇을 거두기',
@@ -52,7 +47,6 @@ const catalog = [
   },
   {
     endYear: 400,
-    actions: [/짐을나르|무거운|배달/, /개수를세|수량|무게/, /흥정|거래|약속을지|약속은.{0,3}지/],
     era: '삼국시대, 4세기 금관가야',
     place: '김해의 물길 가까운 덩이쇠 짐터',
     work: '다른 물건과 바꿀 덩이쇠를 세어 모으기, 한 번에 들 수 있는 무게로 짐을 나누어 물가로 나르기',
@@ -62,7 +56,6 @@ const catalog = [
   },
   {
     endYear: 900,
-    actions: [/분류|짝을맞|같은것/, /표식|오류|검수|대조|두번확인/, /순서|정리정돈|반복/],
     era: '남북국시대, 9세기 발해',
     place: '발해 수도 상경성, 지붕에 올릴 기와를 쌓아 둔 마당',
     work: '문자를 찍은 기와와 민기와를 나누어 놓기, 가장자리가 깨진 것을 빼고 지붕에 올릴 몫을 건네기',
@@ -72,7 +65,6 @@ const catalog = [
   },
   {
     endYear: 1200,
-    actions: [/굽는|불조절|가마|빵을굽/, /무늬|그림|색을맞/, /견습|배우는|손으로빚/],
     era: '고려 12세기',
     place: '강진 대구면의 청자 가마 곁',
     work: '마른 그릇을 가마 곁으로 한 벌씩 나르기, 구운 뒤 금이 갔거나 서로 붙은 그릇을 골라내기',
@@ -82,7 +74,6 @@ const catalog = [
   },
   {
     endYear: 1592,
-    actions: [/응급처치|구조활동|구호활동|위급하면.{0,4}나서/, /길을안내|길을알려|인솔|앞장서/, /다친.{0,4}(돌보|챙기|돕)/],
     era: '조선 1592년',
     place: '충주 탄금대와 달천 강가',
     work: '말에게 먹일 풀을 모으기, 강가로 몰려온 사람에게 길을 일러주기, 떨어진 일행의 소식을 전하기',
@@ -92,7 +83,6 @@ const catalog = [
   },
   {
     endYear: 550,
-    actions: [/도면|평면도|모형집/, /집을꾸|가구를배치|실내를꾸/, /치수를재|수평을맞/],
     era: '백제 웅진시대, 6세기 전반',
     place: '웅진의 왕릉 공사터',
     work: '가마에서 온 전돌을 무늬대로 가려 놓기, 둥글게 휘는 천장에 맞춰 벽돌 줄을 맞추기',
@@ -105,7 +95,6 @@ const catalog = [
   },
   {
     endYear: 771,
-    actions: [/분해|뜯어보/, /수리|고쳐쓰|직접고치/, /조립|납땜|금속을다듬/],
     era: '통일신라 771년',
     place: '신라 왕경, 오늘날의 경주',
     work: '큰 종에 들어갈 무늬의 본을 손보기, 글자 획과 꽃무늬가 뭉개진 곳을 살피기',
@@ -115,7 +104,6 @@ const catalog = [
   },
   {
     endYear: 1323,
-    actions: [/포장|짐을싸|짐싸기/, /물건.{0,4}분류|꼬리표|라벨/, /재고|수량을세|짐을나르/],
     era: '고려와 원의 교역기, 1323년',
     place: '닝보에서 하카타로 가는 바닷길과 신안 앞바다',
     work: '도자기 꾸러미의 임자를 목간으로 구분하기, 짐칸에서 그릇이 서로 부딪히지 않게 살피기',
@@ -125,7 +113,6 @@ const catalog = [
   },
   {
     endYear: 1500,
-    actions: [/기록|체크리스트|목록을만/, /오류|틀린곳|오탈자|빠진곳|교정/, /백업|대조|버전을비교|따로적어/],
     era: '조선 15세기 후반',
     place: '합천 가야산 해인사 장경판전',
     work: '일정한 순서로 경판을 판가에 꽂기, 빠진 판을 찾아 짝을 맞추기, 습기가 밴 나무를 살피기',
@@ -135,7 +122,6 @@ const catalog = [
   },
   {
     endYear: 1600,
-    actions: [/가르치|알려주는|설명해주|설명하는/, /필사|독서|책을읽|낭독/, /토론|질문을모|공부를도/],
     era: '조선 16세기 후반',
     place: '풍기 순흥의 소수서원, 오늘날의 영주',
     work: '여러 사람이 돌려 볼 책을 베끼기, 같은 경전 구절을 달리 풀이한 대목을 모아 강학을 준비하기',
@@ -145,7 +131,6 @@ const catalog = [
   },
   {
     endYear: 1800,
-    actions: [/통역|번역|외국어/, /흥정|값을깎|협상|가격을비교/, /중재|중고거래|거래를주선|양쪽.{0,4}(들어|듣)|싸움.{0,3}말리/],
     era: '조선 18세기',
     place: '동래부 초량왜관의 개시대청',
     work: '서로 다른 말로 오간 값을 옮겨 전하기, 약속한 수량과 창고에 들인 물목을 맞춰 보기',
@@ -155,7 +140,6 @@ const catalog = [
   },
   {
     endYear: 1800,
-    actions: [/식물.{0,3}(기르|키우|돌보)|화분을돌/, /약초|약재|허브를말/, /원산지.{0,3}(확인|비교)/],
     era: '조선 후기, 18세기',
     place: '대구 경상감영 객사 주변 약령시',
     work: '산지별로 온 약재 꾸러미를 나누기, 말린 뿌리를 골라 무게를 달고 운송할 양을 정하기',
@@ -165,7 +149,6 @@ const catalog = [
   },
   {
     endYear: 1859,
-    actions: [/춤을추|춤추|몸짓|안무/, /악기|연주|박자를맞|장단을맞/, /무대에|공연|흉내|연기연습|사람.{0,4}웃기|분위기.{0,3}띄우/],
     era: '조선 후기, 1850년대',
     place: '강릉 단오의 놀이마당',
     work: '가면 너머로 악사의 장단에 맞춰 몸짓하기, 뒤쪽 구경꾼에게까지 동작의 뜻이 보이게 자리 잡기',
@@ -175,7 +158,6 @@ const catalog = [
   },
   {
     endYear: 1800,
-    actions: [/바느질|재봉|옷을짓|옷을만들/, /뜨개|실을잇|자수|코바늘/, /재단|옷을줄|옷을고쳐/],
     era: '조선 후기, 18세기',
     place: '충청도 한산의 모시 짜는 집',
     work: '모시풀에서 뽑은 섬유를 가늘게 쪼개 잇기, 베틀에서 날실의 긴장과 방 안의 습기를 살피기',
@@ -188,7 +170,6 @@ const catalog = [
   },
   {
     endYear: 1795,
-    actions: [/요리|반찬을만|도시락|빵을굽|베이킹/, /밥.{0,3}(사주|사는|산다|차려)|음식.{0,3}(나눠|대접)|한턱.{0,3}(내|쏘)/, /식단|식재료|레시피|장보기/],
     era: '조선 정조 19년, 1795년',
     place: '수원 화성 행궁의 잔칫상 준비터',
     work: '여럿이 나눠 만들 상차림의 수를 헤아리기, 그릇과 재료를 나누고 음식을 내는 때를 맞추기',
@@ -198,7 +179,6 @@ const catalog = [
   },
   {
     endYear: 1884,
-    actions: [/편지.{0,3}(쓰|써|보내)|손편지/, /주소.{0,3}(확인|정리)/, /소식을전|안부를전|우표를모/],
     era: '조선 개항기, 1884년',
     place: '한성 우정총국과 인천 제물포 사이',
     work: '처음 온 손님에게 우표 쓰는 법을 보이기, 봉투의 수신처를 읽어 같은 곳으로 갈 편지를 나누기',
@@ -211,7 +191,6 @@ const catalog = [
   },
   {
     endYear: 1898,
-    actions: [/오탈자|띄어쓰기|고쳐쓰/, /글쓰기|글을쓰|낭독/, /마감|교정|원고|벼락치기|미루다.{0,5}(끝내|해내)/],
     era: '대한제국 1898년 여름',
     place: '한성의 독립신문 인쇄 작업터',
     work: '한글 지면의 띄어쓰기를 읽어 보기, 견본에서 빠진 글자를 찾아 표시하기, 찍어 낸 신문을 접어 나누기',
@@ -221,7 +200,6 @@ const catalog = [
   },
   {
     endYear: 1933,
-    actions: [/실을잇|손이빠|손이빨/, /기계|고장|소리에민감/, /반복|교대|집안에보태/],
     era: '일제강점기 1933년',
     place: '영등포 경성방직 공장의 직기 사이',
     work: '직기에 보낼 실을 나르기, 베가 짜이다 실이 끊긴 자리를 찾아 다시 잇는 법을 배우기',
@@ -231,7 +209,6 @@ const catalog = [
   },
   {
     endYear: 1951,
-    actions: [/가르치|설명해|공부를도/, /동생|아이들|책을읽어/, /배려|자리.{0,3}양보|챙겨주/],
     era: '한국전쟁 중인 1951년',
     place: '피란지 부산의 임시 교실',
     work: '늦게 온 아이에게 앉을 자리를 내기, 앞줄에서 받아 적은 글자를 뒷줄에 옮겨 주기, 수업을 마치고 걸상을 함께 나르기',
@@ -241,7 +218,6 @@ const catalog = [
   },
   {
     endYear: 1969,
-    actions: [/다림질|옷을고|옷을줄/, /실밥|재단|재봉/, /취업준비|견습|눈썰미/],
     era: '1960년대 후반',
     place: '서울 청계천 평화시장 봉제 작업장',
     work: '막 재봉틀에서 나온 옷의 실밥 따기, 다림질한 옷을 포개고 다음 묶음을 가져오는 견습 일',
@@ -251,7 +227,6 @@ const catalog = [
   },
   {
     endYear: 1974,
-    actions: [/길을안내|길을알려|노선/, /거스름돈|계산|표를/, /줄을세|낯선사람|손님을/],
     era: '1974년 서울 지하철 개통 첫해',
     place: '서울 지하철 1호선 종로 구간의 매표 창구',
     work: '목적지를 되물어 표를 건네기, 거스름돈을 세고 지하철이 처음인 손님에게 개찰구를 가리켜 주기',
@@ -261,7 +236,6 @@ const catalog = [
   },
   {
     endYear: 1983,
-    actions: [/경청|잘들어|이야기를듣|고민.{0,4}(들어|듣)/, /안부|소식을전|이름을기억|먼저연락/, /메모|받아적|봉사/],
     era: '1983년 여름',
     place: '서울 여의도 방송국 앞, 이산가족을 찾는 벽보가 붙은 광장',
     work: '어르신이 말한 고향과 헤어진 가족 이름을 종이에 받아 적기, 벽보를 붙이고 닮은 사연이 있는 자리까지 함께 걷기',
@@ -271,7 +245,6 @@ const catalog = [
   },
   {
     endYear: 1996,
-    actions: [/백업|압축|파일|자료실/, /동호회|게시판|게임/, /사용법|컴퓨터|오류/],
     era: '1996년, PC통신 시절',
     place: '집 전화선에 물린 하이텔 단말기 앞, 동호회 자료실',
     work: '게시판에 올라온 초보 회원의 접속 질문에 답하기, 찾기 어려운 자료의 제목을 다시 적어 목록으로 올리기',
@@ -281,7 +254,6 @@ const catalog = [
   },
   {
     endYear: 2002,
-    actions: [/영어|외국어|통역/, /낯선사람|길을안내|길을알려/, /축구|응원|여행/],
     era: '2002년 한일 월드컵',
     place: '서울월드컵경기장 주변의 안내소',
     work: '외국에서 온 관중의 지도를 돌려 같은 방향으로 보기, 경기장 가는 길을 짚어 주고 일행을 놓친 사람을 안내소로 데려가기',
@@ -291,7 +263,6 @@ const catalog = [
   },
   {
     endYear: 2018,
-    actions: [/흠집|고르지|매끈|수평/, /점검|고쳐쓰|손으로고치/, /썰매|빙상|스케이트/],
     era: '2018년 1월, 평창 동계올림픽 개막 전',
     place: '평창 올림픽 슬라이딩 센터의 썰매 트랙',
     work: '트랙을 돌며 패인 자리를 찾아 표시하기, 정빙 담당자 곁에서 얼음 부스러기를 치우고 손질한 구간을 다시 살피기',
@@ -301,7 +272,6 @@ const catalog = [
   },
   {
     endYear: 2023,
-    actions: [/차근차근|기다려주|눈높이/, /사용법|키오스크|스마트폰/, /천천히설명|스스로.{0,6}(하게|하도록)|다시설명/],
     era: '2023년 2월',
     place: '지하철 서울역, 승차권 발매기 앞',
     work: '화면이 처음으로 돌아가 당황한 승객과 목적지부터 다시 찾기, 손님이 직접 표를 뽑을 때까지 곁에서 다음 버튼을 짚어 주기',
@@ -314,62 +284,26 @@ const catalog = [
   },
 ];
 
-function normalize(value) {
-  return String(value ?? '').normalize('NFKC').toLowerCase().replace(/\s+/g, '');
-}
+const periods = [
+  {key:'early', label:'선사시대', through:-1},
+  {key:'ancient', label:'고대·고려', through:1391},
+  {key:'joseon', label:'조선', through:1875},
+  {key:'modern', label:'개항기·일제강점기', through:1945},
+  {key:'recent', label:'광복 이후', through:Infinity},
+];
 
-// 생일은 동점인 배경에만 쓰는 재현 가능한 추첨값이다.
-function tieBreaker(value) {
-  let hash = 2166136261;
-  for (const character of value) {
-    hash = Math.imul(hash ^ character.codePointAt(0), 16777619);
+export function drawContext(birth, random = Math.random) {
+  const year = Number(/^(\d{4})-\d{2}-\d{2}$/.exec(birth)?.[1] ?? 1);
+  const groups = new Map();
+  for (const entry of catalog) {
+    if (entry.endYear >= year) continue;
+    const period = periods.find(item => entry.endYear <= item.through);
+    if (!groups.has(period)) groups.set(period, []);
+    groups.get(period).push(entry);
   }
-  return hash >>> 0;
-}
-
-export function candidateContexts(profile = {}, limit = 3) {
-  // 생년을 알 수 없을 때도 전생의 배경이 현생보다 늦어지는 일을 피한다.
-  const year = Number(/^(\d{4})-\d{2}-\d{2}$/.exec(profile.birth)?.[1] ?? 1);
-  const habits = normalize(profile.personality);
-  const seed = [profile.birth, habits].join('|');
-  const ranked = catalog.filter(entry => entry.endYear < year).map(entry => ({
-    entry,
-    score: entry.actions.filter(pattern => pattern.test(habits)).length,
-    tie: tieBreaker([seed, entry.place].join('|')),
-  })).sort((a, b) => b.score - a.score || a.tie - b.tie);
-
-  // 선사, 고대·고려, 조선 이후의 세 시대권에서 점수가 높은 배경을 한 편씩 뽑는다.
-  // 첫 번째는 전체 최고점이며, 같은 시대권의 차순위는 그 뒤에 돌려준다.
-  const represented = new Set();
-  const firstChoices = [];
-  const otherChoices = [];
-  for (const item of ranked) {
-    const period = item.entry.endYear < 0 ? '선사' : item.entry.endYear < 1392 ? '고대·고려' : '조선 이후';
-    if (represented.has(period)) {
-      otherChoices.push(item);
-    } else {
-      firstChoices.push(item);
-      represented.add(period);
-    }
-  }
-  const lines = String(profile.personality ?? '').match(/[^.!?。！？\n]+[.!?。！？]?/gu) || [];
-  return [...firstChoices, ...otherChoices].slice(0, Math.max(0, limit)).map(({entry,score}) => {
-    const {era,place,work,detail,history,sources} = entry;
-    const tied = ranked.filter(item => item.score === score).length;
-    const excerpt = lines.map(line => line.trim()).find(line =>
-      line.length <= 130 && entry.actions.some(pattern => pattern.test(normalize(line))));
-    let selectionNote = '';
-    if (score) {
-      selectionNote = '성격란의 답이 이 일터의 행동 표현 세 묶음 중 '+score+'개와 맞았습니다.';
-      if (excerpt) selectionNote += ' 그중 한 대목은 “'+excerpt+'”입니다.';
-    } else {
-      selectionNote = '입력에서 이 일터의 행동 표현과 일치하는 대목을 찾지 못해 행동 점수는 0점입니다.';
-    }
-    if (tied > 1) selectionNote += ' 같은 점수의 배경 '+tied+'곳 중 생년월일·성격 문장·장소 이름으로 순서를 정했습니다.';
-    return {era,place,work,detail,history,selectionNote,sources:sources.map(source => ({...source}))};
-  });
-}
-
-export function selectContext(profile = {}) {
-  return candidateContexts(profile, 1)[0];
+  const pick = items => items[Math.floor(random() * items.length)];
+  const period = pick([...groups.keys()]);
+  const {era,place,work,detail,history,sources} = pick(groups.get(period));
+  const selectionNote = '태어난 해보다 앞선 배경을 대상으로 '+groups.size+'개 시대권에 같은 확률을 주어 뽑았습니다. 그중 '+period.label+'에서 뽑힌 일터가 이 이야기의 무대입니다.';
+  return {era,place,work,detail,history,sources,period:period.key,selectionNote};
 }

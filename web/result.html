@@ -7,7 +7,6 @@
   <meta name="description" content="얼굴 관상과 생년월일, 성씨와 삶의 단서를 엮어 나만의 전생 이야기와 풀이를 읽어 보세요.">
   <title>전생록 — 전생 인물첩</title>
   <link rel="icon" href="./assets/seal.svg" type="image/svg+xml">
-  <link rel="preload" as="image" href="./assets/landscape.jpg">
   <link rel="preload" as="font" href="./assets/myeongjo-bold.ttf" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="./style.css">
   <script type="module" src="./result.js"></script>
@@ -28,12 +27,28 @@
       <div class="result-wrap">
         <div class="record-tools"><button type="button" id="resultBack" class="text-button"><i data-icon="return"></i><span>입력으로 돌아가기</span></button><button type="button" id="saveCard" class="text-button"><i data-icon="download"></i>결과 카드 저장</button></div>
         <article class="identity-card" aria-label="전생 인물첩"><div class="identity-frame">
+          <img id="eraArt" class="era-panorama" alt="">
           <div class="identity-top"><p id="resultKind"></p><span class="ink-stamp" aria-hidden="true">前生</span></div>
           <div class="role-block"><p class="role-label">당신의 전생 직업</p><h1 id="resultRole" tabindex="-1"></h1><p id="storyQuote"></p></div>
           <dl class="identity-data"><div><dt>시대</dt><dd id="resultEra"></dd></div><div><dt>무대</dt><dd id="resultPlace"></dd></div></dl>
         </div></article>
-        <article class="reading-paper"><h2 id="resultTitle"></h2><div id="storyText" class="story-text"></div></article>
-        <details id="explain" class="explain" open><summary><i data-icon="scroll"></i>왜 이런 전생이 나왔을까?<span class="chevron"></span></summary><dl id="clues"></dl></details>
+        <article class="reading-paper">
+          <h2 id="resultTitle"></h2><p id="sceneOpening" class="scene-prose"></p>
+          <section id="dilemma" class="dilemma" aria-labelledby="dilemmaTitle" hidden>
+            <h3 id="dilemmaTitle">지금의 나라면?</h3>
+            <div id="sceneChoices" class="scene-choices"></div>
+            <button type="button" id="skipChoice" class="skip-choice">선택하지 않고 결말 보기</button>
+          </section>
+          <div id="outcome" class="outcome" hidden>
+            <p id="comparison" class="comparison" tabindex="-1"></p>
+            <section><h3>전생의 내가 한 선택</h3><p id="sceneDeed" class="scene-prose"></p><p id="habitEcho" class="habit-echo" hidden></p></section>
+            <section><h3>그날 이후</h3><p id="sceneEnding" class="scene-prose"></p></section>
+          </div>
+        </article>
+        <section id="fortuneCard" class="fortune-card" aria-labelledby="fortuneHeading" hidden>
+          <span class="fortune-seal" aria-hidden="true">福</span><div><h2 id="fortuneHeading">이번 생에 돌아온 복</h2><p id="fortuneText"></p><div id="fortuneSource"></div></div>
+        </section>
+        <details id="explain" class="explain"><summary><i data-icon="scroll"></i>왜 이런 전생이 나왔을까?<span class="chevron"></span></summary><dl id="clues"></dl></details>
         <section class="history"><h2>기록과 창작 사이</h2><p id="historyText"></p><div id="sourceLinks"></div></section>
         <button type="button" id="again" class="primary wide">새 전생 풀이 시작</button><div id="resultMessage" role="status"></div>
       </div>

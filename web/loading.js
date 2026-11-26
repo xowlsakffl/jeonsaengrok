@@ -1,4 +1,5 @@
 import { generateReading } from './reading.js';
+import { drawContext } from './history.js';
 import { readSession, writeSession, readingVersion } from './reading-session.js';
 
 const formUrl = './#reading';
@@ -23,13 +24,15 @@ async function start(session) {
   const controller = new AbortController();
   active = controller;
   try {
+    const context = session.context ?? drawContext(session.profile.birth);
+    session = {...session, context};
     writeSession({...session, stage: 'running'});
     title.textContent = '전생록을 펼치는 중';
     status.textContent = '당신이 살았을 시대와 그날의 사연을 쓰고 있습니다.';
     track.hidden = false;
     retry.hidden = true;
     title.focus({preventScroll:true});
-    const reading = await generateReading(session.profile, controller.signal);
+    const reading = await generateReading(session.profile, context, controller.signal);
     if (controller.signal.aborted) return;
     writeSession({...session, stage: 'done', reading});
     location.replace(resultUrl);
