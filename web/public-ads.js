@@ -1,7 +1,32 @@
-// Only the public library and editorial stories load the publisher's ad script.
+async function loadAdFit(slot) {
+  if (!slot || !matchMedia('(min-width: 320px)').matches) return;
+  try {
+    const response = await fetch('/api/public-ads');
+    if (!response.ok) return;
+    const units = await response.json();
+    const unit = units[slot.dataset.placement];
+    if (!unit || sessionStorage.getItem('jeonsaeng.reading-session.v1')) return;
+    const banner = document.createElement('ins');
+    banner.className = 'kakao_ad_area';
+    banner.style.cssText = 'display:none;width:100%';
+    banner.dataset.adUnit = unit;
+    banner.dataset.adWidth = '320';
+    banner.dataset.adHeight = '100';
+    slot.querySelector('.public-ad-banner').append(banner);
+    slot.hidden = false;
+    const sdk = document.createElement('script');
+    sdk.async = true;
+    sdk.src = 'https://t1.kakaocdn.net/kas/static/ba.min.js';
+    sdk.addEventListener('error', () => { slot.hidden = true; });
+    document.body.append(sdk);
+  } catch { /* Public stories remain readable when the ad provider is unavailable. */ }
+}
+
+// Only public editorial pages request ads, outside a personal reading session.
 if (location.origin === 'https://jeonsaengrok.com') {
   try {
     if (!sessionStorage.getItem('jeonsaeng.reading-session.v1')) {
+      void loadAdFit(document.querySelector('.public-ad-slot'));
       const consent = window.googlefc ||= {};
       consent.callbackQueue ||= [];
       consent.callbackQueue.push({

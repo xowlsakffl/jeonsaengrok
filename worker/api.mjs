@@ -116,6 +116,13 @@ export async function reserveGeneration(request,db,now=Date.now()) {
 
 export async function api(request,env,providerFetch=fetch) {
   const path=new URL(request.url).pathname;
+  if (path === '/api/public-ads') {
+    if (request.method !== 'GET') return respond({},405);
+    if (request.cf?.country !== 'KR') return respond({});
+    const units = {library: env.KAKAO_ADFIT_LIBRARY_UNIT, story: env.KAKAO_ADFIT_STORY_UNIT};
+    return respond(Object.fromEntries(Object.entries(units).filter(([, id]) =>
+      typeof id === 'string' && /^DAN-[A-Za-z0-9_-]+$/.test(id))));
+  }
   if(path==='/api/availability'&&request.method==='GET'){
     try {await env.DB.prepare('SELECT day FROM reading_attempts LIMIT 1').first();return respond({server:!!env.OPENAI_API_KEY,quotaReady:true});}
     catch {return respond({server:false,quotaReady:false});}

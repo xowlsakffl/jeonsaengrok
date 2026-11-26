@@ -262,3 +262,8 @@ dialog p{font-size:.94rem;color:#595b51;margin-top:4px}
 .fortune-seal{display:grid;place-items:center;width:43px;height:49px;border:3px double #477056;border-radius:4px;color:#396448;font:700 1.75rem var(--serif);transform:rotate(-5deg)}
 @media(max-width:530px){.scene-choices{grid-template-columns:1fr}.reading-paper{padding:22px 18px}.fortune-card{gap:12px}.fortune-seal{width:34px;height:40px;font-size:1.4rem}}
 
+.public-ad-slot:not([hidden]) { width: 320px; max-width: 100%; margin: 0 auto 32px; text-align: center; }
+.public-ad-slot > span { display: block; font-size: .875rem; color: var(--muted); margin-bottom: 6px; }
+.public-ad-banner { width: 320px; max-width: 100%; min-height: 100px; }
+@media (max-width: 319px) { .public-ad-slot:not([hidden]) { display: none; } }
+@media (max-width: 530px) { .footer .wrap { flex-wrap: wrap; gap: 12px; } }
