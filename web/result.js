@@ -8,6 +8,10 @@ let savingCard = false;
 function node(tag,text,className){
   const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(className)el.className=className;return el;
 }
+function showProse(id,text) {
+  const paragraphs=(text || '').trim().split(/\n\s*\n/).filter(Boolean);
+  $(id).replaceChildren(...paragraphs.map(paragraph=>node('p',paragraph)));
+}
 function makeFaceGuide(observations, selectedIndex) {
   const details=node('details',undefined,'face-guide');
   details.append(node('summary','부위별 측정값 보기'));
@@ -73,17 +77,17 @@ function showReading(reading,isExample,session) {
   $('resultRole').textContent=reading.role;
   $('eraArt').src=eraImage(reading.period);
   const [opening,action,...ending]=reading.paragraphs;
-  $('sceneOpening').textContent=opening;
-  $('sceneDeed').textContent=action;
+  showProse('sceneOpening',opening);
+  showProse('sceneDeed',action);
   $('habitEcho').hidden=!reading.habitCue;
   $('habitEcho').textContent=reading.habitCue ? '내 성격에서 온 단서 · “'+reading.habitCue+'”' : '';
-  $('sceneEnding').textContent=ending.join('\n\n');
+  showProse('sceneEnding',ending.join('\n\n'));
   $('keepsakeSection').hidden=!(reading.keepsake && reading.keepsakeStory);
   $('keepsakeTitle').textContent='당신이 남긴 물건 · '+(reading.keepsake || '');
-  $('keepsakeText').textContent=reading.keepsakeStory || '';
+  showProse('keepsakeText',reading.keepsakeStory || '');
   $('otherPath').hidden=!reading.otherOutcome;
   $('otherPath').open=false;
-  $('otherText').textContent=reading.otherOutcome || '';
+  showProse('otherText',reading.otherOutcome || '');
   $('fortuneText').textContent=reading.fortune || reading.clues.find(clue=>clue.label==='전생에 쌓은 복')?.detail || '';
   $('outcome').hidden=true;
   $('fortuneCard').hidden=true;

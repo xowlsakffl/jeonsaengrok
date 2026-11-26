@@ -18,6 +18,9 @@ const generated = {
   choiceMade:'뒤에 선 이에게 차례를 내준다', choiceOther:'내 짐부터 배에 싣는다',
   habitCue:'친구 부탁을 거절하기는 어렵습니다.',
   middle:'그는 해가 지기 전에 집에 닿았습니다.', ending:'그다음 날에는 그가 당신의 짐을 받아 들었습니다.',
+  crossroads:'뱃사공이 빈자리 하나를 가리켰습니다.', consequence:'배가 떠난 뒤 당신의 짐은 강가에 남았습니다.',
+  later:'이제는 두 사람이 번갈아 먼저 배에 올랐습니다.', keepsake:'닳은 짐끈',
+  keepsakeStory:'짐끈을 건네받은 동무가 자기 짐에 둘렀습니다.', otherOutcome:'먼저 탔다면 동무는 강가에서 하룻밤을 더 보냈을 겁니다.',
   fortune:'옛날에 비워 준 자리 하나가 지금의 살림에 남았습니다.',
   faceIndex:0, focusFace:'그 짐이 오가던 날입니다.', focusHabit:'누구 차례인지 따져 보았습니다.', focusBirth:'',
 };
@@ -52,7 +55,13 @@ test('the job and both disclosed bands reach the model together, independently o
   assert.deepEqual(changed.input.presentLife,{job:'택배 기사',wealth:'빚이 더 많음',family:'매우 넉넉했어요'});
   const [fortune]=reading.clues.filter(clue=>clue.label==='전생에 쌓은 복');
   assert.ok(fortune.detail.includes(generated.deed));
-  assert.ok(reading.paragraphs[1].startsWith(generated.deed));
+  assert.deepEqual(reading.paragraphs,[
+    generated.opening+'\n\n'+generated.crossroads,
+    generated.deed+' '+generated.middle+'\n\n'+generated.consequence,
+    generated.ending+'\n\n'+generated.later,
+  ]);
+  assert.equal(reading.keepsakeStory,generated.keepsakeStory);
+  assert.equal(reading.otherOutcome,generated.otherOutcome);
   assert.equal(reading.choiceMade,generated.choiceMade);
   assert.equal(reading.choiceOther,generated.choiceOther);
   assert.equal(reading.fortune,generated.fortune);
