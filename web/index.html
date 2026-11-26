@@ -29,7 +29,7 @@
         <div class="wrap hero-inner">
           <div class="hero-copy">
             <h1 id="heroTitle">나의 전생은<br>어떤 삶이었을까<span class="hero-question">?</span></h1>
-            <p>얼굴에 남은 흔적과 오늘의 삶을 엮어<br>당신만의 전생 한 장면을 펼칩니다.</p>
+            <p>구석기 강가에서 오늘날의 서울역까지,<br>당신의 얼굴과 버릇으로 전생 한 장면을 펼칩니다.</p>
           </div>
         </div>
       </section>
@@ -63,8 +63,8 @@
               </div>
               <div class="field"><label for="birth">생년월일 <em>*</em></label><input id="birth" name="birth" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="예) 960517" aria-describedby="birthHint" required><small id="birthHint" class="field-help" aria-live="polite">연·월·일 순서로 숫자 6자리를 입력해주세요.</small></div>
               <div class="row">
-                <div class="field"><label for="surname">성씨 <em>*</em></label><input type="text" id="surname" name="surname" maxlength="16" placeholder="예) 신" required></div>
-                <div class="field"><label for="clan">본관 <span class="optional">선택</span></label><input type="text" id="clan" name="clan" maxlength="32" placeholder="예) 평산"></div>
+                <div class="field"><label for="surname">성씨 <em>*</em></label><input type="text" id="surname" name="surname" maxlength="16" placeholder="예) 김" required></div>
+                <div class="field"><label for="clan">본관 <span class="optional">선택</span></label><input type="text" id="clan" name="clan" maxlength="32" placeholder="예) 김해"></div>
               </div>
               <p id="errOne" class="error" role="alert" hidden></p>
               <button type="submit" class="primary wide" id="nextBtn">다음 단계</button>
@@ -82,11 +82,10 @@
               </div>
               <div class="field"><label for="job">직업 <em>*</em></label><input type="text" id="job" maxlength="90" required placeholder="직업을 입력해주세요"></div>
               <div class="field"><label for="personality">내 성격 <em>*</em></label><textarea id="personality" rows="3" maxlength="260" required placeholder="예) 평소엔 느긋하지만 급한 순간엔 집중해요. 친구들에게 밥 사는 걸 좋아해요."></textarea></div>
-              <div class="traits" aria-label="성격 예시 더하기"><button type="button" data-trait="느긋해요">＋ 느긋함</button><button type="button" data-trait="사람을 잘 챙겨요">＋ 다정함</button><button type="button" data-trait="조심스러워요">＋ 신중함</button><button type="button" data-trait="끝까지 파고들어요">＋ 끈기</button></div>
+              <div class="traits" aria-label="성격 예시 더하기"><button type="button" data-trait="사람을 잘 챙겨요">＋ 다정함</button><button type="button" data-trait="조심스러워요">＋ 신중함</button><button type="button" data-trait="끝까지 파고들어요">＋ 끈기</button><button type="button" data-trait="마지막까지 일을 미뤄요">＋ 미루기</button><button type="button" data-trait="틀려도 제 주장을 굽히기 어려워요">＋ 고집</button><button type="button" data-trait="일이 꼬이면 남 탓부터 해요">＋ 남 탓</button></div>
               <small class="field-help">이야기를 펼치면 얼굴 묘사와 입력한 단서가 OpenAI로 전송됩니다. 사진 원본과 생년월일은 기기에 남습니다.</small>
               <p id="errTwo" class="error" role="alert" hidden></p>
               <div class="actions"><button type="button" class="secondary" id="backBtn">이전 단계</button><button type="submit" class="primary" id="revealBtn"><i data-icon="book"></i> 내 전생 펼치기</button></div>
-              <div id="writing" hidden><span class="writing-dot" aria-hidden="true"></span><span id="writingStatus" role="status"></span><button type="button" id="stopWriting" class="text-button">중단</button></div>
             </div>
           </form>
         </section>
@@ -94,17 +93,29 @@
           <div class="section-title"><div class="heading-wrap"><i data-icon="scroll"></i><h2>예시 기록</h2></div></div>
           <button type="button" data-example class="example-card">
             <div class="example-image"><img src="./assets/scribe.jpg" alt="붓을 들고 장부를 기록하는 옛 서기의 초상"><span class="folio-seal" aria-hidden="true">前<br>生</span></div>
-            <div class="example-body"><span class="era"><i></i>조선 후기 · 수원</span><h3>하루 늦게 망신당한 장부쟁이</h3><p>품삯 장부에서 자기 몫을 지운 날,<br>그토록 피하던 박수를 받았습니다.</p><span class="read-sample"><i data-icon="book"></i>예시 기록 읽기</span></div>
+            <div class="example-body"><span class="era"><i></i>조선 후기 · 수원</span><h3 id="sampleRole"></h3><p id="sampleTeaser"></p><span class="read-sample"><i data-icon="book"></i>예시 기록 읽기</span></div>
           </button>
         </aside>
       </div>
     </div>
-    <section id="resultView" hidden aria-labelledby="resultTitle">
+    <section id="writing" class="writing-view" hidden aria-labelledby="writingTitle">
+      <div class="writing-content">
+        <div class="bound-book" aria-hidden="true"><span class="book-cord"></span><span class="book-slip">前生錄</span><img src="./assets/seal.svg" alt=""></div>
+        <h1 id="writingTitle" tabindex="-1">전생록을 펼치는 중</h1>
+        <p role="status">당신이 살았을 시대와 그날의 사연을 쓰고 있습니다.</p>
+        <div class="ink-track" aria-hidden="true"></div>
+        <button type="button" id="stopWriting" class="text-button">그만 쓰고 입력으로 돌아가기</button>
+      </div>
+    </section>
+    <section id="resultView" hidden aria-labelledby="resultRole">
       <div class="result-wrap">
         <div class="record-tools"><button type="button" id="resultBack" class="text-button"><i data-icon="return"></i><span>입력으로 돌아가기</span></button><button type="button" id="saveCard" class="text-button"><i data-icon="download"></i>결과 카드 저장</button></div>
-        <article class="identity-card" aria-label="전생 인물첩"><div class="identity-frame"><div class="identity-top"><p id="resultKind"></p><span class="ink-stamp" aria-hidden="true">前生</span></div><h1 id="resultTitle" tabindex="-1"></h1><p id="storyQuote"></p><dl class="identity-data"><div><dt>시대</dt><dd id="resultEra"></dd></div><div><dt>무대</dt><dd id="resultPlace"></dd></div><div><dt>전생의 직업</dt><dd id="resultRole"></dd></div></dl></div></article>
-        <article class="reading-paper"><h2>그날의 기록</h2><div id="storyText" class="story-text"></div></article>
-        <section class="verdict"><span class="verdict-stamp" aria-hidden="true">評</span><div><h2>전생에서 온 팩폭</h2><p id="roast"></p></div></section>
+        <article class="identity-card" aria-label="전생 인물첩"><div class="identity-frame">
+          <div class="identity-top"><p id="resultKind"></p><span class="ink-stamp" aria-hidden="true">前生</span></div>
+          <div class="role-block"><p class="role-label">당신의 전생 직업</p><h1 id="resultRole" tabindex="-1"></h1><p id="storyQuote"></p></div>
+          <dl class="identity-data"><div><dt>시대</dt><dd id="resultEra"></dd></div><div><dt>무대</dt><dd id="resultPlace"></dd></div></dl>
+        </div></article>
+        <article class="reading-paper"><h2 id="resultTitle"></h2><div id="storyText" class="story-text"></div></article>
         <details id="explain" class="explain" open><summary><i data-icon="scroll"></i>왜 이런 전생이 나왔을까?<span class="chevron"></span></summary><dl id="clues"></dl></details>
         <section class="history"><h2>기록과 창작 사이</h2><p id="historyText"></p><div id="sourceLinks"></div></section>
         <button type="button" id="again" class="primary wide">새 전생 풀이 시작</button><div id="resultMessage" role="status"></div>
@@ -115,7 +126,7 @@
   <dialog id="guide"><div class="dialog-top"><h2>전생록 이용 안내</h2><button type="button" id="guideClose" class="icon-btn" aria-label="닫기"><i data-icon="close"></i></button></div>
     <p>정면 얼굴 사진 한 장과 현생의 단서를 입력하면 전생의 한 장면과 그 풀이가 열립니다.</p>
     <h3>얼굴은 어떻게 읽나요?</h3><p>이 기기에서 얼굴 특징점 68개를 찾고, 코·턱선·눈 사이·눈썹을 읽습니다. 사진에서 어느 지점을 보았는지 결과에서 눌러볼 수 있어요. 관상은 전통적인 상징 풀이입니다.</p>
-    <h3>이야기는 어떻게 쓰나요?</h3><p>한국사 자료에서 당시 사람들이 쓰던 도구와 일거리를 찾고, 언어 모델이 당신이 적은 직업과 버릇을 읽어 사건과 결말을 씁니다. 인물과 사건은 역사소설처럼 즐기는 창작입니다.</p>
+    <h3>이야기는 어떻게 쓰나요?</h3><p>구석기부터 2020년대까지 한국사 자료에 남은 일거리 중, 당신이 태어난 해보다 앞선 배경을 고릅니다. 그곳에서 무슨 일을 맡고 어떤 선택을 했을지는 당신이 적은 직업과 버릇에서 시작합니다. 전생록에서는 현생의 재산을 전생에 베푼 선행이 돌아온 복으로 읽습니다. 인물과 사건은 역사소설처럼 즐기는 창작입니다.</p>
     <h3>내 정보는 어디로 가나요?</h3><p>서버 AI는 출생 계절, 성씨·본관, 선택한 형편, 직업·성격, 얼굴의 묘사를 OpenAI로 보냅니다. 사진 원본과 생년월일 여섯 자리는 기기에 남습니다. 전생록은 서버에 입력과 결과를 저장하지 않습니다.</p>
     <button type="button" id="guideDone" class="primary wide">확인</button>
   </dialog>

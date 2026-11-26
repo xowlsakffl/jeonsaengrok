@@ -1,7 +1,95 @@
 // 의뢰인의 직능에서 옛 일거리를 찾는다. work는 가능한 행동, history는 출처로 확인한 배경이다.
 const catalog = [
   {
-    regions: /충주|탄금대/,
+    endYear: -10000,
+    jobs: /정비|수리|기계|공구|목수|가공|개발|엔지니어|공예|생산|정비공/,
+    actions: [/손재주|손으로만들|직접고치/, /원인.{0,4}찾|시행착오|다시시도/, /고장|분해|부딪혀보/],
+    era: '구석기시대, 수만 년 전',
+    place: '오늘날 연천 전곡리의 한탄강 자갈밭',
+    work: '한 손에 쥘 만한 자갈을 찾아 옮기기, 먼저 돌을 깨는 사람 곁에서 떨어져 나온 쓸 만한 돌조각을 고르기',
+    detail: '같은 자갈이라도 부딪힌 자리에 따라 날이 다르게 섰다. 금이 엉뚱한 데로 가면 아침부터 고른 돌을 다시 구해야 했다.',
+    history: '전곡리에서는 주먹도끼뿐 아니라 돌을 때리는 망치돌, 돌조각이 떨어져 나간 몸돌, 떼어 낸 격지도 나왔다. 한탄강 자갈은 석기의 재료가 되었다.',
+    sources: [{ label: '경기문화재연구원 · 연천 전곡리 유적', url: 'https://gjicp.ggcf.kr/mediaObjects/460' }],
+  },
+  {
+    endYear: -2000,
+    jobs: /수산|어업|해녀|조리|요리|주방|식당|음식|주부|급식|환경|생물|채집/,
+    actions: [/장보기|끼니|요리|밥을챙/, /낚시|물때|바다|채집/, /나눠먹|나누어먹|음식.{0,4}(나눠|나누)/],
+    era: '신석기시대, 약 5천 년 전',
+    place: '오늘날 부산 영도 동삼동의 바닷가',
+    work: '물이 빠진 바위틈에서 조개를 줍기, 먹을 몫을 나누고 빈 껍데기를 거처 한쪽으로 치우기',
+    detail: '물에 잠기면 같은 바위에 다시 손을 뻗을 수 없다. 먼저 채운 사람은 아직 빈손인 사람 몫을 남겨 둘지 정해야 했다.',
+    history: '동삼동에 쌓인 조개무지에는 조개껍데기와 물고기 뼈, 토기와 뼈로 만든 도구가 남았다. 바닷가에서 무엇을 먹고 살았는지를 보여 주는 흔적이다.',
+    sources: [{ label: '국가유산청 · 부산 동삼동 패총', url: 'https://digital.khs.go.kr/heri/heriDetail.do?ctptUid=13898859676171300883' }],
+  },
+  {
+    endYear: -300,
+    jobs: /농업|농부|농사|원예|영양|창고|재고|물류|포장|회계|경리|재배/,
+    actions: [/수량|재고|계획|미리준비/, /식물|작물|텃밭|키우는걸/, /아껴|절약|저축|비축/],
+    era: '청동기시대 중기',
+    place: '오늘날 부여 송국리의 벼농사 마을',
+    work: '돌칼로 거둔 이삭을 나르기, 젖은 낟알을 펴 말리기, 남길 볍씨를 먹을 곡식과 갈라 두기',
+    detail: '곡식이 덜 마르면 쌓아 두기 어렵다. 다음에 뿌릴 볍씨까지 먹어 버리면 한 철 뒤에 쓸 것이 없었다.',
+    history: '송국리에서는 곡물을 거둘 때 쓰는 돌칼과 불에 탄 쌀, 곡식을 저장한 시설, 사람들이 함께 살던 집터가 확인되었다.',
+    sources: [{ label: '한국학중앙연구원 · 부여 송국리 선사 취락지', url: 'https://encykorea.aks.ac.kr/Article/E0024420' }],
+  },
+  {
+    endYear: -1,
+    jobs: /섬유|패션|의류|뜨개|수선|미용|디자인|공예|공방|직조|방직/,
+    actions: [/뜨개|바느질|실을|꼬인걸/, /매듭|묶기|꼼꼼/, /색을맞|손끝|손재주/],
+    era: '초기 철기시대, 기원전 1세기',
+    place: '영산강 가까이, 오늘날 광주 신창동의 마을',
+    work: '가락바퀴로 섬유에 꼬임을 주기, 이어 놓은 실을 감기, 올이 끊어지면 처음 보는 사람도 따라 할 수 있게 손동작을 보여 주기',
+    detail: '실은 꼬임이 모자라면 풀리고 너무 세게 잡아당기면 끊어졌다. 엉킨 실 한 뭉치가 풀릴 때까지 다음 손은 기다려야 했다.',
+    history: '신창동의 젖은 땅은 나무와 직물의 흔적을 보존했다. 당시 사람들이 실을 뽑고 천을 짠 흔적인 방직 도구도 남아 있다.',
+    sources: [{ label: '한국학중앙연구원 · 광주 신창동 유적과 출토 도구', url: 'https://encykorea.aks.ac.kr/Article/E0005276' }],
+  },
+  {
+    endYear: 357,
+    jobs: /주방|전업주부|조리|간병|돌봄|축산|사육|급식|급양|수의|청소/,
+    actions: [/물긷|청소|뒷정리/, /챙겨먹|끼니|밥을차/, /동물|먹이를|돌보/],
+    era: '고구려 357년',
+    place: '황해도 안악 일대, 우물과 부엌이 따로 있는 집',
+    work: '우물가에서 물을 길어 솥 옆에 채우기, 불 앞에 선 사람에게 식재료를 건네고 빈 그릇을 거두기',
+    detail: '물을 긷는 곳과 음식을 익히는 곳은 떨어져 있었다. 솥이 끓을 때 물동이가 비면 누군가는 다시 우물까지 다녀와야 했다.',
+    history: '357년으로 추정되는 안악 3호분 벽화에는 우물과 부엌, 외양간이 그려져 있다. 벽화에 묘사된 집안일을 이야기의 무대로 삼았다.',
+    sources: [{ label: '국립문화유산연구원 · 안악 3호분', url: 'https://portal.nrich.go.kr/kor/koguryoView.do?idx=59&menuIdx=668' }],
+  },
+  {
+    endYear: 400,
+    jobs: /금속|제철|용접|운송|택배|물류|무역|상하차|배송|선원|판매|정비/,
+    actions: [/짐을나르|무거운|배달/, /개수를세|수량|무게/, /흥정|거래|약속을지/],
+    era: '삼국시대, 4세기 금관가야',
+    place: '김해의 물길 가까운 덩이쇠 짐터',
+    work: '다른 물건과 바꿀 덩이쇠를 세어 모으기, 한 번에 들 수 있는 무게로 짐을 나누어 물가로 나르기',
+    detail: '덩이쇠는 다른 쇠 물건의 재료로 다시 쓸 수 있었다. 하나를 빠뜨리면 물가까지 옮긴 묶음을 다시 풀어 세어야 했다.',
+    history: '김해의 고분에서 덩이쇠가 나왔다. 가야에서는 철제품의 재료인 이 쇠가 유통됐고 바닷길을 통한 교류도 이루어졌다.',
+    sources: [{ label: '국사편찬위원회 · 가야의 철 생산과 유통', url: 'https://contents.history.go.kr/mobile/kc/view.do?code=kc_age_10&levelId=kc_r101450' }],
+  },
+  {
+    endYear: 900,
+    jobs: /품질|검수|검사|데이터|개발|디자인|시공|인테리어|사무|기획|분류/,
+    actions: [/분류|짝을맞|같은것/, /표식|오류|검수|대조/, /순서|정리정돈|반복/],
+    era: '남북국시대, 9세기 발해',
+    place: '발해 수도 상경성, 지붕에 올릴 기와를 쌓아 둔 마당',
+    work: '문자를 찍은 기와와 민기와를 나누어 놓기, 가장자리가 깨진 것을 빼고 지붕에 올릴 몫을 건네기',
+    detail: '서로 포개질 기와 한쪽이 깨지면 틈이 났다. 무거운 기와를 높이 올리기 전에 마당에서 골라내는 편이 쉬웠다.',
+    history: '발해 상경성의 궁궐터와 절터에서 문자를 찍거나 새긴 기와가 발견됐다. 같은 유적에 남은 여러 표식이 이야기 속 분류 일감의 실마리다.',
+    sources: [{ label: '국사편찬위원회 · 발해의 기와와 벽돌', url: 'https://contents.history.go.kr/front/nh/view.do?levelId=nh_010_0060_0030_0020_0020' }],
+  },
+  {
+    endYear: 1200,
+    jobs: /도자|도예|제과|제빵|디자인|주얼리|공방|공예|미술|생산|도공/,
+    actions: [/굽는|불조절|가마|빵을굽/, /무늬|그림|색을맞/, /견습|배우는|손으로빚/],
+    era: '고려 12세기',
+    place: '강진 대구면의 청자 가마 곁',
+    work: '마른 그릇을 가마 곁으로 한 벌씩 나르기, 구운 뒤 금이 갔거나 서로 붙은 그릇을 골라내기',
+    detail: '그릇을 빚고 말리는 데 걸린 시간은 불 한 번에 사라질 수 있었다. 가마 문을 열어야 어느 그릇이 살아남았는지 알 수 있었다.',
+    history: '강진 대구면에는 고려 때 청자를 구운 가마터가 밀집해 있다. 가마와 그릇 조각은 청자의 색과 장식이 달라져 온 과정을 전한다.',
+    sources: [{ label: '국가유산청 · 강진 고려청자 요지', url: 'https://digital.khs.go.kr/heri/heriDetail.do?ctptNo=1333600680000&ctptUid=13898859674078200701' }],
+  },
+  {
+    endYear: 1592,
     jobs: /군인|군무원|소방|구급|응급구조|경찰|재난|구호|구조대|수의사/,
     actions: [/응급처치|구조활동|구호활동/, /길을안내|길을알려|인솔/, /다친.{0,4}(돌보|챙기|돕)/],
     era: '조선 1592년',
@@ -12,7 +100,7 @@ const catalog = [
     sources: [{ label: '한국학중앙연구원 · 탄금대전투', url: 'https://encykorea.aks.ac.kr/Article/E0058773' }],
   },
   {
-    regions: /공주|웅진/,
+    endYear: 550,
     jobs: /건축|인테리어|토목|건설|타일|도예|미장|시공|공간디자인|설계사/,
     actions: [/도면|평면도|모형집/, /집을꾸|가구를배치|실내를꾸/, /치수를재|수평을맞/],
     era: '백제 웅진시대, 6세기 전반',
@@ -26,10 +114,10 @@ const catalog = [
     ],
   },
   {
-    regions: /경주|월성/,
+    endYear: 771,
     jobs: /기계|금속|제조|주조|생산직|용접|반도체|자동차|조각|금형|정비|주얼리|엔지니어/,
     actions: [/분해|뜯어보/, /수리|고쳐쓰|직접고치/, /조립|납땜|금속을다듬/],
-    era: '통일신라 8세기, 771년 무렵',
+    era: '통일신라 771년',
     place: '신라 왕경, 오늘날의 경주',
     work: '큰 종에 들어갈 무늬의 본을 손보기, 글자 획과 꽃무늬가 뭉개진 곳을 살피기',
     detail: '종 몸체의 글과 넝쿨무늬는 청동을 부을 때 함께 만들어졌다. 완성된 종은 무게가 약 19톤이다.',
@@ -37,7 +125,7 @@ const catalog = [
     sources: [{ label: '국립경주박물관 · 성덕대왕신종 해설', url: 'https://gyeongju.museum.go.kr/kor/html/sub03/0305.html?file_id=9599&mode=D&no=5307' }],
   },
   {
-    regions: /신안|압해|무안/,
+    endYear: 1323,
     jobs: /물류|선원|해운|창고|구매|재고|조선소|항해|유통|수산|포장|선박/,
     actions: [/포장|짐을싸|짐싸기/, /물건.{0,4}분류|꼬리표|라벨/, /재고|수량을세|짐을나르/],
     era: '고려와 원의 교역기, 1323년',
@@ -48,7 +136,7 @@ const catalog = [
     sources: [{ label: '국립광주박물관 · 신안해저문화재', url: 'https://modu.museum.go.kr/explore/video/691' }],
   },
   {
-    regions: /합천|초계/,
+    endYear: 1500,
     jobs: /개발|프로그래|소프트웨어|데이터|서버|보안|사서|기록|보존|환경|전산|devops|software|developer|백엔드|프론트엔드|클라우드/,
     actions: [/기록|체크리스트|목록을만/, /오류|틀린곳|오탈자|빠진곳|교정/, /백업|대조|버전을비교/],
     era: '조선 15세기 후반',
@@ -59,7 +147,7 @@ const catalog = [
     sources: [{ label: '문화체육관광부 · 해인사 장경판전', url: 'https://www.mcst.go.kr/usr/child/cultureStory/traditional/heritage.jsp?pMenuCD=4102020202' }],
   },
   {
-    regions: /순흥|풍기|영주/,
+    endYear: 1600,
     jobs: /교사|교육|선생|강사|교수|연구|지도사|학예|편집|작가|과외|학원|법무|변호/,
     actions: [/가르치|알려주는|설명해주|설명하는/, /필사|독서|책을읽|낭독/, /토론|질문을모|공부를도/],
     era: '조선 16세기 후반',
@@ -70,7 +158,7 @@ const catalog = [
     sources: [{ label: '국사편찬위원회 · 풍기 소수서원', url: 'https://contents.history.go.kr/mobile/kc/view.do?code=kc_age_30&levelId=kc_r300680' }],
   },
   {
-    regions: /동래|부산|초량/,
+    endYear: 1800,
     jobs: /무역|영업|통역|번역|외교|관세|세관|협상|해외|회계|세무|금융|은행|통상|중개|판매/,
     actions: [/통역|번역|외국어/, /흥정|값을깎|협상|가격을비교/, /중재|중고거래|거래를주선/],
     era: '조선 18세기',
@@ -81,7 +169,7 @@ const catalog = [
     sources: [{ label: '국사편찬위원회 · 초량왜관', url: 'https://contents.history.go.kr/mobile/kc/view.do?levelId=kc_i302810' }],
   },
   {
-    regions: /대구|달성/,
+    endYear: 1800,
     jobs: /약사|약국|제약|의사|간호|병원|한의|보건|임상|원예|약재|식물|바이오/,
     actions: [/식물.{0,3}(기르|키우|돌보)|화분을돌/, /약초|약재|허브를말/, /원산지.{0,3}(확인|비교)/],
     era: '조선 후기, 18세기',
@@ -92,10 +180,10 @@ const catalog = [
     sources: [{ label: '한국학중앙연구원 · 대구 약령시', url: 'https://encykorea.aks.ac.kr/Article/E0014120' }],
   },
   {
-    regions: /강릉|명주/,
+    endYear: 1859,
     jobs: /음악|가수|연주|무용|공연|배우|연극|댄스|영상|방송|유튜|크리에이터|홍보|광고|연출|마케터|마케팅|콘텐츠/,
     actions: [/춤을추|춤추|몸짓|안무/, /악기|연주|박자를맞|장단을맞/, /무대에|공연|흉내|연기연습/],
-    era: '조선 후기',
+    era: '조선 후기, 1850년대',
     place: '강릉 단오의 놀이마당',
     work: '가면 너머로 악사의 장단에 맞춰 몸짓하기, 뒤쪽 구경꾼에게까지 동작의 뜻이 보이게 자리 잡기',
     detail: '관노가면극은 대사가 없는 탈놀이다. 무거운 장면도 우스운 장면도 몸짓과 음악으로 전해야 한다.',
@@ -103,7 +191,7 @@ const catalog = [
     sources: [{ label: '강릉단오제위원회 · 관노가면극', url: 'https://www.danojefestival.or.kr/kor/info/yeonhee.html' }],
   },
   {
-    regions: /한산|서천|임천/,
+    endYear: 1800,
     jobs: /의류|패션|섬유|봉제|바느질|원단|농업|농부|농사|공예|공방|스타일리스트|공예가|패턴|디자이너|디자인/,
     actions: [/바느질|재봉|옷을짓|옷을만들/, /뜨개|실을잇|자수|코바늘/, /재단|옷을줄|옷을고쳐/],
     era: '조선 후기, 18세기',
@@ -117,7 +205,7 @@ const catalog = [
     ],
   },
   {
-    regions: /수원|화성/,
+    endYear: 1795,
     jobs: /조리|요리|셰프|제과|제빵|파티시|영양|음식|식당|급식|외식|바리스타|접객|호텔|케이터링|행사|주방|전업주부/,
     actions: [/요리|반찬을만|도시락|빵을굽|베이킹/, /밥.{0,3}(사주|사는|차려)|음식.{0,3}(나눠|대접)/, /식단|식재료|레시피|장보기/],
     era: '조선 정조 19년, 1795년',
@@ -128,17 +216,130 @@ const catalog = [
     sources: [{ label: '국사편찬위원회 · 궁중음식과 의궤', url: 'https://contents.history.go.kr/play/view.do?levelId=tt_b44' }],
   },
   {
-    regions: /한성|한양|인천|제물포/,
+    endYear: 1884,
     jobs: /우편|배달|택배|배송|운송|통신|집배|우체|행정|사무|고객|상담|접수|공무원|서비스직|콜센터/,
     actions: [/편지.{0,3}(쓰|써|보내)|손편지/, /주소.{0,3}(확인|정리)/, /소식을전|안부를전|우표를모/],
     era: '조선 개항기, 1884년',
     place: '한성 우정총국과 인천 제물포 사이',
     work: '처음 온 손님에게 우표 쓰는 법을 보이기, 봉투의 수신처를 읽어 같은 곳으로 갈 편지를 나누기',
     detail: '처음 쓸 수 있었던 우표는 5문과 10문 두 종류였다. 첫 우편 노선은 한성과 인천을 이었다.',
-    history: '1884년에 우정총국이 근대식 우편 업무를 시작했다. 갑신정변으로 곧 문을 닫았고 우편 업무는 1895년에 재개됐다.',
+    history: '1884년에 우정총국이 근대식 우편 업무를 시작했다. 그해 갑신정변으로 문을 닫으면서 첫 우편 노선도 끊겼다.',
     sources: [
       { label: '우정박물관 · 우편사업의 개시', url: 'https://www.koreapost.go.kr/postmuseum/subIndex/4513.do' },
       { label: '우정박물관 · 최초의 우표', url: 'https://kpds.koreapost.go.kr/postmuseum/subIndex/4531.do' },
+    ],
+  },
+  {
+    endYear: 1898,
+    jobs: /편집|기자|언론|출판|인쇄|번역|작가|교정|마케팅|카피라이터/,
+    actions: [/오탈자|띄어쓰기|고쳐쓰/, /글쓰기|글을쓰|낭독/, /마감|교정|원고/],
+    era: '대한제국 1898년 여름',
+    place: '한성의 독립신문 인쇄 작업터',
+    work: '한글 지면의 띄어쓰기를 읽어 보기, 견본에서 빠진 글자를 찾아 표시하기, 찍어 낸 신문을 접어 나누기',
+    detail: '날마다 신문을 내기 시작한 뒤로 오늘 찾은 오자는 오늘 손봐야 했다. 한 칸의 틈을 잘못 두면 소리 내 읽는 뜻까지 달라졌다.',
+    history: '독립신문은 한글판에 띄어쓰기를 썼다. 한글판과 영문판을 따로 내던 이 신문은 1898년 7월부터 일간으로 발행되었다.',
+    sources: [{ label: '국가유산청 · 독립신문', url: 'https://digital.khs.go.kr/heri/heriDetail.do?ctptNo=4411105060000&ctptUid=13983497591123025829' }],
+  },
+  {
+    endYear: 1933,
+    jobs: /직조|방직|섬유|기계|생산직|공장|제조|정비|기능공/,
+    actions: [/실을잇|손이빠|손이빨/, /기계|고장|소리에민감/, /반복|교대|집안에보태/],
+    era: '일제강점기 1933년',
+    place: '영등포 경성방직 공장의 직기 사이',
+    work: '직기에 보낼 실을 나르기, 베가 짜이다 실이 끊긴 자리를 찾아 다시 잇는 법을 배우기',
+    detail: '끊어진 실을 고치는 동안에도 옆줄 직기는 돌아갔다. 손을 멈춘 이유를 말하려면 기계 소리보다 큰 목소리가 필요했다.',
+    history: '경성방직은 영등포에 면직물 공장을 두었다. 1933년에 증축을 마친 공장에는 직기가 672대 있었다.',
+    sources: [{ label: '한국학중앙연구원 · 경성방직주식회사', url: 'https://encykorea.aks.ac.kr/Article/E0077991' }],
+  },
+  {
+    endYear: 1951,
+    jobs: /교사|교직|학생|교육|강사|사회복지|보육|돌봄|학원|상담|봉사/,
+    actions: [/가르치|설명해|공부를도/, /동생|아이들|책을읽어/, /배려|자리.{0,3}양보|챙겨주/],
+    era: '한국전쟁 중인 1951년',
+    place: '피란지 부산의 임시 교실',
+    work: '늦게 온 아이에게 앉을 자리를 내기, 앞줄에서 받아 적은 글자를 뒷줄에 옮겨 주기, 수업을 마치고 걸상을 함께 나르기',
+    detail: '책과 자리가 모자랐다. 한 아이가 앞에서 읽으면 뒤에 앉은 아이는 들리는 대로 자기 종이에 옮겨야 했다.',
+    history: '1951년 12월의 부산 현지 보도에는 피란 온 중학생들이 천막이나 판자로 마련한 교실에서 배웠다고 적혀 있다. 여러 학교가 한곳에 모여 수업하기도 했다.',
+    sources: [{ label: '국사편찬위원회 · 1951년 부산 피난학교 실태 보도', url: 'https://db.history.go.kr/contemp/level.do?levelId=dh_023_1951_12_16_0060' }],
+  },
+  {
+    endYear: 1969,
+    jobs: /재단|재봉|봉제|의류|수선|패션|세탁|매장|의상|스타일리스트/,
+    actions: [/다림질|옷을고|옷을줄/, /실밥|재단|재봉/, /취업준비|견습|눈썰미/],
+    era: '1960년대 후반',
+    place: '서울 청계천 평화시장 봉제 작업장',
+    work: '막 재봉틀에서 나온 옷의 실밥 따기, 다림질한 옷을 포개고 다음 묶음을 가져오는 견습 일',
+    detail: '비좁은 작업대에 옷이 쌓이면 옆사람이 움직일 자리부터 없어졌다. 실밥 하나가 남으면 이미 포갠 옷을 다시 풀어야 했다.',
+    history: '평화시장은 1960년대에 기성복 도매시장으로 성장했다. 좁은 봉제 작업장에서 견습 보조공들은 실밥을 뜯고 다림질을 하며 재봉 일을 도왔다.',
+    sources: [{ label: '국사편찬위원회 · 평화시장의 봉제 노동', url: 'https://contents.history.go.kr/data/pdf/eh/eh_n0930_0010.pdf' }],
+  },
+  {
+    endYear: 1974,
+    jobs: /철도|역무|운전|교통|행정|매표|편의점|계산원|고객|서비스|접객|판매/,
+    actions: [/길을안내|길을알려|노선/, /거스름돈|계산|표를/, /줄을세|낯선사람|손님을/],
+    era: '1974년 서울 지하철 개통 첫해',
+    place: '서울 지하철 1호선 종로 구간의 매표 창구',
+    work: '목적지를 되물어 표를 건네기, 거스름돈을 세고 지하철이 처음인 손님에게 개찰구를 가리켜 주기',
+    detail: '표를 한 장 고르는 동안에도 줄은 길어졌다. 목적지를 잘못 들으면 손님은 창구로 돌아와야 했다.',
+    history: '서울 지하철 1호선은 1974년에 개통했다. 그해의 서울시 지하철 운임 규정에는 승차권의 종류와 운임이 남아 있다.',
+    sources: [{ label: '국가기록원 · 1974년 서울시 지하철 운임 규정', url: 'https://theme.archives.go.kr/next/localSelf/records/detail.do?flag=0&page=15&searchKey=&searchTxt=&seq=190' }],
+  },
+  {
+    endYear: 1983,
+    jobs: /방송|작가|사회복지|상담|기록|간호|자원봉사|상담사|접수|복지/,
+    actions: [/경청|잘들어|이야기를듣/, /안부|소식을전|이름을기억/, /메모|받아적|봉사/],
+    era: '1983년 여름',
+    place: '서울 여의도 방송국 앞, 이산가족을 찾는 벽보가 붙은 광장',
+    work: '어르신이 말한 고향과 헤어진 가족 이름을 종이에 받아 적기, 벽보를 붙이고 닮은 사연이 있는 자리까지 함께 걷기',
+    detail: '이름 한 자나 마을 이름 하나가 달라도 찾는 사람은 지나칠 수 있었다. 벽보를 올리기 전에 적은 말을 임자에게 다시 읽어 주어야 했다.',
+    history: '1983년 6월 KBS 이산가족 찾기 생방송이 시작되자 여의도에는 가족의 사연을 적은 벽보가 모였다. 현장 사진에는 벽보 곁을 지키는 사람들이 남아 있다.',
+    sources: [{ label: 'KBS 아카이브 · 이산가족 찾기 현장 사진', url: 'https://world.kbs.co.kr/special/dispersed_families/page/photos.htm?lang=k' }],
+  },
+  {
+    endYear: 1996,
+    jobs: /개발|프로그래|전산|소프트웨어|서버|데이터|컴퓨터|게임|사서|커뮤니티|백엔드|프론트엔드|엔지니어|developer/,
+    actions: [/백업|압축|파일|자료실/, /동호회|게시판|게임/, /사용법|컴퓨터|오류/],
+    era: '1996년, PC통신 시절',
+    place: '집 전화선에 물린 하이텔 단말기 앞, 동호회 자료실',
+    work: '게시판에 올라온 초보 회원의 접속 질문에 답하기, 찾기 어려운 자료의 제목을 다시 적어 목록으로 올리기',
+    detail: '집 전화선 하나를 같이 썼다. 식구가 급히 전화를 써야 하면 쓰던 글을 마칠지 접속부터 끊을지 정해야 했다.',
+    history: '당시에는 전화망을 쓰는 PC통신이 인기를 끌었다. 하이텔에서는 전용 단말기로 게시판과 동호회, 자료실에 들어갈 수 있었다.',
+    sources: [{ label: '서울생활사박물관 · 하이텔 단말기', url: 'https://museum.seoul.go.kr/sulm/board/NR_boardView.do?bbsCd=1176&seq=20230918102822170' }],
+  },
+  {
+    endYear: 2002,
+    jobs: /관광|가이드|통역|호텔|여행|스포츠|체육|행사|외교|안내|서비스|승무원/,
+    actions: [/영어|외국어|통역/, /낯선사람|길을안내|길을알려/, /축구|응원|여행/],
+    era: '2002년 한일 월드컵',
+    place: '서울월드컵경기장 주변의 안내소',
+    work: '외국에서 온 관중의 지도를 돌려 같은 방향으로 보기, 경기장 가는 길을 짚어 주고 일행을 놓친 사람을 안내소로 데려가기',
+    detail: '경기 시작 시각은 정해져 있었다. 말이 통하지 않을 때는 길게 설명하는 것보다 종이 지도의 갈림길 하나를 짚는 편이 빨랐다.',
+    history: '2002년 4월 서울시는 월드컵에 오는 외국 선수단과 관광객을 환영하고 안내할 시민 서포터즈를 모집했다. 당시 모집 공고에 안내와 응원 일이 함께 적혀 있다.',
+    sources: [{ label: '서울역사박물관 · 2002년 서울시민 서포터즈 모집 공고', url: 'https://museum.seoul.go.kr/www/board/NR_boardView.do?bbsCd=1014&seq=00000000000000013&sso=ok' }],
+  },
+  {
+    endYear: 2018,
+    jobs: /빙상|체육|스포츠|시설관리|정비|냉동|냉장|설비|미장|품질|정빙/,
+    actions: [/흠집|고르지|매끈|수평/, /점검|고쳐쓰|손으로고치/, /썰매|빙상|스케이트/],
+    era: '2018년 1월, 평창 동계올림픽 개막 전',
+    place: '평창 올림픽 슬라이딩 센터의 썰매 트랙',
+    work: '트랙을 돌며 패인 자리를 찾아 표시하기, 정빙 담당자 곁에서 얼음 부스러기를 치우고 손질한 구간을 다시 살피기',
+    detail: '굽이가 달라질 때마다 얼음의 모양도 달랐다. 아침에 고르게 다듬은 곳도 성에가 끼면 다시 들여다봐야 했다.',
+    history: '대회 개막을 앞둔 2018년 1월, 슬라이딩 센터의 정빙 담당자는 매일 트랙을 살폈다. 얼음이 패인 곳은 메우고 솟은 부분은 코스 모양에 맞춰 손으로 깎았다.',
+    sources: [{ label: '문화체육관광부 위클리 공감 · 평창 정빙 담당자 인터뷰', url: 'https://www.korea.kr/goNewsRes/attaches/2019.05/23/57_20180115_01I0vUscYDGJM000.pdf' }],
+  },
+  {
+    endYear: 2023,
+    jobs: /디지털교육|고객지원|사용성|접근성|상담|서비스|복지|교육|안내|ux/,
+    actions: [/차근차근|기다려주|눈높이/, /사용법|키오스크|스마트폰/, /천천히설명|디지털|기계치/],
+    era: '2023년 2월',
+    place: '지하철 서울역, 승차권 발매기 앞',
+    work: '화면이 처음으로 돌아가 당황한 승객과 목적지부터 다시 찾기, 손님이 직접 표를 뽑을 때까지 곁에서 다음 버튼을 짚어 주기',
+    detail: '대신 눌러 주면 줄은 빨리 줄었다. 승객이 돌아올 때 혼자서도 표를 뽑게 하려면 스스로 버튼을 찾아볼 시간이 필요했다.',
+    history: '서울시는 2023년 2월 디지털 안내사를 역과 시장 등에 배치했다. 서울역에서는 주황색 근무복을 입은 안내사들이 승객에게 무인 발매기 사용법을 설명했다.',
+    sources: [
+      { label: '서울특별시 · 2023년 디지털 안내사 현장 배치', url: 'https://news.seoul.go.kr/gov/archives/545166' },
+      { label: '내 손안에 서울 · 서울역 발매기 앞 현장 취재', url: 'https://mediahub.seoul.go.kr/archives/2006924?tr_code=new01' },
     ],
   },
 ];
@@ -161,25 +362,32 @@ function publicContext({ era, place, work, detail, history, sources }) {
 }
 
 export function candidateContexts(profile = {}, limit = 3) {
-  const clan = normalize(profile.clan);
+  // 생년을 알 수 없을 때도 전생의 배경이 현생보다 늦어지는 일을 피한다.
+  const year = Number(/^(\d{4})-\d{2}-\d{2}$/.exec(profile.birth)?.[1] ?? 1);
   const job = normalize(profile.job);
   const habits = normalize(profile.personality);
-  const seed = tieBreaker([profile.birth, job, habits].join('|'));
-  const groups = new Map();
-  for (const entry of catalog) {
-    const actions = entry.actions.filter(pattern => pattern.test(habits)).length;
-    const relevance = Number(entry.jobs.test(job)) * 2 + actions;
-    const score = relevance * 2 + Number(entry.regions.test(clan));
-    if (!groups.has(score)) groups.set(score, []);
-    groups.get(score).push(entry);
+  const seed = [profile.birth, job, habits].join('|');
+  const ranked = catalog.filter(entry => entry.endYear < year).map(entry => ({
+    entry,
+    score: Number(entry.jobs.test(job)) * 2 + entry.actions.filter(pattern => pattern.test(habits)).length,
+    tie: tieBreaker([seed, entry.place].join('|')),
+  })).sort((a, b) => b.score - a.score || a.tie - b.tie);
+
+  // 먼저 선사·고대와 고려·조선 이후에서 가장 어울리는 한 편씩 뽑는다.
+  // 첫 번째는 전체 최고점이며, 같은 시대권의 차순위는 그 뒤에 돌려준다.
+  const represented = new Set();
+  const firstChoices = [];
+  const otherChoices = [];
+  for (const { entry } of ranked) {
+    const period = entry.endYear < 0 ? '선사' : entry.endYear < 1392 ? '고대·고려' : '조선 이후';
+    if (represented.has(period)) {
+      otherChoices.push(entry);
+    } else {
+      firstChoices.push(entry);
+      represented.add(period);
+    }
   }
-  const scores = [...groups.keys()].sort((a, b) => b - a);
-  const ranked = scores.flatMap(score => {
-    const tied = groups.get(score);
-    const start = seed % tied.length;
-    return [...tied.slice(start), ...tied.slice(0, start)];
-  });
-  return ranked.slice(0, Math.max(0, limit)).map(publicContext);
+  return [...firstChoices, ...otherChoices].slice(0, Math.max(0, limit)).map(publicContext);
 }
 
 export function selectContext(profile = {}) {
