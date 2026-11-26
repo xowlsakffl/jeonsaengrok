@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { api } from '../worker/api.mjs';
+import { localD1 } from './local-d1.mjs';
 import { describeProfile } from '../web/profile.js';
 import { drawContext } from '../web/history.js';
 import { describePersonality, traitGroups } from '../web/traits.js';
@@ -31,10 +32,12 @@ function makeRequest(profile) {
 }
 async function run(profile) {
   let input;
-  const response=await api(makeRequest(profile),{OPENAI_API_KEY:'test'},async (_url,options)=>{
+  const db=localD1();
+  const response=await api(makeRequest(profile),{OPENAI_API_KEY:'test',DB:db},async (_url,options)=>{
     input=JSON.parse(JSON.parse(options.body).input);
     return Response.json({output:[{content:[{type:'output_text',text:JSON.stringify(generated)}]}]});
   });
+  db.close();
   assert.equal(response.status,200);
   const {reading}=await response.json();
   return {input,reading};
@@ -119,14 +122,31 @@ test('a note containing a badge sentence stays intact when the badge is selected
   assert.equal(describePersonality(note,[]),note);
 });
 
+test('legacy badge choices keep their meaning and aliases do not duplicate the description', ()=>{
+  assert.equal(describePersonality('직접 쓴 말',['마감 몰아치기','마감 직전에 몰아서 해요']), '직접 쓴 말 시간이 넉넉할 땐 미루다가 마감이 닥쳐야 집중해요.');
+  const aliases = traitGroups.flatMap(group=>group.traits.flatMap(([, , ...aliases])=>aliases));
+  assert.equal(new Set(aliases).size,40);
+  assert.equal(aliases.length,40);
+});
+
 test('a declined input lets the reader return to the form', async ()=>{
   const failures=[
     Response.json({error:{code:'invalid_prompt'}},{status:400}),
     Response.json({output:[{content:[{type:'refusal',refusal:'declined'}]}]}),
   ];
   for(const failure of failures){
-    const response=await api(makeRequest(base),{OPENAI_API_KEY:'test'},async ()=>failure);
+    const db=localD1();
+    const response=await api(makeRequest(base),{OPENAI_API_KEY:'test',DB:db},async ()=>failure);
+    db.close();
     assert.equal(response.status,422);
     assert.match((await response.json()).error,/입력으로 돌아가/);
   }
+});
+
+test('missing quota storage blocks a valid request before any provider call',async()=>{
+  let calls=0;
+  const res=await api(makeRequest(base),{OPENAI_API_KEY:'test'},async()=>{calls++});
+  assert.equal(res.status,503);
+  assert.equal((await res.json()).code,'quota_unavailable');
+  assert.equal(calls,0);
 });

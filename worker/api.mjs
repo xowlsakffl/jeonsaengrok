@@ -1,4 +1,4 @@
-const fields = {job:90,personality:2400,season:2,surname:16,clan:32,wealth:60,family:60};
+const fields = {job:90,personality:2600,season:2,surname:16,clan:32,wealth:60,family:60};
 const respond = (obj,status=200) => new Response(JSON.stringify(obj),{status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff'}});
 const declinedReading = () => respond({error:'AI가 이번 입력으로 전생 풀이를 작성하지 못했습니다. 입력으로 돌아가 내용을 확인해주세요.'},422);
 const wealthBands = new Set([
@@ -18,7 +18,8 @@ fortune은 deed 장면을 근거로 그때 남에게 남긴 몫이 현생에서 
 title은 아이러니나 구체적인 물건이 들어간 짧은 제목, role은 간결한 옛 직업, summary는 결말을 다 밝히지 않는 한 문장이다. focusHabit은 자술한 버릇과 본문 속 행동을 연결한다. focusBirth는 계절과 장면이 맞닿을 때만 쓴다. 성씨와 본관에서 유명인·가계·민족성·원한을 추정하지 않는다.
 faceIndex는 실제 관찰값의 코(0), 턱선(1), 눈 사이(2), 눈썹과 눈 사이(3) 중 한 곳이다. 코를 고르면 『마의상법』 상권에서 코를 재물과 연결한 풀이를 물건이나 몫이 오간 장면에 활용할 수 있다. 다른 부위는 장면에서 고개를 들거나 어느 쪽으로 눈길을 주었는지처럼 구체적인 행동에만 연결한다. 눈 사이 간격을 미간의 명궁으로 부르지 않는다. 새로운 관상 용어나 비율별 운명 등급을 만들지 않는다. 측정문은 화면에 붙으니 되풀이하지 않는다. 얼굴에서 현실의 성품·선악·능력·경제상태를 단정하거나 칭찬하지 않는다.`;
 const textField = {type:'string'};
-const textKeys = ['habitCue','title','role','summary','opening','choiceMade','choiceOther','deed','middle','ending','fortune','focusFace','focusHabit','focusBirth'];
+const epilogueInstructions = `한 번의 집필에서 두 가지 뒷이야기도 쓴다. keepsake는 그 시대 일터에서 실제로 손에 쥘 만한 물건 한 가지의 짧은 이름이다. keepsakeStory는 결말에서 시간이 흐른 뒤 그 물건이 누구의 손에 왜 남았는지를 하나의 구체적인 장면으로 2문장에 담는다. otherOutcome은 같은 순간에 choiceOther를 택했다면 무엇을 지키고 무엇을 잃었을지 인물과 사건에 맞춰 두 문장으로 상상한다. 본편이나 복 풀이를 반복하지 않는다. 장황한 교훈 대신 물건의 흠집, 들은 말, 달라진 순서처럼 그날이 남긴 흔적을 보여준다.`;
+const textKeys = ['habitCue','title','role','summary','opening','choiceMade','choiceOther','deed','middle','ending','keepsake','keepsakeStory','otherOutcome','fortune','focusFace','focusHabit','focusBirth'];
 const properties = Object.fromEntries(textKeys.map(key => [key,textField]));
 properties.faceIndex = {type:'integer',enum:[0,1,2,3]};
 const schema = {type:'object',properties,required:Object.keys(properties),additionalProperties:false};
@@ -77,12 +78,48 @@ function resultData(t,p) {
   const cue = typeof t.habitCue==='string' ? t.habitCue.trim() : '';
   const habitCue = cue && cue.length<=130 && p.personality.includes(cue) ? cue : '';
   return {background:0,faceIndex:t.faceIndex,title:t.title,role:t.role,summary:t.summary,paragraphs,clues,
-    choiceMade:t.choiceMade.trim(),choiceOther:t.choiceOther.trim(),habitCue,fortune:t.fortune.trim()};
+    choiceMade:t.choiceMade.trim(),choiceOther:t.choiceOther.trim(),habitCue,fortune:t.fortune.trim(),
+    keepsake:t.keepsake?.trim(),keepsakeStory:t.keepsakeStory?.trim(),otherOutcome:t.otherOutcome?.trim()};
+}
+
+const dayMilliseconds = 86400000;
+export async function reserveGeneration(request,db,now=Date.now()) {
+  const day = new Date(now+9*3600000).toISOString().slice(0,10);
+  const actor = request.headers.get('oai-authenticated-user-id');
+  const network = request.headers.get('cf-connecting-ip');
+  const identity = actor ? 'account/'+actor : 'network/'+(network || 'shared');
+  let dayRow=await db.prepare('SELECT salt FROM reading_days WHERE day=?').bind(day).first();
+  if (!dayRow) {
+    const cutoff=new Date(now+9*3600000-dayMilliseconds).toISOString().slice(0,10);
+    await db.batch([
+      db.prepare('DELETE FROM reading_attempts WHERE day < ?').bind(cutoff),
+      db.prepare('DELETE FROM reading_days WHERE day < ?').bind(cutoff),
+      db.prepare('INSERT OR IGNORE INTO reading_days(day,salt) VALUES(?,?)').bind(day,crypto.randomUUID()),
+    ]);
+    dayRow=await db.prepare('SELECT salt FROM reading_days WHERE day=?').bind(day).first();
+  }
+  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(dayRow.salt+'/'+identity));
+  const visitor=Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
+  const submittedId=request.headers.get('X-Reading-Id');
+  const id=submittedId && /^[0-9a-f-]{36}$/i.test(submittedId) ? submittedId : crypto.randomUUID();
+  // One atomic write checks both quotas before giving permission to call the provider.
+  const reservation=await db.prepare(`INSERT INTO reading_attempts(day,request_id,actor)
+    SELECT ?,?,? WHERE (SELECT COUNT(*) FROM reading_attempts WHERE day=?)<30
+    AND (SELECT COUNT(*) FROM reading_attempts WHERE day=? AND actor=?)<2
+    ON CONFLICT(day,request_id) DO NOTHING RETURNING request_id`).bind(day,id,visitor,day,day,visitor).first();
+  if (reservation) return null;
+  const existing=await db.prepare('SELECT 1 AS found FROM reading_attempts WHERE day=? AND request_id=? AND actor=?').bind(day,id,visitor).first();
+  return existing
+    ? respond({code:'duplicate',error:'이 풀이 요청은 이미 접수됐어요. 같은 요청으로 AI를 다시 호출하지 않았습니다.'},409)
+    : respond({code:'daily_limit',error:'오늘 이용할 수 있는 새 풀이 횟수를 모두 썼어요. 한국 시간 자정에 다시 열립니다. 공개 전생 이야기는 지금도 읽을 수 있어요.'},429);
 }
 
 export async function api(request,env,providerFetch=fetch) {
   const path=new URL(request.url).pathname;
-  if(path==='/api/availability'&&request.method==='GET')return respond({server:!!env.OPENAI_API_KEY});
+  if(path==='/api/availability'&&request.method==='GET'){
+    try {await env.DB.prepare('SELECT day FROM reading_attempts LIMIT 1').first();return respond({server:!!env.OPENAI_API_KEY,quotaReady:true});}
+    catch {return respond({server:false,quotaReady:false});}
+  }
   if(path!=='/api/reading')return respond({error:'경로를 찾지 못했습니다.'},404);
   if(request.method!=='POST')return respond({error:'POST 요청만 가능합니다.'},405);
   if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return respond({error:'이 사이트에서 다시 시도해주세요.'},403);
@@ -100,8 +137,12 @@ export async function api(request,env,providerFetch=fetch) {
   }catch{return respond({error:'입력을 확인해주세요.'},400);}
   if(!profile)return respond({error:'입력한 항목을 다시 확인해주세요.'},400);
   try {
+    const blocked=await reserveGeneration(request,env.DB);
+    if (blocked) return blocked;
+  } catch {return respond({code:'quota_unavailable',error:'오늘의 이용 횟수를 확인할 수 없어 잠시 집필을 쉬고 있어요. 공개 이야기는 바로 읽을 수 있습니다.'},503);}
+  try {
     const response=await providerFetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:'Bearer '+env.OPENAI_API_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({model:'gpt-6-luna',reasoning:{effort:'none'},store:false,instructions,input:JSON.stringify(authorInput(profile)),max_output_tokens:2300,text:{format:{type:'json_schema',name:'korean_past_life',strict:true,schema}}}),
+      body:JSON.stringify({model:'gpt-6-luna',reasoning:{effort:'none'},store:false,instructions:instructions+'\n'+epilogueInstructions,input:JSON.stringify(authorInput(profile)),max_output_tokens:2300,text:{format:{type:'json_schema',name:'korean_past_life',strict:true,schema}}}),
       signal:AbortSignal.any([request.signal,AbortSignal.timeout(65000)])});
     if(response.status===429){
       const failure=await response.json().catch(()=>({}));

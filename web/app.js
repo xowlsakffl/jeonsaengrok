@@ -25,8 +25,7 @@ fetch('./api/availability',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(
   if(data?.server===false)$('availability').hidden=false;
 }).catch(()=>{});
 let step = 1;
-let requestId = 0;
-let photoUrl = '';
+let pendingPhoto = null;
 let features = null;
 function clearError(id) {
   $(id).hidden=true;
@@ -51,19 +50,28 @@ function changeStep(to, focus=false) {
   if (focus) $(step===1?'firstTitle':'secondTitle').focus({preventScroll:true});
   if (focus) $('reading').scrollIntoView({block:'start'});
 }
+function releasePhoto() {
+  if (!pendingPhoto) return;
+  pendingPhoto.image.removeAttribute('src');
+  URL.revokeObjectURL(pendingPhoto.url);
+  pendingPhoto=null;
+}
 function clearPhoto() {
-  requestId++;
-  if (photoUrl) URL.revokeObjectURL(photoUrl);
-  photoUrl='';
+  releasePhoto();
   features=null;
   $('portrait').value='';
   $('portrait').removeAttribute('aria-invalid');
-  $('photoPreview').removeAttribute('src');
   $('uploaded').hidden=true;
   $('uploadTrigger').hidden=false;
   $('photoStatus').textContent='';
   $('photoStatus').className='';
   $('nextBtn').disabled=false;
+}
+function showMeasurementsReady() {
+  $('photoTitle').textContent='얼굴 분석 완료';
+  $('photoStatus').textContent='얼굴 단서를 확인했어요. 분석에 사용한 사진은 지웠어요.';
+  $('uploadTrigger').hidden=true;
+  $('uploaded').hidden=false;
 }
 async function choosePhoto(file) {
   if (!file) return;
@@ -72,29 +80,33 @@ async function choosePhoto(file) {
   if (!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>12*1024*1024||!file.size) {
     feedback('errOne','12MB 이하의 JPG, PNG 또는 WEBP 사진을 선택해주세요.',$('portrait')); return;
   }
-  const id=requestId;
-  photoUrl=URL.createObjectURL(file);
-  $('photoName').textContent=file.name;
+  const task={image:new Image(),url:URL.createObjectURL(file)};
+  pendingPhoto=task;
+  file=null;
+  $('photoTitle').textContent='얼굴 분석 중';
   $('photoStatus').textContent='이 기기에서 얼굴 특징점을 찾고 있어요…';
   $('uploadTrigger').hidden=true;
   $('uploaded').hidden=false;
   $('nextBtn').disabled=true;
-  $('photoPreview').src=photoUrl;
   try {
-    await $('photoPreview').decode();
-    if (id!==requestId) return;
-    const response=await analyzeFace($('photoPreview'));
-    if (id!==requestId) return;
+    task.image.src=task.url;
+    await task.image.decode();
+    if (pendingPhoto!==task) return;
+    const response=await analyzeFace(task.image);
+    if (pendingPhoto!==task) return;
     features=response;
-    $('photoStatus').textContent='얼굴 단서를 확인했어요.';
+    showMeasurementsReady();
   } catch (error) {
-    if (id!==requestId) return;
-    $('photoStatus').className='bad';
-    $('photoStatus').textContent=error instanceof Error && /[가-힣]/.test(error.message)?error.message:'사진을 읽지 못했어요. 정면 사진으로 다시 시도해주세요.';
-    $('errOne').textContent='사진 오른쪽의 삭제 버튼을 누르고 다른 사진을 선택해주세요.';
-    $('errOne').hidden=false;
+    if (pendingPhoto!==task) return;
+    $('uploadTrigger').hidden=false;
+    $('uploaded').hidden=true;
+    const message=error instanceof Error && /[가-힣]/.test(error.message)?error.message:'사진을 읽지 못했어요. 정면 사진으로 다시 시도해주세요.';
+    feedback('errOne',message,$('portrait'));
   } finally {
-    if (id===requestId) $('nextBtn').disabled=false;
+    if (pendingPhoto===task) {
+      releasePhoto();
+      $('nextBtn').disabled=false;
+    }
   }
 }
 $('portrait').addEventListener('change',e=>choosePhoto(e.target.files[0]));
@@ -102,6 +114,7 @@ $('photoRemove').addEventListener('click',()=>{clearPhoto();clearError('errOne')
 for (const name of ['dragenter','dragover']) $('dropzone').addEventListener(name,e=>{e.preventDefault();$('dropzone').classList.add('drag');});
 $('dropzone').addEventListener('dragleave',()=>$('dropzone').classList.remove('drag'));
 $('dropzone').addEventListener('drop',e=>{e.preventDefault();$('dropzone').classList.remove('drag');choosePhoto(e.dataTransfer.files[0]);});
+window.addEventListener('pagehide',()=>{if (pendingPhoto) clearPhoto();});
 
 
 const fieldIds = ['birth','surname','clan','job','personality','wealth','family'];
@@ -109,21 +122,7 @@ const fieldIds = ['birth','surname','clan','job','personality','wealth','family'
 function makeDraft() {
   const values = Object.fromEntries(fieldIds.map(id => [id,$(id).value]));
   values.traits = traitPicker.selected();
-  const photo = $('photoPreview');
-  let preview = '';
-  if (features && photo.naturalWidth) {
-    if (photoUrl.startsWith('data:')) {
-      preview = photoUrl;
-    } else {
-      const scale = Math.min(1, 640 / Math.max(photo.naturalWidth,photo.naturalHeight));
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.max(1,Math.round(photo.naturalWidth*scale));
-      canvas.height = Math.max(1,Math.round(photo.naturalHeight*scale));
-      canvas.getContext('2d').drawImage(photo,0,0,canvas.width,canvas.height);
-      preview = canvas.toDataURL('image/jpeg',0.8);
-    }
-  }
-  return {values, step, features, preview, photoName:$('photoName').textContent};
+  return {values, step, features};
 }
 
 function getProfile() {
@@ -142,14 +141,9 @@ function restoreDraft(draft) {
   traitPicker.restore(draft.values.traits);
   refreshBirth();
   $('personality').dispatchEvent(new Event('input'));
-  if (draft.features && draft.preview) {
-    photoUrl = draft.preview;
+  if (draft.features?.observations?.length) {
     features = draft.features;
-    $('photoPreview').src = photoUrl;
-    $('photoName').textContent = draft.photoName;
-    $('photoStatus').textContent = '얼굴 단서를 확인했어요.';
-    $('uploadTrigger').hidden = true;
-    $('uploaded').hidden = false;
+    showMeasurementsReady();
   }
   changeStep(draft.step === 2 && features ? 2 : 1);
 }
@@ -159,7 +153,7 @@ $('profileForm').addEventListener('submit',e=>{
   e.preventDefault();
   if (step===1) {
     clearError('errOne');
-    if(!features){feedback('errOne','정면 얼굴 사진 한 장을 올리고 얼굴 인식을 마쳐주세요.',photoUrl?$('photoRemove'):$('portrait'));return;}
+    if(!features){feedback('errOne','정면 얼굴 사진 한 장을 선택하고 분석을 마쳐주세요.',$('portrait'));return;}
     if(!birthDate($('birth').value)){feedback('errOne','생년월일을 숫자 6자리로 확인해주세요.',$('birth'));return;}
     if(!$('surname').value.trim()){feedback('errOne','성씨를 입력해주세요. 본관은 비워둘 수 있어요.',$('surname'));return;}
     changeStep(2,true);return;
@@ -197,7 +191,7 @@ for (const button of document.querySelectorAll('[data-example]')) {
     try {
       const draft = makeDraft();
       const previous = readSession();
-      const unchanged = previous?.draft.preview === draft.preview &&
+      const unchanged = JSON.stringify(previous?.draft.features) === JSON.stringify(draft.features) &&
         JSON.stringify(previous?.draft.values) === JSON.stringify(draft.values);
       writeSession(unchanged ? {...previous,draft} : {draft});
     } catch {}

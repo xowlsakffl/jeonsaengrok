@@ -1,12 +1,12 @@
 import { describeProfile } from './profile.js';
 
-export async function generateReading(profile,context,signal) {
+export async function generateReading(profile,context,signal,requestId) {
   const {era,place,work,detail,history} = context;
   const candidates=[{era,place,work,detail,history}];
   let response;
   try {
     response=await fetch('./api/reading',{
-      method:'POST',headers:{'Content-Type':'application/json'},
+      method:'POST',headers:{'Content-Type':'application/json','X-Reading-Id':requestId},
       body:JSON.stringify({...describeProfile(profile),candidates}),signal
     });
   } catch(error) {
@@ -17,6 +17,8 @@ export async function generateReading(profile,context,signal) {
   if(!response.ok||!data?.reading){
     const error=new Error(data?.error||'서버 AI가 응답하지 않았습니다. 잠시 후 다시 시도해주세요.');
     error.reviewInput=response.status===422;
+    error.receivedResponse=true;
+    error.quotaCode=data?.code;
     throw error;
   }
   const reading=data.reading;

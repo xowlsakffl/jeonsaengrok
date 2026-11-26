@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const web=path.join(root,'web');
 const types={'.js':'text/javascript; charset=utf-8','.html':'text/html; charset=utf-8','.svg':'image/svg+xml','.json':'application/json','.jpg':'image/jpeg','.woff2':'font/woff2','.ttf':'font/ttf','.wasm':'application/wasm','.txt':'text/plain; charset=utf-8','.css':'text/css; charset=utf-8'};
+types['.xml']='application/xml; charset=utf-8';
 const packed={};
 async function collect(dir) {
   for(const entry of await readdir(dir,{withFileTypes:true})) {

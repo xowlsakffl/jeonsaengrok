@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f8f5ec">
+  <meta name="robots" content="noindex">
   <meta name="description" content="얼굴 관상과 생년월일, 성씨와 삶의 단서를 엮어 나만의 전생 이야기와 풀이를 읽어 보세요.">
   <title>전생록 — 전생 인물첩</title>
   <link rel="icon" href="./assets/seal.svg" type="image/svg+xml">
@@ -43,6 +44,8 @@
             <p id="comparison" class="comparison" tabindex="-1"></p>
             <section><h3>전생의 내가 한 선택</h3><p id="sceneDeed" class="scene-prose"></p><p id="habitEcho" class="habit-echo" hidden></p></section>
             <section><h3>그날 이후</h3><p id="sceneEnding" class="scene-prose"></p></section>
+            <section id="keepsakeSection" hidden><h3 id="keepsakeTitle"></h3><p id="keepsakeText" class="scene-prose"></p></section>
+            <details id="otherPath" class="other-path" hidden><summary>다른 선택을 했다면?</summary><p id="otherText" class="scene-prose"></p></details>
           </div>
         </article>
         <section id="fortuneCard" class="fortune-card" aria-labelledby="fortuneHeading" hidden>
@@ -55,6 +58,14 @@
     </section>
 
   </main>
+  <template id="measurementDiagram">
+    <svg viewBox="0 0 200 145" class="measurement-diagram" role="img" aria-label="측정 부위를 표시한 얼굴 도식">
+      <g fill="none" stroke="#756c55" stroke-width="2" stroke-linecap="round">
+        <path d="M64 57 Q61 11 100 11 Q139 11 136 57 Q137 93 120 117 Q108 132 100 133 Q92 132 80 117 Q63 93 64 57Z"/>
+        <path d="M73 54 Q80 50 91 54 M109 54 Q119 50 127 54 M73 63 Q82 58 91 63 M109 63 Q118 58 127 63 M100 66 L96 82 Q101 86 106 82 M88 103 Q100 107 112 103"/>
+      </g>
+    </svg>
+  </template>
   <template id="fortuneReference">
     <details class="clue-reference"><summary>‘복’이라는 풀이의 출처</summary>
       <p>초기 불교 경전 MN 135에는 수행자에게 음식과 옷을 베푼 사람이 인간으로 다시 태어날 때 재물이 풍족해진다는 가르침이 있습니다. 오늘의 직업·재산·집안 형편에서 이 인물이 무엇을 베풀었는지 떠올리는 부분은 전생록의 창작입니다.</p>

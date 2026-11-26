@@ -73,7 +73,8 @@ textarea{resize:vertical}
 .field-help .icon{width:13px;height:13px}
 .file-spec{margin-left:auto;color:#777568;font-size:.74rem}
 .uploaded{align-items:center;display:flex;gap:14px;padding:12px 17px;min-height:104px}
-.uploaded img{width:61px;height:74px;object-fit:cover;border-radius:3px;background:#efeadd}
+#photoHelp{display:grid;grid-template-columns:auto 1fr;align-items:baseline;font-size:.88rem;line-height:1.55;column-gap:7px}
+#photoHelp .file-spec{grid-column:2;margin:0;width:auto}
 .uploaded-copy{min-width:0}
 .uploaded-copy strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .uploaded-copy .bad{color:var(--rust)}
@@ -91,14 +92,15 @@ textarea{resize:vertical}
 .personality-field legend em{font-style:normal;color:var(--rust)}
 #traitHelp{margin:3px 0 10px;color:var(--muted);font-size:.9rem}
 .trait-picker{container-type:inline-size;border:1px solid #d8d1c2;border-radius:7px;background:#fbf9f2}
-.trait-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;padding:4px;background:#eeeade;border-radius:6px 6px 0 0}
+.trait-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;padding:4px;background:#eeeade;border-radius:6px 6px 0 0}
+@container (min-width:610px){.trait-tabs{grid-template-columns:repeat(6,minmax(0,1fr))}}
 .trait-tabs button{min-height:40px;padding:5px 2px;border:1px solid transparent;border-radius:4px;background:transparent;color:#625d4e;font-size:.9rem;font-weight:650}
 .trait-tabs [aria-selected=true]{background:#fffdf7;border-color:#d4ccb9;color:#29473b;box-shadow:0 1px 2px #29251a13}
-.trait-options,#chosenTraits{display:flex;flex-wrap:wrap;gap:7px}
-.trait-options{padding:15px 14px}
+.trait-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,138px),1fr));gap:7px;padding:15px 14px}
+#chosenTraits{display:flex;flex-wrap:wrap;gap:7px}
 .trait-options button,#chosenTraits button{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:20px;font-size:.9rem;line-height:1.25}
-.trait-options button{min-height:37px;padding:6px 11px;border:1px solid #cdc9b9;background:#fffdf8;color:#403f35}
-.trait-options button::before{content:'+';width:12px;text-align:center;color:#777362;font-weight:600}
+.trait-options button{min-height:43px;justify-content:flex-start;border-radius:12px;text-align:left;line-height:1.4;word-break:keep-all;overflow-wrap:anywhere;padding:7px 9px;border:1px solid #cdc9b9;background:#fffdf8;color:#403f35}
+.trait-options button::before{content:'+';flex:0 0 12px;text-align:center;color:#777362;font-weight:600}
 .trait-options button[aria-pressed=true]{color:#fffdf4;border-color:#325446;background:#325446}
 .trait-options button[aria-pressed=true]::before{content:'✓';color:#fffdf4}
 .trait-selection{border-top:1px solid #dfdacd;padding:10px 14px;color:#4a584a}
@@ -156,7 +158,7 @@ textarea{resize:vertical}
 .face-guide{margin-top:9px}
 .face-guide>summary{display:list-item;color:var(--rust);font:650 .86rem/1.6 var(--sans);padding:0;text-decoration:underline;text-underline-offset:3px}
 .face-guide-frame{position:relative;width:min(280px,100%);margin-top:10px;background:#eee7d7;border-radius:5px;overflow:hidden}
-.face-guide-frame canvas{display:block;width:100%;height:auto}
+.measurement-diagram{display:block;width:100%;height:auto}
 .pin{position:absolute;transform:translate(-50%,-50%);width:32px;height:32px;border:2px solid #fff;border-radius:50%;background:#35362abf;color:#fff;font-size:.75rem;font-weight:800;box-shadow:0 1px 6px #0006}
 .pin[aria-pressed=true]{background:var(--rust)}
 .face-note{font-size:.84rem;color:var(--muted);margin-top:6px}
@@ -231,6 +233,27 @@ dialog p{font-size:.94rem;color:#595b51;margin-top:4px}
 .outcome section:last-child{border-color:#924735}
 .outcome .scene-prose{margin-top:5px}
 .habit-echo{display:inline-block;margin-top:9px;background:#eee9dc;border-radius:4px;color:#594d36;padding:5px 10px;font-size:.9rem}
+.other-path{margin-top:22px;padding:14px 16px;border:1px solid #c5c0ad;border-radius:6px;background:#f7f4eb}
+.other-path summary{cursor:pointer;font-weight:700;color:#67412f}
+.other-path p{margin-top:9px}
+.free-records-link{display:block;margin:15px auto;color:#f2e3b9;text-decoration:underline}
+.library-intro{margin-bottom:42px;padding:22px;border:1px solid var(--line);border-radius:6px;background:var(--card)}
+.library-intro p{margin:8px 0;max-width:65ch}
+.library-intro a,.public-back,.public-more a,.public-reading .public-prose a,.service-note a{color:var(--rust);text-decoration:underline;text-underline-offset:4px}
+.public-reading{max-width:760px;width:calc(100% - 36px);margin:35px auto 60px}
+.public-reading h1{font:700 clamp(2rem,5vw,3.4rem)/1.35 var(--serif);color:#263e33;margin:8px 0 12px}
+.public-era{color:#89452e;font-weight:700;font-size:.94rem;margin-top:20px}
+.public-role{color:#5a5648;font-size:1rem;line-height:1.7}
+.public-art{width:100%;height:auto;border-radius:6px;margin:22px 0 6px}
+.public-prose p{font-size:1.07rem;line-height:1.95;margin:16px 0;word-break:keep-all;overflow-wrap:anywhere}
+.public-prose h2{margin-top:25px}
+.public-more{display:flex;flex-wrap:wrap;gap:14px 28px;border-top:1px solid var(--line);padding-top:18px;margin-top:30px}
+.library-list{display:grid;gap:16px;margin-top:24px}
+.library-list article>a{display:grid;grid-template-columns:minmax(130px,34%) 1fr;gap:18px;background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.library-list article img{width:100%;height:100%;object-fit:cover;min-height:130px}
+.library-list article div{padding:13px 15px 15px 0}
+.library-list .public-era{margin:0 0 4px}.library-list h2{margin-bottom:5px}
+@media(max-width:530px){.library-list article>a{display:block}.library-list article img{height:112px;min-height:0}.library-list article div{padding:12px 15px 16px}}
 .fortune-card{display:grid;grid-template-columns:auto 1fr;align-items:start;gap:18px;margin:18px 0;padding:clamp(20px,4vw,34px);border:1px solid #a6aa8b;background:#eaf0e4;border-radius:7px}
 .fortune-card h2{color:#254c3c;font:700 1.45rem/1.4 var(--serif);margin-bottom:8px}
 .fortune-card p{line-height:1.8}

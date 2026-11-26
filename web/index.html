@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f8f5ec">
   <meta name="description" content="얼굴 관상과 생년월일, 성씨와 삶의 단서를 엮어 나만의 전생 이야기와 풀이를 읽어 보세요.">
-  <title>전생록 — 나의 전생 풀이</title>
+  <title>전생록 | AI 전생 테스트와 시대별 전생 이야기</title>
+  <link rel="canonical" href="https://jeonsaeng-rok.deftpiece16.chatgpt.site/">
+  <meta name="google-adsense-account" content="ca-pub-9112551758734193">
+  <meta property="og:title" content="전생록 · 나는 어느 시대에 어떤 선택을 했을까?">
+  <meta property="og:description" content="구석기부터 현대까지, 역사 기록과 나의 성격을 엮은 전생 이야기. 사진 없이 읽는 단편도 만나보세요.">
+  <meta property="og:image" content="https://jeonsaeng-rok.deftpiece16.chatgpt.site/assets/era-joseon.jpg">
+  <meta property="og:url" content="https://jeonsaeng-rok.deftpiece16.chatgpt.site/">
   <link rel="icon" href="./assets/seal.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="./assets/landscape.jpg">
   <link rel="preload" as="font" href="./assets/myeongjo-bold.ttf" type="font/ttf" crossorigin>
@@ -41,7 +47,7 @@
           </div>
           <form class="form-card" id="profileForm" novalidate>
             <div id="firstStep">
-              <p id="availability" class="service-note" role="status" hidden>현재 서버 AI 연결을 준비하고 있습니다. 예시 기록은 바로 읽을 수 있어요.</p>
+              <p id="availability" class="service-note" role="status" hidden>지금은 새 풀이를 쉬고 있습니다. <a href="./records.html">시대별 전생 이야기 읽기</a></p>
               <div class="card-heading"><h3 tabindex="-1" id="firstTitle">얼굴과 뿌리</h3><span class="step-count">1 / 2</span></div>
               <p class="form-intro">얼굴 사진과 태어난 날, 성씨와 본관을 알려주세요.</p>
               <div class="field photo-field">
@@ -53,13 +59,13 @@
                     <span class="plus" aria-hidden="true">＋</span>
                   </label>
                   <div id="uploaded" class="uploaded" hidden>
-                    <img id="photoPreview" alt="입력한 얼굴 미리보기">
-                    <div class="uploaded-copy"><strong id="photoName"></strong><small id="photoStatus" role="status"></small></div>
-                    <button type="button" class="icon-btn remove" id="photoRemove" aria-label="사진 삭제"><i data-icon="close"></i></button>
+                    <span class="face-symbol" aria-hidden="true"><i data-icon="lock"></i></span>
+                    <div class="uploaded-copy"><strong id="photoTitle"></strong><small id="photoStatus" role="status"></small></div>
+                    <button type="button" class="icon-btn remove" id="photoRemove" aria-label="얼굴 분석 초기화"><i data-icon="close"></i></button>
                   </div>
                   <input type="file" accept="image/jpeg,image/png,image/webp" id="portrait" class="file-input" aria-describedby="photoHelp">
                 </div>
-                <div class="field-help" id="photoHelp"><i data-icon="lock"></i>사진은 이 기기에서만 분석합니다.<span class="file-spec">JPG · PNG · WEBP, 최대 12MB</span></div>
+                <div class="field-help" id="photoHelp"><i data-icon="lock"></i><span>얼굴 사진은 저장하거나 서버로 보내지 않아요. 이 기기에서 분석한 뒤 사진 데이터는 바로 지워요.</span><span class="file-spec">JPG · PNG · WEBP, 최대 12MB</span></div>
               </div>
               <div class="field"><label for="birth">생년월일 <em>*</em></label><input id="birth" name="birth" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" placeholder="예) 960517" aria-describedby="birthHint" required><small id="birthHint" class="field-help" aria-live="polite">연·월·일 순서로 숫자 6자리를 입력해주세요.</small></div>
               <div class="field"><label for="clan">본관 <span class="optional">선택</span></label><input type="text" id="clan" name="clan" maxlength="32" placeholder="예) 김해"></div>
@@ -81,7 +87,7 @@
               <div class="field"><label for="job">직업 <em>*</em></label><input type="text" id="job" maxlength="90" required aria-describedby="jobHint" placeholder="직업을 입력해주세요"><small id="jobHint" class="field-help">현재 직업이 없으면 ‘무직’이라고 적어주세요.</small></div>
               <fieldset class="personality-field" aria-describedby="traitHelp">
                 <legend>내 성격 <em>*</em></legend>
-                <p id="traitHelp">나와 닮은 행동을 골라주세요. 직접 적어도 좋아요.</p>
+                <p id="traitHelp">상황별로 평소 내 모습과 닮은 말을 골라주세요. 여러 개를 고르거나 직접 적어도 돼요.</p>
                 <div class="trait-picker">
                   <div class="trait-tabs" id="traitTabs" role="tablist" aria-label="행동 주제"></div>
                   <div id="traitPanels"></div>
@@ -93,7 +99,8 @@
                 <label class="trait-note-label" for="personality">내 말로 적기</label>
                 <textarea id="personality" rows="2" maxlength="260" placeholder="예) 친구들 밥값은 제가 내는데, 곤란한 부탁을 받으면 답장을 미뤄요."></textarea>
               </fieldset>
-              <small class="field-help">이야기를 펼치면 입력한 직업명과 공개한 재산·집안 형편, 성격 등 풀이 단서를 OpenAI에 보냅니다. 사진 원본과 생년월일은 이 기기에 남습니다.</small>
+              <small class="field-help">이야기를 펼치면 얼굴 비율을 설명한 문장과 입력한 직업·성격 등 풀이 단서를 OpenAI에 보냅니다. 사진과 생년월일 여섯 자리는 전송하지 않아요.</small>
+              <small class="field-help">새 AI 집필은 하루 최대 2회입니다. 로그인하지 않은 방문자는 같은 인터넷 연결에서 횟수를 공유해요. 공개 이야기는 횟수 제한 없이 읽을 수 있어요.</small>
               <p id="errTwo" class="error" role="alert" hidden></p>
               <div class="actions"><button type="button" class="secondary" id="backBtn">이전 단계</button><button type="submit" class="primary" id="revealBtn"><i data-icon="book"></i> 내 전생 펼치기</button></div>
             </div>
@@ -108,7 +115,8 @@
         </aside>
       </div>
     </div>
+    <section class="wrap library-intro"><h2>시대별 전생 이야기</h2><p>한탄강 자갈밭에서 돌을 고르던 사람, 한산에서 모시를 짜던 사람, 서울 지하철 첫해의 역무원. 사진 없이 세 사람의 선택과 그 시대의 기록을 읽어보세요.</p><a href="./records.html">전생 이야기 서고 열기</a></section>
   </main>
-  <footer class="footer"><div class="wrap"><a class="foot-brand" href="#home">전생록 <span>前生錄</span></a><span>역사와 전통 관상에서 영감을 얻은 창작 이야기</span></div></footer>
+  <footer class="footer"><div class="wrap"><a class="foot-brand" href="#home">전생록 <span>前生錄</span></a><a href="./privacy.html">개인정보와 광고 안내</a></div></footer>
 </body>
 </html>

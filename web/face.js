@@ -117,37 +117,23 @@ export async function analyzeFace(image) {
   if (browGap <= 0) {
     throw new Error('눈과 눈썹의 위치를 구분하기 어렵습니다. 눈썹이 가려지지 않은 사진을 골라 주세요.');
   }
-  // Positions in the entire uncropped image for an overlay with the same aspect ratio.
-  const normalize = point => ({
-    x: Math.max(0, Math.min(1, point.x / inputWidth)),
-    y: Math.max(0, Math.min(1, point.y / inputHeight)),
-  });
-  const noseMark = normalize(noseTip);
-  const chinMark = normalize(points[8]);
   return {
-    nose: noseRatio < 0.32 ? 'narrow' : noseRatio > 0.41 ? 'full' : 'balanced',
-    jaw: jawRatio < 0.72 ? 'narrow' : jawRatio > 0.82 ? 'wide' : 'balanced',
-    marks: { nose: noseMark, jaw: chinMark },
     observations: [
       {
         name: '코',
         reading: `이 사진에서 콧방울 양끝의 너비는 두 눈 바깥꼬리 사이 거리의 약 ${Math.round(noseRatio * 100)}%입니다.`,
-        mark: noseMark,
       },
       {
         name: '턱선',
         reading: `턱선 중간의 좌우 너비는 양쪽 볼 가장자리 사이 거리의 약 ${Math.round(jawRatio * 100)}%입니다.`,
-        mark: chinMark,
       },
       {
         name: '눈 사이',
         reading: `두 눈의 안쪽 눈머리 사이 간격은 한쪽 눈의 평균 가로 길이와 비교해 약 ${eyeGap.toFixed(1)}배입니다.`,
-        mark: normalize(midpoint(points[39], points[42])),
       },
       {
         name: '눈썹',
         reading: `눈썹 한가운데에서 윗눈꺼풀까지의 간격은 양쪽 평균으로 눈 가로 길이의 약 ${Math.round(browGap * 100)}%입니다.`,
-        mark: normalize(points[24]),
       },
     ],
   };

@@ -8,30 +8,20 @@ let savingCard = false;
 function node(tag,text,className){
   const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(className)el.className=className;return el;
 }
-function makeFaceGuide(face, photo, selectedIndex) {
+function makeFaceGuide(observations, selectedIndex) {
   const details=node('details',undefined,'face-guide');
-  details.append(node('summary','내 사진에서 관상 위치 보기'));
+  details.append(node('summary','부위별 측정값 보기'));
   const box=node('div',undefined,'face-guide-frame');
-  const canvas=node('canvas');
-  canvas.width=560;
-  canvas.height=400;
-  canvas.setAttribute('aria-label','사진에서 측정한 얼굴 부위 네 곳');
-  const width=photo.naturalWidth, height=photo.naturalHeight, points=face.observations;
-  const xs=points.map(o=>o.mark.x*width), ys=points.map(o=>o.mark.y*height);
-  const spread=Math.max(1,Math.max(...ys)-Math.min(...ys));
-  const cropHeight=Math.min(height,width*5/7,spread*1.95), cropWidth=cropHeight*7/5;
-  const left=Math.max(0,Math.min(width-cropWidth,(Math.min(...xs)+Math.max(...xs)-cropWidth)/2));
-  const top=Math.max(0,Math.min(height-cropHeight,(Math.min(...ys)+Math.max(...ys)-cropHeight)/2));
-  canvas.getContext('2d').drawImage(photo,left,top,cropWidth,cropHeight,0,0,560,400);
-  box.append(canvas);
+  box.append($('measurementDiagram').content.cloneNode(true));
+  const positions=[[50,57],[50,90],[50,43],[60,36]];
   const note=node('p',undefined,'face-note'),tabs=node('div',undefined,'face-tabs');
   note.setAttribute('aria-live','polite');
   const buttons=[],markers=[];
-  points.forEach(({name,reading,mark},i)=>{
+  observations.forEach(({name,reading},i)=>{
     const pin=node('span',String(i+1),'pin'), button=node('button',(i+1)+' '+name);
     pin.setAttribute('aria-hidden','true');
-    pin.style.left=((mark.x*width-left)/cropWidth*100)+'%';
-    pin.style.top=((mark.y*height-top)/cropHeight*100)+'%';
+    pin.style.left=positions[i][0]+'%';
+    pin.style.top=positions[i][1]+'%';
     button.type='button';
     button.addEventListener('click',()=>{
       buttons.forEach((b,j)=>{b.setAttribute('aria-pressed',String(j===i));markers[j].hidden=j!==i;});
@@ -88,6 +78,12 @@ function showReading(reading,isExample,session) {
   $('habitEcho').hidden=!reading.habitCue;
   $('habitEcho').textContent=reading.habitCue ? '내 성격에서 온 단서 · “'+reading.habitCue+'”' : '';
   $('sceneEnding').textContent=ending.join('\n\n');
+  $('keepsakeSection').hidden=!(reading.keepsake && reading.keepsakeStory);
+  $('keepsakeTitle').textContent='당신이 남긴 물건 · '+(reading.keepsake || '');
+  $('keepsakeText').textContent=reading.keepsakeStory || '';
+  $('otherPath').hidden=!reading.otherOutcome;
+  $('otherPath').open=false;
+  $('otherText').textContent=reading.otherOutcome || '';
   $('fortuneText').textContent=reading.fortune || reading.clues.find(clue=>clue.label==='전생에 쌓은 복')?.detail || '';
   $('outcome').hidden=true;
   $('fortuneCard').hidden=true;
@@ -110,17 +106,13 @@ function showReading(reading,isExample,session) {
     const div=node('div',undefined,'clue');
     const description=node('dd',clue.detail);
     if (clue.label==='얼굴 관상') description.append($('faceReference').content.cloneNode(true));
+    const measurements=session?.profile?.face?.observations;
+    if (clue.label==='얼굴 관상' && !isExample && measurements?.length===4) {
+      description.append(makeFaceGuide(measurements,reading.faceIndex));
+    }
     div.append(node('dt',clue.label),description);
     return div;
   }));
-  if(!isExample && session?.profile.face?.marks && session.draft.preview){
-    const faceRow=Array.from($('clues').children).find(row=>row.querySelector('dt').textContent==='얼굴 관상');
-    const photo = new Image();
-    photo.src = session.draft.preview;
-    photo.decode().then(() => {
-      if (faceRow?.isConnected) faceRow.querySelector('dd').append(makeFaceGuide(session.profile.face, photo, reading.faceIndex));
-    }).catch(() => {});
-  }
   $('historyText').textContent=reading.history;
   $('sourceLinks').replaceChildren(...reading.sources.filter(s=>/^https:\/\//.test(s.url)).map(s=>{const a=node('a',s.label);a.href=s.url;a.target='_blank';a.rel='noopener noreferrer';return a;}));
   $('resultBack').querySelector('span').textContent=isExample?'풀이로 돌아가기':'입력 수정하기';
