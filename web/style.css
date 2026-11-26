@@ -169,20 +169,23 @@ dialog p{font-size:.94rem;color:#595b51;margin-top:4px}
 .identity-data dt{font-size:.82rem;color:#d6d6b9;margin-bottom:3px}.identity-data dd{margin:0;font:700 1.03rem/1.5 var(--serif);overflow-wrap:anywhere}
 .story-text p,.clue dd{overflow-wrap:anywhere}
 .service-note{padding:10px 13px;margin-bottom:16px;background:#efe7d6;color:#68402f;border-radius:4px;font-size:.93rem}
-.writing-view{display:grid;place-items:center;min-height:calc(100svh - 69px);padding:54px 20px 70px;text-align:center;background:linear-gradient(180deg,#f7f2e7 5%,#f7f2e7ed 44%,#f5ecda70 100%),url('./assets/landscape.jpg') 66% bottom/cover no-repeat}
+.loading-page{background:#1b392f}
+.writing-view{display:grid;place-items:center;min-height:100svh;padding:44px 20px;text-align:center;background:radial-gradient(ellipse at 50% 37%,#51614be8,#1c3a30ee 66%,#142f29f5),url('./assets/landscape.jpg') center bottom/cover no-repeat}
 .writing-content{width:min(100%,560px)}
 .bound-book{position:relative;width:clamp(126px,22vw,165px);aspect-ratio:.73;margin:0 auto 36px;border:2px solid #18382e;border-radius:3px 6px 6px 3px;background:linear-gradient(100deg,#203e36,#365547 16%,#274d40 70%,#1f4336);box-shadow:3px 3px #cfb787,5px 5px #ede0b9,7px 7px #7e7358,10px 17px 28px #26382f32;transform:rotate(-7deg)}
 .book-cord{position:absolute;left:8%;top:7%;bottom:7%;width:8%;border-right:2px solid #d4bc8e;background:repeating-linear-gradient(to bottom,transparent 0 21%,#d4bc8e 21% 23%,transparent 23% 25%)}
 .book-slip{position:absolute;right:13%;top:11%;padding:9px 4px;writing-mode:vertical-rl;background:#e9debd;color:#29392e;border:3px double #9e8b67;font:700 clamp(1.1rem,3vw,1.6rem)/1.15 var(--serif);letter-spacing:.13em}
 .bound-book img{position:absolute;bottom:11%;right:15%;width:19%;transform:rotate(5deg);opacity:.92}
-.writing-view h1{font:700 clamp(1.85rem,4.3vw,2.85rem)/1.35 var(--serif);letter-spacing:-.07em;color:#243f34}
-.writing-view p{margin:12px auto 0;font-size:1rem;color:#575447}
-.ink-track{overflow:hidden;width:92px;height:3px;margin:24px auto;background:#c7c4ad;border-radius:2px}
-.ink-track::after{content:'';display:block;width:48%;height:100%;background:#315043;animation:ink-flow 1.8s ease-in-out infinite alternate}
-#stopWriting{margin:12px auto 0;padding:9px 4px;font-size:.95rem;color:#674a3d;text-decoration:underline;text-underline-offset:4px}
+.writing-view h1{font:700 clamp(1.85rem,4.3vw,2.85rem)/1.35 var(--serif);letter-spacing:-.07em;color:#fbf3df}
+.writing-view h1:focus{outline:none}
+.writing-view p{margin:12px auto 0;font-size:1rem;color:#e3e1cf}
+.ink-track{overflow:hidden;width:92px;height:3px;margin:24px auto;background:#657363;border-radius:2px}
+.ink-track::after{content:'';display:block;width:48%;height:100%;background:#dfc799;animation:ink-flow 1.8s ease-in-out infinite alternate}
+#retryWriting{display:block;margin:20px auto 0;background:#e9d9ad;color:#253e32}
+#stopWriting{margin:12px auto 0;padding:9px 4px;font-size:.95rem;color:#eee7d4;text-decoration:underline;text-underline-offset:4px}
 @keyframes ink-flow{from{transform:translateX(0)}to{transform:translateX(110%)}}
 @media(prefers-reduced-motion:reduce){.ink-track::after{animation:none;transform:translateX(55%)}}
 .face-tabs{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}.face-tabs button{border:1px solid #cbc8b8;border-radius:4px;background:#fffaf0;padding:5px 8px;font-size:.84rem}
 .face-tabs [aria-pressed="true"]{color:white;background:#654433;border-color:#654433}.face-guide-frame .pin{display:grid;place-items:center;width:23px;height:23px;background:#8f392c;pointer-events:none}.face-note{font-size:.92rem}
-@media(max-width:530px){.identity-data{gap:10px}.identity-card h1{max-width:100%;font-size:clamp(2.25rem,9vw,3.15rem)}.identity-card #storyQuote{max-width:100%;font-size:1rem}.identity-card{padding:7px}.identity-top{padding-top:20px}.writing-view{min-height:calc(100svh - 58px)}}
+@media(max-width:530px){.identity-data{gap:10px}.identity-card h1{max-width:100%;font-size:clamp(2.25rem,9vw,3.15rem)}.identity-card #storyQuote{max-width:100%;font-size:1rem}.identity-card{padding:7px}.identity-top{padding-top:20px}}
 

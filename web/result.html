@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f5ec">
+  <meta name="description" content="얼굴 관상과 생년월일, 성씨와 삶의 단서를 엮어 나만의 전생 이야기와 풀이를 읽어 보세요.">
+  <title>전생록 — 전생 인물첩</title>
+  <link rel="icon" href="./assets/seal.svg" type="image/svg+xml">
+  <link rel="preload" as="image" href="./assets/landscape.jpg">
+  <link rel="preload" as="font" href="./assets/myeongjo-bold.ttf" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./result.js"></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap bar">
+      <a class="brand" href="./#home" aria-label="전생록 처음으로"><img src="./assets/seal.svg" alt="" width="36" height="36"><span>전생록</span></a>
+      <nav aria-label="주 메뉴">
+        <a href="./#reading" class="nav-current" id="readingNav">전생 풀이</a>
+        <button type="button" data-example>예시 기록</button>
+        <button type="button" id="guideOpen">이용 안내</button>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <section id="resultView" hidden aria-labelledby="resultRole">
+      <div class="result-wrap">
+        <div class="record-tools"><button type="button" id="resultBack" class="text-button"><i data-icon="return"></i><span>입력으로 돌아가기</span></button><button type="button" id="saveCard" class="text-button"><i data-icon="download"></i>결과 카드 저장</button></div>
+        <article class="identity-card" aria-label="전생 인물첩"><div class="identity-frame">
+          <div class="identity-top"><p id="resultKind"></p><span class="ink-stamp" aria-hidden="true">前生</span></div>
+          <div class="role-block"><p class="role-label">당신의 전생 직업</p><h1 id="resultRole" tabindex="-1"></h1><p id="storyQuote"></p></div>
+          <dl class="identity-data"><div><dt>시대</dt><dd id="resultEra"></dd></div><div><dt>무대</dt><dd id="resultPlace"></dd></div></dl>
+        </div></article>
+        <article class="reading-paper"><h2 id="resultTitle"></h2><div id="storyText" class="story-text"></div></article>
+        <details id="explain" class="explain" open><summary><i data-icon="scroll"></i>왜 이런 전생이 나왔을까?<span class="chevron"></span></summary><dl id="clues"></dl></details>
+        <section class="history"><h2>기록과 창작 사이</h2><p id="historyText"></p><div id="sourceLinks"></div></section>
+        <button type="button" id="again" class="primary wide">새 전생 풀이 시작</button><div id="resultMessage" role="status"></div>
+      </div>
+    </section>
+
+  </main>
+  <footer class="footer"><div class="wrap"><a class="foot-brand" href="./#home">전생록 <span>前生錄</span></a><span>역사와 전통 관상에서 영감을 얻은 창작 이야기</span></div></footer>
+</body>
+</html>

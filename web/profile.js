@@ -12,13 +12,9 @@ export function birthDate(input, now = new Date()) {
 }
 
 export function describeProfile(profile) {
-  const selected = id => {
-    const field = document.getElementById(id);
-    return field.value === 'private' ? '' : field.selectedOptions[0].textContent;
-  };
   return {
-    job:profile.job, personality:profile.personality, season:profile.season, surname:profile.surname, clan:profile.clan,
-    wealth:selected('wealth'), family:selected('family'),
+    workLife:profile.workLife, personality:profile.personality, season:profile.season, surname:profile.surname, clan:profile.clan,
+    wealth:profile.wealthLabel, family:profile.familyLabel,
     face:profile.face.observations.map(o => o.reading)
   };
 }
