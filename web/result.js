@@ -56,7 +56,10 @@ function showReading(reading,isExample,session) {
   $('storyQuote').textContent=reading.summary;
   $('clues').replaceChildren(...reading.clues.map(clue=>{
     const div=node('div',undefined,'clue');
-    div.append(node('dt',clue.label),node('dd',clue.detail));
+    const description=node('dd',clue.detail);
+    const reference = {'전생에 쌓은 복':'fortuneReference','얼굴 관상':'faceReference'}[clue.label];
+    if (reference) description.append($(reference).content.cloneNode(true));
+    div.append(node('dt',clue.label),description);
     return div;
   }));
   if(!isExample && session?.profile.face?.marks && session.draft.preview){

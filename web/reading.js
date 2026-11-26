@@ -3,7 +3,7 @@ import { describeProfile } from './profile.js';
 
 export async function generateReading(profile,signal) {
   const choices=candidateContexts(profile);
-  const candidates=choices.map(({era,place,work,detail})=>({era,place,work,detail}));
+  const candidates=choices.map(({era,place,work,detail,history})=>({era,place,work,detail,history}));
   let response;
   try {
     response=await fetch('./api/reading',{
@@ -23,6 +23,7 @@ export async function generateReading(profile,signal) {
   const reading=data.reading;
   const context=choices[reading.background];
   if(!context)throw new Error('AI가 기록의 시대를 마치지 못했어요. 다시 시도해주세요.');
-  return {...reading,era:context.era,place:context.place,history:context.history,sources:context.sources,engine:'서버 AI'};
+  const clues=[{label:'시대 선택',detail:context.selectionNote},...reading.clues];
+  return {...reading,clues,era:context.era,place:context.place,history:context.history,sources:context.sources,engine:'서버 AI'};
 }
 

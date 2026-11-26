@@ -327,10 +327,6 @@ function tieBreaker(value) {
   return hash >>> 0;
 }
 
-function publicContext({ era, place, work, detail, history, sources }) {
-  return { era, place, work, detail, history, sources: sources.map(source => ({ ...source })) };
-}
-
 export function candidateContexts(profile = {}, limit = 3) {
   // 생년을 알 수 없을 때도 전생의 배경이 현생보다 늦어지는 일을 피한다.
   const year = Number(/^(\d{4})-\d{2}-\d{2}$/.exec(profile.birth)?.[1] ?? 1);
@@ -347,16 +343,31 @@ export function candidateContexts(profile = {}, limit = 3) {
   const represented = new Set();
   const firstChoices = [];
   const otherChoices = [];
-  for (const { entry } of ranked) {
-    const period = entry.endYear < 0 ? '선사' : entry.endYear < 1392 ? '고대·고려' : '조선 이후';
+  for (const item of ranked) {
+    const period = item.entry.endYear < 0 ? '선사' : item.entry.endYear < 1392 ? '고대·고려' : '조선 이후';
     if (represented.has(period)) {
-      otherChoices.push(entry);
+      otherChoices.push(item);
     } else {
-      firstChoices.push(entry);
+      firstChoices.push(item);
       represented.add(period);
     }
   }
-  return [...firstChoices, ...otherChoices].slice(0, Math.max(0, limit)).map(publicContext);
+  const lines = String(profile.personality ?? '').match(/[^.!?。！？\n]+[.!?。！？]?/gu) || [];
+  return [...firstChoices, ...otherChoices].slice(0, Math.max(0, limit)).map(({entry,score}) => {
+    const {era,place,work,detail,history,sources} = entry;
+    const tied = ranked.filter(item => item.score === score).length;
+    const excerpt = lines.map(line => line.trim()).find(line =>
+      line.length <= 130 && entry.actions.some(pattern => pattern.test(normalize(line))));
+    let selectionNote = '';
+    if (score) {
+      selectionNote = '성격란의 답이 이 일터의 행동 표현 세 묶음 중 '+score+'개와 맞았습니다.';
+      if (excerpt) selectionNote += ' 그중 한 대목은 “'+excerpt+'”입니다.';
+    } else {
+      selectionNote = '입력에서 이 일터의 행동 표현과 일치하는 대목을 찾지 못해 행동 점수는 0점입니다.';
+    }
+    if (tied > 1) selectionNote += ' 같은 점수의 배경 '+tied+'곳 중 생년월일·성격 문장·장소 이름으로 순서를 정했습니다.';
+    return {era,place,work,detail,history,selectionNote,sources:sources.map(source => ({...source}))};
+  });
 }
 
 export function selectContext(profile = {}) {

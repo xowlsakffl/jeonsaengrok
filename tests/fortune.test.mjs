@@ -20,7 +20,7 @@ const generated = {
 };
 
 function makeRequest(profile) {
-  const candidates=candidateContexts(profile).map(({era,place,work,detail})=>({era,place,work,detail}));
+  const candidates=candidateContexts(profile).map(({era,place,work,detail,history})=>({era,place,work,detail,history}));
   return new Request('https://site.test/api/reading',{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({...describeProfile(profile),candidates}),
@@ -42,10 +42,22 @@ test('the job and both disclosed bands reach the model together, independently o
   const changed=await run({...base,job:'택배 기사',wealthLabel:'빚이 더 많음',familyLabel:'매우 넉넉했어요'});
   assert.deepEqual(input.presentLife,{job:base.job,wealth:base.wealthLabel,family:base.familyLabel});
   assert.deepEqual(changed.input.setting,input.setting);
+  assert.equal(input.setting.history,candidateContexts(base)[0].history);
   assert.deepEqual(changed.input.presentLife,{job:'택배 기사',wealth:'빚이 더 많음',family:'매우 넉넉했어요'});
   const [fortune]=reading.clues.filter(clue=>clue.label==='전생에 쌓은 복');
   assert.ok(fortune.detail.includes(generated.deed));
   assert.ok(reading.paragraphs[1].startsWith(generated.deed));
+});
+
+test('the setting explanation shows real matches and discloses ties when no behavior matches', ()=>{
+  const personality='저는 고장 난 물건을 직접 고치고 원인을 찾아 다시 시도합니다.';
+  const [matched]=candidateContexts({...base,personality});
+  assert.match(matched.place,/전곡리/);
+  assert.ok(matched.selectionNote.includes(personality));
+  assert.match(matched.selectionNote,/세 묶음 중 3개/);
+  const [unmatched]=candidateContexts({...base,personality:'가나다라마바사'});
+  assert.match(unmatched.selectionNote,/0점/);
+  assert.match(unmatched.selectionNote,/같은 점수의 배경 \d+곳/);
 });
 
 test('private financial fields are omitted and unemployed is a valid occupation', async ()=>{
