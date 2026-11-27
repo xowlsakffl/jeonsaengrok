@@ -23,6 +23,7 @@ const icons = {
   lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8.3 10V7a3.7 3.7 0 1 1 7.4 0v3M12 14v3"/>',
   close:'<path d="m6 6 12 12M18 6 6 18"/>',
   download:'<path d="M12 3v12m-5-5 5 5 5-5M4 16v4h16v-4"/>',
+  share:'<circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="m8.4 10.7 7.2-4.3m-7.2 6.9 7.2 4.3"/>',
   return:'<path d="M4 10h10a5 5 0 0 1 0 10h-3m-2-15-5 5 5 5"/>'
 };
 for (const el of document.querySelectorAll('[data-icon]')) {

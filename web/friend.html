@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex"><meta name="referrer" content="no-referrer">
+  <title>친구의 전생 인물첩 · 전생록</title>
+  <meta property="og:title" content="친구의 전생 인물첩 · 전생록">
+  <meta property="og:description" content="그날, 이 사람은 어떤 선택을 했을까요? 친구가 보낸 전생 카드를 펼쳐 보세요.">
+  <meta property="og:image" content="https://jeonsaengrok.com/assets/era-joseon.jpg">
+  <link rel="icon" href="./assets/seal.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css">
+  <script type="module" src="./friend.js"></script>
+</head>
+<body>
+  <header class="masthead"><div class="wrap bar"><a class="brand" href="./"><img src="./assets/seal.svg" alt="">전생록</a><nav aria-label="주 메뉴"><a href="./records.html">이야기 서고</a></nav></div></header>
+  <main class="public-reading friend-reading">
+    <article id="friendCard" class="reading-paper" hidden>
+      <img class="friend-art" id="friendArt" alt="">
+      <p class="public-era" id="friendEra"></p><h1 id="friendRole"></h1>
+      <h2 id="friendTitle"></h2><p class="scene-prose" id="friendSummary"></p>
+      <section id="friendQuiz" class="dilemma" aria-labelledby="friendQuestion" hidden>
+        <h3 id="friendQuestion">친구의 전생 인물이 고른 쪽은?</h3>
+        <div class="scene-choices" id="friendChoices"></div>
+        <p id="friendAnswer" role="status"></p>
+      </section>
+    </article>
+    <div id="missingCard" hidden><h1>공유 카드를 열 수 없어요</h1><p>받은 링크가 끝까지 복사됐는지 확인해주세요.</p></div>
+    <noscript>친구의 카드를 보려면 브라우저에서 자바스크립트를 켜주세요.</noscript>
+    <a class="friend-start" href="./#reading">나도 전생 테스트 하기</a>
+  </main>
+</body>
+</html>

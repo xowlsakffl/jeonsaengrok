@@ -1,9 +1,12 @@
 import './site.js';
 import { readSession, clearSession, writeSession } from './reading-session.js';
 import { example } from './sample.js';
+import { fullRecordHtml, hasChoices, quizCard, quizLink, storyText } from './result-export.js';
 const $ = id => document.getElementById(id);
 let activeReading = null;
 let activeExample = false;
+let activePick = null;
+let faceObservations = [];
 let savingCard = false;
 function node(tag,text,className){
   const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(className)el.className=className;return el;
@@ -45,6 +48,7 @@ function eraImage(period) {
 
 function revealScene(pick,fromButton=false) {
   const reading=activeReading;
+  activePick=pick;
   const guessed = pick === 'choiceMade' || pick === 'choiceOther';
   $('comparison').textContent = guessed
     ? (pick === 'choiceMade' ? '전생의 당신도 같은 선택을 했습니다.' : '전생의 당신은 다른 쪽을 택했습니다.')
@@ -68,6 +72,9 @@ $('fortuneSource').append($('fortuneReference').content.cloneNode(true));
 function showReading(reading,isExample,session) {
   activeReading = reading;
   activeExample = isExample;
+  activePick=null;
+  faceObservations=isExample ? [] : session?.profile?.face?.observations || [];
+  if($('shareDialog').open)$('shareDialog').close();
   $('resultView').hidden = false;
   document.title=reading.role+' · 전생록';
   $('resultKind').textContent=isExample?'전생 인물첩 · 예시':'전생 인물첩 · '+reading.engine+' 집필';
@@ -110,7 +117,7 @@ function showReading(reading,isExample,session) {
     const div=node('div',undefined,'clue');
     const description=node('dd',clue.detail);
     if (clue.label==='얼굴 관상') description.append($('faceReference').content.cloneNode(true));
-    const measurements=session?.profile?.face?.observations;
+    const measurements=faceObservations;
     if (clue.label==='얼굴 관상' && !isExample && measurements?.length===4) {
       description.append(makeFaceGuide(measurements,reading.faceIndex));
     }
@@ -149,6 +156,12 @@ function cardText(ctx,message,x,top,width,height,startSize,color) {
   }
   ctx.restore();
 }
+function downloadFile(blob,filename){
+  const url=URL.createObjectURL(blob),a=node('a');
+  a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+}
+
 $('saveCard').addEventListener('click',async()=>{
   if(!activeReading||savingCard)return;
   savingCard=true;
@@ -179,10 +192,67 @@ $('saveCard').addEventListener('click',async()=>{
       cardText(ctx,value,183,yy-32,800,68,36,'#f9f2df');
     });
     const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(),'image/png'));
-    const url=URL.createObjectURL(blob),a=node('a');a.href=url;a.download='전생록-결과카드.png';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+    downloadFile(blob,'전생록-결과카드.png');
     $('resultMessage').textContent='결과 카드를 이미지로 저장했습니다.';
   }catch{$('resultMessage').textContent='이미지를 저장하지 못했습니다. 다시 시도해주세요.';}
   finally{savingCard=false;}
+});
+
+$('saveRecord').addEventListener('click',()=>{
+  if(!activeReading)return;
+  try{
+    const references=['faceReference','fortuneReference'].map(id=>{
+      const template=$(id).content;
+      return {heading:template.querySelector('summary').textContent,
+        body:[...template.querySelectorAll('p')].map(p=>p.textContent).join('\n\n'),
+        sources:[...template.querySelectorAll('a')].map(a=>({label:a.textContent,url:a.href}))};
+    });
+    const html=fullRecordHtml(activeReading,{pick:activePick,observations:faceObservations,references,isExample:activeExample});
+    const title=activeReading.title.replace(/[<>:"/\\|?*\u0000-\u001f]/g,' ').trim().slice(0,72);
+    downloadFile(new Blob([html],{type:'text/html;charset=utf-8'}),'전생록-'+(title||'전체 기록')+'.html');
+    $('resultMessage').textContent='전체 기록 파일은 인터넷 없이 열 수 있어요. 파일을 열어 인쇄하거나 PDF로 저장할 수 있습니다.';
+  }catch{$('resultMessage').textContent='전체 기록을 저장하지 못했어요. 다시 시도해주세요.';}
+});
+
+let shareData=null;
+function updateSharePreview(){
+  const quiz=$('shareDialog').querySelector('input:checked').value==='quiz';
+  const card=quizCard(activeReading), preview=$('sharePreview');
+  const quizTitle=hasChoices(card)?'전생의 나는 어떤 선택을 했을까?':'나의 전생 인물 카드';
+  const invite=[card.role,quizTitle].filter(Boolean).join(' · ');
+  $('quizModeLabel').textContent=hasChoices(card)?'선택 퀴즈 링크':'인물 카드 링크';
+  $('copyShare').textContent=quiz?'링크 복사':'본문 복사';
+  $('shareStatus').textContent='';$('manualCopy').hidden=true;
+  if(quiz){
+    shareData={title:card.title+' · 전생록',text:invite,url:quizLink(card)};
+    preview.replaceChildren(node('p',invite,'share-byline'),node('h3',card.title),node('p',[card.era,card.place].filter(Boolean).join(' · ')),node('p',card.summary));
+    if(hasChoices(card))preview.append(node('p',[card.choiceOther,card.choiceMade].map(s=>'· '+s).join('\n'),'share-options'));
+  }else{
+    shareData={title:card.title+' · 전생록',text:storyText(activeReading)};
+    preview.replaceChildren(node('p',shareData.text,'share-prose'));
+  }
+  $('nativeShare').hidden=typeof navigator.share!=='function' || (typeof navigator.canShare==='function' && !navigator.canShare(shareData));
+}
+$('shareRecord').addEventListener('click',()=>{
+  if(!activeReading)return;
+  $('shareDialog').querySelector('input[value="quiz"]').checked=true;
+  updateSharePreview();$('shareDialog').showModal();
+});
+$('shareDialog').querySelector('fieldset').addEventListener('change',updateSharePreview);
+$('nativeShare').addEventListener('click',async()=>{
+  try{await navigator.share(shareData);}
+  catch(error){if(error.name!=='AbortError')$('shareStatus').textContent='공유 창을 열지 못했어요. 복사해서 보낼 수 있어요.';}
+});
+$('copyShare').addEventListener('click',async()=>{
+  const data=shareData, value=data.url || data.text;
+  try{
+    await navigator.clipboard.writeText(value);
+    if(shareData===data)$('shareStatus').textContent=data.url?'공유 링크를 복사했어요.':'이야기 본문을 복사했어요.';
+  }catch{
+    if(shareData!==data)return;
+    const field=$('manualCopy');field.value=value;field.hidden=false;field.focus();field.select();
+    $('shareStatus').textContent='선택한 내용을 직접 복사해주세요.';
+  }
 });
 
 function openRecord() {
