@@ -142,7 +142,9 @@ async function tallPng(canvas, layout) {
 }
 
 export async function recordImage(reading, options) {
-  await Promise.all([document.fonts.load(styles.title[0]), document.fonts.load(styles.body[0])]);
+  const headings = recordSections(reading,options).map(section => section.heading);
+  const serifText = ['전생록 前生錄',reading.title,reading.summary,...headings].join(' ');
+  await Promise.all([document.fonts.load(styles.title[0],serifText), document.fonts.load(styles.body[0])]);
   const canvas = document.createElement('canvas');
   canvas.width = width;
   const ctx = canvas.getContext('2d', {willReadFrequently: true});

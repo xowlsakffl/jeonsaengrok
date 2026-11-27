@@ -80,6 +80,7 @@ $('fortuneSource').append($('fortuneReference').content.cloneNode(true));
 function showReading(reading,isExample,session,view = 'own') {
   const shared = view === 'shared';
   sharedView = shared;
+  $('sharedStart').hidden = !shared;
   savedView = view === 'saved';
   const expanded = shared || savedView;
   $('unavailableRecord').hidden=true;
@@ -201,7 +202,8 @@ $('saveCard').addEventListener('click',async()=>{
   savingCard=true;
   const reading=activeReading;
   try{
-    await document.fonts.ready;
+    const cardWords = [reading.role,reading.title,reading.summary,reading.era,reading.place,'전생록 錄'].join(' ');
+    await Promise.all([document.fonts.load('700 36px LocalMyeongjo',cardWords),document.fonts.load('700 30px LocalSuit','당신의 전생 직업 시대 무대')]);
     const canvas=document.createElement('canvas');canvas.width=1080;canvas.height=1280;
     const ctx=canvas.getContext('2d');
     ctx.fillStyle='#29483f';ctx.fillRect(0,0,1080,1280);

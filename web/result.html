@@ -9,7 +9,7 @@
   <meta name="description" content="얼굴 관상과 생년월일, 성씨와 삶의 단서를 엮어 나만의 전생 이야기와 풀이를 읽어 보세요.">
   <title>전생록 — 전생 인물첩</title>
   <link rel="icon" href="./assets/seal.svg" type="image/svg+xml">
-  <link rel="preload" as="font" href="./assets/myeongjo-bold.ttf" type="font/ttf" crossorigin>
+  <link rel="preload" as="font" href="./assets/myeongjo-entry.woff2" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="./style.css">
   <script type="module" src="./result.js"></script>
 </head>
@@ -35,6 +35,7 @@
           <div class="role-block"><p class="role-label">당신의 전생 직업</p><h1 id="resultRole" tabindex="-1"></h1><p id="storyQuote"></p></div>
           <dl class="identity-data"><div><dt>시대</dt><dd id="resultEra"></dd></div><div><dt>무대</dt><dd id="resultPlace"></dd></div></dl>
         </div></article>
+        <a id="sharedStart" class="shared-start" href="./#reading" hidden>나도 전생 테스트 하기</a>
         <div class="record-actions" role="group" aria-label="결과 저장과 공유">
           <button type="button" id="saveCard"><i data-icon="download"></i>카드 이미지 저장</button>
           <button type="button" id="saveRecord"><i data-icon="book"></i>전체 기록 이미지 저장</button>
