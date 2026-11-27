@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f8f5ec">
   <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
   <meta name="description" content="얼굴 관상과 생년월일, 성씨와 삶의 단서를 엮어 나만의 전생 이야기와 풀이를 읽어 보세요.">
   <title>전생록 — 전생 인물첩</title>
   <link rel="icon" href="./assets/seal.svg" type="image/svg+xml">
@@ -35,10 +36,12 @@
         </div></article>
         <div class="record-actions" role="group" aria-label="결과 저장과 공유">
           <button type="button" id="saveCard"><i data-icon="download"></i>카드 이미지 저장</button>
-          <button type="button" id="saveRecord"><i data-icon="book"></i>전체 기록 저장</button>
+          <button type="button" id="saveRecord"><i data-icon="book"></i>전체 기록 이미지 저장</button>
           <button type="button" id="shareRecord"><i data-icon="share"></i>공유하기</button>
         </div>
+        <p class="record-share-note">공유 링크를 받은 사람은 결말과 성격·재산 등 개인 풀이 근거까지 볼 수 있어요.</p>
         <p id="resultMessage" role="status"></p>
+        <input id="manualCopy" type="text" readonly hidden aria-label="전체 기록 공유 링크">
         <article class="reading-paper">
           <h2 id="resultTitle"></h2><div id="sceneOpening" class="scene-prose"></div>
           <section id="dilemma" class="dilemma" aria-labelledby="dilemmaTitle" hidden>
@@ -47,6 +50,7 @@
             <button type="button" id="skipChoice" class="skip-choice">선택하지 않고 결말 보기</button>
           </section>
           <div id="outcome" class="outcome" hidden>
+            <dl id="sharedChoices" class="shared-choices" hidden></dl>
             <p id="comparison" class="comparison" tabindex="-1"></p>
             <section><h3>전생의 내가 한 선택</h3><div id="sceneDeed" class="scene-prose"></div><p id="habitEcho" class="habit-echo" hidden></p></section>
             <section><h3>그날 이후</h3><div id="sceneEnding" class="scene-prose"></div></section>
@@ -64,19 +68,8 @@
       </div>
     </section>
 
+    <section id="unavailableRecord" class="public-reading" hidden><h1>공유 기록을 열 수 없어요</h1><p>받은 링크가 끝까지 복사됐는지 확인해주세요.</p><a class="friend-start" href="./#reading">내 전생 풀이하기</a></section>
   </main>
-  <dialog id="shareDialog" aria-labelledby="shareHeading">
-    <div class="dialog-top"><h2 id="shareHeading">전생 기록 공유</h2><form method="dialog"><button class="icon-btn" aria-label="닫기"><i data-icon="close"></i></button></form></div>
-    <fieldset class="share-modes"><legend>공유할 내용</legend>
-      <label><input type="radio" name="shareMode" value="quiz" checked><span id="quizModeLabel">선택 퀴즈 링크</span></label>
-      <label><input type="radio" name="shareMode" value="story"><span>이야기 본문</span></label>
-    </fieldset>
-    <div id="sharePreview" class="share-preview" tabindex="0" role="region" aria-label="공유 미리보기"></div>
-    <p class="share-note">친구에게 보낼 내용을 미리 확인하세요. 개인 풀이 근거는 전체 기록 파일에만 담깁니다.</p>
-    <div class="share-buttons"><button type="button" class="primary" id="nativeShare" hidden>공유하기</button><button type="button" class="copy-action" id="copyShare">링크 복사</button></div>
-    <textarea id="manualCopy" readonly hidden aria-label="직접 복사할 공유 내용"></textarea>
-    <p id="shareStatus" role="status"></p>
-  </dialog>
   <template id="measurementDiagram">
     <svg viewBox="0 0 200 145" class="measurement-diagram" role="img" aria-label="측정 부위를 표시한 얼굴 도식">
       <g fill="none" stroke="#756c55" stroke-width="2" stroke-linecap="round">
