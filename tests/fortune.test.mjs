@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { api } from '../worker/api.mjs';
 import { localD1 } from './local-d1.mjs';
 import { describeProfile } from '../web/profile.js';
+import { generateReading } from '../web/reading.js';
 import { drawContext } from '../web/history.js';
 import { describePersonality, traitGroups } from '../web/traits.js';
 
@@ -66,6 +67,91 @@ test('the job and both disclosed bands reach the model together, independently o
   assert.equal(reading.choiceOther,generated.choiceOther);
   assert.equal(reading.fortune,generated.fortune);
   assert.equal(reading.habitCue,generated.habitCue);
+});
+
+test('the full card survives truncation in optional annotations, while incomplete scenes and refusals do not',async t=>{
+  const {habitCue,focusBirth,...required}=generated;
+  const complete=JSON.stringify(required).slice(0,-1);
+  const cases=[
+    [complete+',"habitCue":"도중에', 'max_output_tokens',200],
+    [complete+',"habitCue":'+JSON.stringify(habitCue)+',"focusBirth":"계절', 'max_output_tokens',200],
+    ['{"title":"끝난 제목","opening":"미완성 본문', 'max_output_tokens',502],
+    [complete+',"habitCue":"도중에','content_filter',422],
+  ];
+  for(const [text,reason,status] of cases){
+    const db=localD1();t.after(()=>db.close());
+    const response=await api(makeRequest(base),{DB:db,OPENAI_API_KEY:'test'},async()=>Response.json({
+      status:'incomplete',incomplete_details:{reason},output:[{content:[{type:'output_text',text}]}],
+    }));
+    assert.equal(response.status,status);
+    if(status===200){
+      const {reading}=await response.json();
+      assert.equal(reading.otherOutcome,generated.otherOutcome);
+      assert.ok(reading.paragraphs[2].endsWith(generated.later));
+    }
+  }
+});
+
+test('only transient provider errors invite an automatic retry, including short Retry-After hints',async t=>{
+  const cases=[
+    [429,'rate_limit_exceeded','2',429,'provider_rate_limit',2000],
+    [429,'rate_limit_exceeded','60',429,'provider_rate_limit',null],
+    [429,'insufficient_quota',null,429,'provider_quota',null],
+    [403,'permission_denied',null,502,'provider_http_403',null],
+    [503,'unavailable',null,502,'provider_http_503',1200],
+  ];
+  for(const [upstream,code,after,status,reason,delay] of cases){
+    const db=localD1();t.after(()=>db.close());
+    const response=await api(makeRequest(base),{DB:db,OPENAI_API_KEY:'test'},async()=>Response.json(
+      {error:{code}},{status:upstream,headers:after?{'retry-after':after}:{}}
+    ));
+    assert.equal(response.status,status);
+    const body=await response.json();
+    assert.equal(body.reason,reason);
+    assert.equal(body.autoRetryAfterMs,delay);
+  }
+});
+
+test('the loading flow recovers with the same input while each upstream attempt consumes one site slot',async t=>{
+  const db=localD1();t.after(()=>db.close());
+  const ids=[],inputs=[];
+  t.mock.method(globalThis,'fetch',async(_url,options)=>{
+    ids.push(options.headers['X-Reading-Id']);
+    return api(new Request('https://site.test/api/reading',options),{DB:db,OPENAI_API_KEY:'test'},async(_provider,opts)=>{
+      inputs.push(JSON.parse(opts.body).input);
+      return inputs.length===1 ? Response.json({error:{}},{status:503,headers:{'retry-after':'0'}})
+        : Response.json({output:[{content:[{type:'output_text',text:JSON.stringify(generated)}]}]});
+    });
+  });
+  const reading=await generateReading(base,drawContext(base.birth,()=>0.25),new AbortController().signal,crypto.randomUUID());
+  assert.equal(reading.title,generated.title);
+  assert.equal(inputs.length,2);
+  assert.equal(inputs[0],inputs[1]);
+  assert.notEqual(ids[0],ids[1]);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM reading_attempts').first()).n,2);
+});
+
+test('lost browser responses reuse the same ID and recovery stops after a single replay',async t=>{
+  const ids=[];
+  t.mock.method(globalThis,'fetch',async(_url,options)=>{
+    ids.push(options.headers['X-Reading-Id']);
+    throw new TypeError('network interrupted');
+  });
+  const id=crypto.randomUUID();
+  await assert.rejects(generateReading(base,drawContext(base.birth),new AbortController().signal,id));
+  assert.deepEqual(ids,[id,id]);
+});
+
+test('leaving the loading page cancels a pending recovery',async t=>{
+  const controller=new AbortController();let calls=0;
+  t.mock.method(globalThis,'fetch',async()=>{
+    calls++;
+    return Response.json({error:'다시 연결',autoRetryAfterMs:1000},{status:503});
+  });
+  await assert.rejects(generateReading(base,drawContext(base.birth),controller.signal,crypto.randomUUID(),{
+    onRecovery:()=>controller.abort(),
+  }),{name:'AbortError'});
+  assert.equal(calls,1);
 });
 
 test('interrupted outputs, invalid JSON, and timeouts are reported separately',async t=>{

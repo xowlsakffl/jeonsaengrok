@@ -33,7 +33,14 @@ async function start(session) {
     track.hidden = false;
     retry.hidden = true;
     title.focus({preventScroll:true});
-    const reading = await generateReading(session.profile, context, controller.signal,session.requestId);
+    const reading = await generateReading(session.profile, context, controller.signal,session.requestId,{
+      allowRecovery:!session.autoRetried,
+      onRecovery(requestId){
+        status.textContent='응답이 중간에 멈춰 같은 입력으로 한 번 더 연결하고 있어요.';
+        session={...session,requestId,autoRetried:true};
+        writeSession({...session,stage:'running'});
+      },
+    });
     if (controller.signal.aborted) return;
     writeSession({...session, stage: 'done', reading});
     location.replace(resultUrl);
