@@ -87,6 +87,13 @@ test('the fortune uses the deed from the main scene even when the other ending w
   assert.equal(changed.reading.fortune,reading.fortune);
 });
 
+test('a deed echoed by the model appears just once before the present-day scene',async ()=>{
+  for(const opening of [generated.deed, '“'+generated.deed+'”', '"'+generated.deed+'"']){
+    const {reading}=await run(base,{...generated,presentFortune:opening+' '+generated.presentFortune});
+    assert.equal(reading.fortune,'“'+generated.deed+'” '+generated.presentFortune);
+  }
+});
+
 test('the full card survives truncation in optional annotations, while incomplete scenes and refusals do not',async t=>{
   const {habitCue,focusBirth,...required}=generated;
   const complete=JSON.stringify(required).slice(0,-1);

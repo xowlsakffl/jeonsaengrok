@@ -85,7 +85,16 @@ function resultData(t,p) {
     {label:'얼굴 관상',detail:p.face[t.faceIndex]+' '+t.focusFace.trim()},
     {label:'성격',detail:t.focusHabit.trim()},
   ];
-  const fortune = '“'+t.deed.trim()+'” '+t.presentFortune.trim();
+  const deed = t.deed.trim();
+  let present = t.presentFortune.trim();
+  for (const opening of [deed, '“'+deed+'”', '"'+deed+'"']) {
+    if (present.startsWith(opening)) {
+      present = present.slice(opening.length).trimStart();
+      break;
+    }
+  }
+  if (!/[가-힣]/.test(present)) return null;
+  const fortune = '“'+deed+'” '+present;
   clues.push({label:'전생에 쌓은 복',detail:fortune});
   const familyName=p.clan ? '성은 '+p.surname+'씨, 본관은 '+p.clan+'입니다. 본관은 성의 연고를 전하는 단서입니다.' : '성은 '+p.surname+'씨입니다. 본관은 따로 적지 않았습니다.';
   const birthNote=typeof t.focusBirth==='string' ? t.focusBirth.trim() : '';
