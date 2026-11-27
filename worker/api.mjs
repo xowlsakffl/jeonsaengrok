@@ -16,13 +16,15 @@ setting은 독자가 태어나기 이전으로 이미 정해진 시대와 현장
 opening에는 주인공이 평소 하던 일에 이상이 생기는 순간을, crossroads에는 그 이상을 두고 상대가 주인공과 다르게 원하는 것이 무엇인지 쓴다. 각각 100~155자의 한 문단이다. 독자가 두 선택을 모두 상상할 수 있는 찰나에 멈춘다.
 deed는 habitCue가 행동으로 드러나는 선택 한 문장이다. middle은 그 즉시 상대가 보인 뜻밖의 반응과 눈앞에서 바뀐 일(100~160자), consequence는 그 여파로 누군가 한 번 더 움직이는 두 번째 장면(130~190자)이다. 두 사람 사이의 사정이 드러날 때는 설명보다 짧은 말이나 행동을 쓴다. 긴박함이 어울리지 않는 일터라면 엇갈린 셈, 실없는 농담, 민망한 침묵도 사건이 될 수 있다.
 ending은 얼마 뒤 누가 무엇을 되찾거나 떠안았는지 보여주는 장면(110~170자)이다. later는 일상이 다시 돌아온 날의 짧은 장면(100~160자)으로 끝낸다. 처음과 달라진 관계를 독자가 알아차릴 만한 행동을 남긴다. 선행을 했어도 실수의 대가는 남을 수 있다. 마지막에 교훈을 덧붙이지 않는다.
-presentLife에는 독자가 밝힌 현생 직업명(job), 본인 순자산 구간(wealth), 자랄 때의 집안 형편(family)만 들어온다. 세 단서를 따로 채점하거나 정해진 복의 등급표에 대입하지 말고, 함께 보고 이 사람에게 어울리는 선행과 되돌아온 복 하나를 상상한다. 자란 환경에서 받은 복, 지금 먹고사는 일, 본인 살림의 크기와 빚은 서로 다를 수 있다. 직업명은 실제로 풀이에 반영하되, 직업만으로 소득·대기업 근무·고용 안정·일 만족도를 단정하지 않는다. 상속이나 자수성가도 지어내지 않는다. 재산이 적거나 빚이 있다는 사실을 전생의 죄에 대한 벌로 돌리지 않는다.
-fortune은 deed 장면을 근거로 그때 남에게 남긴 몫이 현생에서 어떤 모습의 복이 되었는지 감각적인 두세 문장으로 풀어라. 입력된 직업명은 fortune에서 자연스럽게 명시하고, 재산과 자란 집도 주어졌다면 둘의 관계가 읽히게 한다. 금액·구간을 복사하거나 입력을 나열하지 말고, 막연한 '좋은 기회' 대신 사람·살림·쉴 틈처럼 구체적으로 말한다. 풀이의 마지막 문장까지 누가 베푼 무엇이 어떤 복으로 남았는지를 쓴다. 판단의 한계, 입력 절차, 점수나 재산 등급표에 대한 설명은 독자에게 쓰지 않는다. 재산이나 집안 형편을 비공개로 선택한 항목은 추정하지 않는다. ‘무직’은 현재 상태로 읽고 ‘현재 직업이 무직인 당신’처럼 직함으로 호칭하지 않는다. 무직인 이유나 소득, 전생의 잘못을 짐작하지 않는다. 현대 직업과 형편은 풀이에만 쓰고 옛 장면에 끌어들이지 않는다.
+presentLife에는 독자가 밝힌 현생 직업명(job), 본인 순자산 구간(wealth), 자랄 때의 집안 형편(family)만 들어온다. 세 단서를 함께 보고 본편의 선택으로 실제 남긴 것에 대응하는 지금의 복 한 가지를 찾는다. 직업명만으로 고용 안정이나 소득을 단정하지 않는다. 상속이나 자수성가도 지어내지 않는다. 재산이 적거나 빚이 있다는 사실을 전생의 죄에 대한 벌로 돌리지 않는다.
+presentFortune 바로 앞에 서버가 deed 원문을 그대로 붙인다. 이어질 두 문장은 현생 장면만 써라. deed에서 누가 무엇을 했고 consequence와 ending에서 누가 그 이득과 대가를 감당했는지 읽고, 그 관계가 오늘날 어떤 도움이나 기회로 돌아오는지 그린다. 누군가의 부탁을 거절하고 자루를 꿰맸다면, 현생에서 빈틈을 알아봐 주는 동료나 수습할 시간 같은 복으로 풀 수 있다. 하지 않은 양보를 선행으로 만들거나 다른 사람이 한 일을 주인공의 공으로 돌리지 않는다. choiceOther와 otherOutcome의 행동은 일어나지 않았다. 전생의 사건을 여기서 다시 서술하지 않는다.
+입력된 직업명은 presentFortune에 자연스럽게 쓰고, 재산과 자란 집도 주어졌다면 지금의 살림에 녹인다. 비공개 항목은 추정하지 않는다. 금액·등급이나 입력 절차를 나열하지 않는다. ‘무직’은 현재 상태로 읽고 직함으로 호칭하지 않는다. 현대 직업과 형편은 풀이에만 쓰고 옛 장면에 끌어들이지 않는다.
 title은 아이러니나 구체적인 물건이 들어간 짧은 제목, role은 간결한 옛 직업, summary는 결말을 다 밝히지 않는 한 문장이다. focusHabit은 자술한 버릇과 본문 속 행동을 연결한다. focusBirth는 계절과 장면이 맞닿을 때만 쓴다. 성씨와 본관에서 유명인·가계·민족성·원한을 추정하지 않는다.
 faceIndex는 실제 관찰값의 코(0), 턱선(1), 눈 사이(2), 눈썹과 눈 사이(3) 중 한 곳이다. 코를 고르면 『마의상법』 상권에서 코를 재물과 연결한 풀이를 물건이나 몫이 오간 장면에 활용할 수 있다. 다른 부위는 장면에서 고개를 들거나 어느 쪽으로 눈길을 주었는지처럼 구체적인 행동에만 연결한다. 눈 사이 간격을 미간의 명궁으로 부르지 않는다. 새로운 관상 용어나 비율별 운명 등급을 만들지 않는다. 측정문은 화면에 붙으니 되풀이하지 않는다. 얼굴에서 현실의 성품·선악·능력·경제상태를 단정하거나 칭찬하지 않는다.`;
 const textField = {type:'string'};
 const epilogueInstructions = `keepsake는 이 인물이 만졌던 물건의 짧은 이름이다. keepsakeStory는 한 문단(150~230자)으로, 닳거나 고쳐 쓴 자국을 알아보는 사람과 그가 훗날 이 물건을 어디에 썼는지를 그린다. 본편의 마지막 장면을 재연하지 않는다. otherOutcome은 choiceOther를 정말로 실행한 짧은 별개의 결말(170~250자)이다. 첫 행동, 그로 인해 달라진 상대의 대응, 이 길에서만 생기는 이득이나 손실을 차례로 보여준다. 가정형을 매 문장 되풀이하거나 본편과 비교해 어느 쪽이 낫다고 평하지 않는다.`;
-const textKeys = ['title','role','summary','opening','crossroads','choiceMade','choiceOther','deed','middle','consequence','ending','later','keepsake','keepsakeStory','otherOutcome','fortune','focusFace','focusHabit'];
+// Finish the lived branch and its present-day interpretation before imagining the other branch.
+const textKeys = ['title','role','summary','opening','crossroads','choiceMade','deed','middle','consequence','ending','later','presentFortune','choiceOther','otherOutcome','keepsake','keepsakeStory','focusFace','focusHabit'];
 const properties = Object.fromEntries(textKeys.map(key => [key,textField]));
 properties.faceIndex = {type:'integer',enum:[0,1,2,3]};
 // These two annotations have local fallbacks. Keep them after the complete story.
@@ -69,7 +71,7 @@ function authorInput({job,wealth,family,candidates,...clues}) {
 
 function resultData(t,p) {
   if(!t || !Number.isInteger(t.faceIndex) || t.faceIndex<0 || t.faceIndex>=p.face.length)return null;
-  const limits = {title:80,role:64,summary:200,opening:750,crossroads:750,choiceMade:80,choiceOther:80,deed:320,middle:750,consequence:750,ending:750,later:750,keepsake:100,keepsakeStory:750,otherOutcome:750,focusFace:600,focusHabit:600,fortune:800};
+  const limits = {title:80,role:64,summary:200,opening:750,crossroads:750,choiceMade:80,choiceOther:80,deed:320,middle:750,consequence:750,ending:750,later:750,keepsake:100,keepsakeStory:750,otherOutcome:750,focusFace:600,focusHabit:600,presentFortune:800};
   for (const [key,max] of Object.entries(limits)) {
     if (typeof t[key]!=='string' || !/[가-힣]/.test(t[key]) || t[key].length>max) return null;
   }
@@ -82,14 +84,15 @@ function resultData(t,p) {
     {label:'얼굴 관상',detail:p.face[t.faceIndex]+' '+t.focusFace.trim()},
     {label:'성격',detail:t.focusHabit.trim()},
   ];
-  clues.push({label:'전생에 쌓은 복',detail:'“'+t.deed.trim()+'” '+t.fortune.trim()});
+  const fortune = '“'+t.deed.trim()+'” '+t.presentFortune.trim();
+  clues.push({label:'전생에 쌓은 복',detail:fortune});
   const familyName=p.clan ? '성은 '+p.surname+'씨, 본관은 '+p.clan+'입니다. 본관은 성의 연고를 전하는 단서입니다.' : '성은 '+p.surname+'씨입니다. 본관은 따로 적지 않았습니다.';
   const birthNote=typeof t.focusBirth==='string' ? t.focusBirth.trim() : '';
   clues.push({label:'생년월일',detail:birthNote||('태어난 때는 '+p.season+'입니다.')},{label:'성씨·본관',detail:familyName});
   const cue = typeof t.habitCue==='string' ? t.habitCue.trim() : '';
   const habitCue = cue && cue.length<=130 && p.personality.includes(cue) ? cue : '';
   return {background:0,faceIndex:t.faceIndex,title:t.title,role:t.role,summary:t.summary,paragraphs,clues,
-    choiceMade:t.choiceMade.trim(),choiceOther:t.choiceOther.trim(),habitCue,fortune:t.fortune.trim(),
+    choiceMade:t.choiceMade.trim(),choiceOther:t.choiceOther.trim(),habitCue,fortune,
     keepsake:t.keepsake?.trim(),keepsakeStory:t.keepsakeStory?.trim(),otherOutcome:t.otherOutcome?.trim()};
 }
 

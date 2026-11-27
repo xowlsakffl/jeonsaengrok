@@ -22,7 +22,7 @@ const generated = {
   crossroads:'뱃사공이 빈자리 하나를 가리켰습니다.', consequence:'배가 떠난 뒤 당신의 짐은 강가에 남았습니다.',
   later:'이제는 두 사람이 번갈아 먼저 배에 올랐습니다.', keepsake:'닳은 짐끈',
   keepsakeStory:'짐끈을 건네받은 동무가 자기 짐에 둘렀습니다.', otherOutcome:'먼저 탔다면 동무는 강가에서 하룻밤을 더 보냈을 겁니다.',
-  fortune:'옛날에 비워 준 자리 하나가 지금의 살림에 남았습니다.',
+  presentFortune:'개발자로 일하는 지금, 급한 날이면 먼저 자리를 비워 주는 동료가 곁에 있습니다.',
   faceIndex:0, focusFace:'그 짐이 오가던 날입니다.', focusHabit:'누구 차례인지 따져 보았습니다.', focusBirth:'',
 };
 
@@ -34,17 +34,19 @@ function makeRequest(profile) {
     body:JSON.stringify({...describeProfile(profile),candidates}),
   });
 }
-async function run(profile) {
-  let input;
+async function run(profile, story=generated) {
+  let input, schema;
   const db=localD1();
   const response=await api(makeRequest(profile),{OPENAI_API_KEY:'test',DB:db},async (_url,options)=>{
-    input=JSON.parse(JSON.parse(options.body).input);
-    return Response.json({output:[{content:[{type:'output_text',text:JSON.stringify(generated)}]}]});
+    const payload=JSON.parse(options.body);
+    input=JSON.parse(payload.input);
+    schema=payload.text.format.schema;
+    return Response.json({output:[{content:[{type:'output_text',text:JSON.stringify(story)}]}]});
   });
   db.close();
   assert.equal(response.status,200);
   const {reading}=await response.json();
-  return {input,reading};
+  return {input,reading,schema};
 }
 
 test('the job and both disclosed bands reach the model together, independently of the historical setting', async ()=>{
@@ -65,8 +67,24 @@ test('the job and both disclosed bands reach the model together, independently o
   assert.equal(reading.otherOutcome,generated.otherOutcome);
   assert.equal(reading.choiceMade,generated.choiceMade);
   assert.equal(reading.choiceOther,generated.choiceOther);
-  assert.equal(reading.fortune,generated.fortune);
+  assert.equal(reading.fortune,fortune.detail);
   assert.equal(reading.habitCue,generated.habitCue);
+});
+
+test('the fortune uses the deed from the main scene even when the other ending would be more generous',async ()=>{
+  const story={...generated,
+    choiceMade:'터진 자루를 꿰매요', deed:'당신은 볍씨를 옮겨 담고 터진 자루를 꿰맵니다.',
+    choiceOther:'볍씨를 나눠 줘요', otherOutcome:'당신은 볍씨 한 됫박을 퍼서 건넵니다.',
+    presentFortune:'개발자로 일하는 지금, 빈틈을 먼저 발견하면 함께 손볼 시간을 내 주는 동료가 곁에 있습니다.'};
+  const {reading,schema}=await run(base,story);
+  assert.ok(reading.paragraphs[1].startsWith(story.deed));
+  assert.equal(reading.fortune,'“'+story.deed+'” '+story.presentFortune);
+  assert.equal(reading.clues.find(clue=>clue.label==='전생에 쌓은 복').detail,reading.fortune);
+  const order=Object.keys(schema.properties);
+  assert.ok(order.indexOf('ending')<order.indexOf('presentFortune'));
+  for(const field of ['choiceOther','otherOutcome'])assert.ok(order.indexOf('presentFortune')<order.indexOf(field));
+  const changed=await run(base,{...story,choiceOther:'일을 쉬어요',otherOutcome:'당신은 일을 덮어 두고 쉽니다.'});
+  assert.equal(changed.reading.fortune,reading.fortune);
 });
 
 test('the full card survives truncation in optional annotations, while incomplete scenes and refusals do not',async t=>{
