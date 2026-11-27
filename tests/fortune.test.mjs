@@ -68,6 +68,40 @@ test('the job and both disclosed bands reach the model together, independently o
   assert.equal(reading.habitCue,generated.habitCue);
 });
 
+test('interrupted outputs, invalid JSON, and timeouts are reported separately',async t=>{
+  const cases=[
+    [()=>Response.json({status:'incomplete',incomplete_details:{reason:'max_output_tokens'},output:[{content:[{type:'output_text',text:'{"title":'}]}]}),'output_limit',502],
+    [()=>Response.json({output:[{content:[{type:'output_text',text:'{"title":'}]}]}),'invalid_response',502],
+    [()=>{throw new DOMException('deadline','TimeoutError')},'timeout',504],
+    [()=>{throw new TypeError('disconnected')},'connection_lost',503],
+  ];
+  for(const [provider,reason,status] of cases){
+    const db=localD1();t.after(()=>db.close());
+    const response=await api(makeRequest(base),{DB:db,OPENAI_API_KEY:'test'},provider);
+    assert.equal(response.status,status);
+    assert.equal((await response.json()).reason,reason);
+  }
+});
+
+test('one extra attempt follows an upstream failure while duplicate and daily limits hold',async t=>{
+  const db=localD1();t.after(()=>db.close());
+  const env={DB:db,OPENAI_API_KEY:'test'};
+  const send=(id,provider)=>{
+    const req=makeRequest(base);
+    req.headers.set('X-Reading-Id',id);
+    return api(req,env,provider);
+  };
+  const fail=()=>{throw new TypeError('connection closed')};
+  const success=()=>Response.json({output:[{content:[{type:'output_text',text:JSON.stringify(generated)}]}]});
+  const id=crypto.randomUUID();
+  assert.equal((await send(id,fail)).status,503);
+  assert.equal((await send(id,success)).status,409);
+  assert.equal((await send(crypto.randomUUID(),fail)).status,503);
+  assert.equal((await send(crypto.randomUUID(),success)).status,200);
+  assert.equal((await send(crypto.randomUUID(),success)).status,429);
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM reading_attempts').first()).n,3);
+});
+
 test('equal-sized draw intervals reach every eligible period and all thirty settings, including the Paleolithic', ()=>{
   const visited=new Set(), counts=new Map();
   for (let i=0; i<100; i++) {

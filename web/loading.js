@@ -41,7 +41,7 @@ async function start(session) {
     if (controller.signal.aborted) return;
     const message = error.message || '전생 이야기를 마치지 못했습니다. 다시 시도해주세요.';
     if (error.reviewInput || error.quotaCode) writeSession({...session,stage:'review',message,quotaCode:error.quotaCode});
-    else writeSession({...session,stage:'retry',requestId:error.receivedResponse ? null : session.requestId});
+    else writeSession({...session,stage:'retry',message,requestId:error.receivedResponse ? null : session.requestId});
     showRetry(message, error.reviewInput,error.quotaCode);
   } finally {
     if (active === controller) active = null;
@@ -55,7 +55,7 @@ function enter() {
   if (session.version !== readingVersion || !session.profile.job?.trim()) { location.replace(formUrl); return; }
   if (session.stage === 'ready') { start(session); return; }
   if (session.stage === 'review') { showRetry(session.message,!session.quotaCode,session.quotaCode); return; }
-  showRetry('이전 풀이가 중단됐습니다. 같은 입력으로 다시 펼칠 수 있어요.');
+  showRetry(session.stage==='retry' && session.message || '이전 풀이가 중단됐습니다. 같은 입력으로 다시 펼칠 수 있어요.');
 }
 
 retry.addEventListener('click', () => {

@@ -90,8 +90,13 @@ function resultData(t,p) {
 }
 
 const dayMilliseconds = 86400000;
-export async function reserveGeneration(request,db,now=Date.now()) {
-  const day = new Date(now+9*3600000).toISOString().slice(0,10);
+const quotaDay = now => new Date(now+9*3600000).toISOString().slice(0,10);
+function readingId(request) {
+  const id=request.headers.get('X-Reading-Id');
+  return id && /^[0-9a-f-]{36}$/i.test(id) ? id : crypto.randomUUID();
+}
+export async function reserveGeneration(request,db,now=Date.now(),id=readingId(request)) {
+  const day = quotaDay(now);
   const actor = request.headers.get('oai-authenticated-user-id');
   const network = request.headers.get('cf-connecting-ip');
   const identity = actor ? 'account/'+actor : 'network/'+(network || 'shared');
@@ -107,15 +112,16 @@ export async function reserveGeneration(request,db,now=Date.now()) {
   }
   const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(dayRow.salt+'/'+identity));
   const visitor=Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,'0')).join('');
-  const submittedId=request.headers.get('X-Reading-Id');
-  const id=submittedId && /^[0-9a-f-]{36}$/i.test(submittedId) ? submittedId : crypto.randomUUID();
+  // Failed upstream attempts retain their ID and still count toward the site budget.
+  const failedVisitor='failed/'+visitor;
   // One atomic write checks both quotas before giving permission to call the provider.
   const reservation=await db.prepare(`INSERT INTO reading_attempts(day,request_id,actor)
     SELECT ?,?,? WHERE (SELECT COUNT(*) FROM reading_attempts WHERE day=?)<30
     AND (SELECT COUNT(*) FROM reading_attempts WHERE day=? AND actor=?)<2
-    ON CONFLICT(day,request_id) DO NOTHING RETURNING request_id`).bind(day,id,visitor,day,day,visitor).first();
+    AND (SELECT COUNT(*) FROM reading_attempts WHERE day=? AND actor IN (?,?))<3
+    ON CONFLICT(day,request_id) DO NOTHING RETURNING request_id`).bind(day,id,visitor,day,day,visitor,day,visitor,failedVisitor).first();
   if (reservation) return null;
-  const existing=await db.prepare('SELECT 1 AS found FROM reading_attempts WHERE day=? AND request_id=? AND actor=?').bind(day,id,visitor).first();
+  const existing=await db.prepare('SELECT 1 AS found FROM reading_attempts WHERE day=? AND request_id=? AND actor IN (?,?)').bind(day,id,visitor,failedVisitor).first();
   return existing
     ? respond({code:'duplicate',error:'이 풀이 요청은 이미 접수됐어요. 같은 요청으로 AI를 다시 호출하지 않았습니다.'},409)
     : respond({code:'daily_limit',error:'오늘 이용할 수 있는 새 풀이 횟수를 모두 썼어요. 한국 시간 자정에 다시 열립니다. 공개 전생 이야기는 지금도 읽을 수 있어요.'},429);
@@ -150,31 +156,55 @@ export async function api(request,env,providerFetch=fetch) {
     profile=validateProfile(data);
   }catch{return respond({error:'입력을 확인해주세요.'},400);}
   if(!profile)return respond({error:'입력한 항목을 다시 확인해주세요.'},400);
+  const id=readingId(request), started=Date.now();
   try {
-    const blocked=await reserveGeneration(request,env.DB);
+    const blocked=await reserveGeneration(request,env.DB,started,id);
     if (blocked) return blocked;
   } catch {return respond({code:'quota_unavailable',error:'오늘의 이용 횟수를 확인할 수 없어 잠시 집필을 쉬고 있어요. 공개 이야기는 바로 읽을 수 있습니다.'},503);}
+  async function failure(reason,message,status=502,retryable=true) {
+    console.error(JSON.stringify({event:'reading_failed',reason,requestId:id,elapsedMs:Date.now()-started,status}));
+    if(retryable && !request.signal.aborted){
+      try {
+        await env.DB.prepare("UPDATE reading_attempts SET actor='failed/'||actor WHERE day=? AND request_id=? AND actor NOT LIKE 'failed/%'").bind(quotaDay(started),id).run();
+      } catch {console.error(JSON.stringify({event:'reading_retry_accounting_failed',requestId:id}));}
+    }
+    return respond({reason,error:message},status);
+  }
+  const deadline=AbortSignal.timeout(85000);
+  let stage='connection';
   try {
     const response=await providerFetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:'Bearer '+env.OPENAI_API_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({model:'gpt-6-luna',reasoning:{effort:'none'},store:false,instructions:instructions+'\n'+epilogueInstructions,input:JSON.stringify(authorInput(profile)),max_output_tokens:3600,text:{format:{type:'json_schema',name:'korean_past_life',strict:true,schema}}}),
-      signal:AbortSignal.any([request.signal,AbortSignal.timeout(65000)])});
+      body:JSON.stringify({model:'gpt-6-luna',reasoning:{effort:'none'},store:false,instructions:instructions+'\n'+epilogueInstructions,input:JSON.stringify(authorInput(profile)),max_output_tokens:4800,text:{format:{type:'json_schema',name:'korean_past_life',strict:true,schema}}}),
+      signal:AbortSignal.any([request.signal,deadline])});
     if(response.status===429){
       const failure=await response.json().catch(()=>({}));
       const exhausted=failure?.error?.type==='insufficient_quota'||failure?.error?.code==='credit_balance_exhausted';
-      return respond({error:exhausted?'전생록의 AI 이용 한도가 소진됐습니다. 운영자가 API 잔액을 확인해야 합니다.':'AI 요청 한도에 닿았어요. 잠시 후 다시 시도해주세요.'},429);
+      return failure(exhausted?'provider_quota':'provider_rate_limit',exhausted?'전생록의 AI 이용 한도가 소진됐습니다. 운영자가 API 잔액을 확인해야 합니다.':'AI에 요청이 몰렸어요. 잠시 뒤 다시 시도해주세요.',429);
     }
     if(!response.ok){
       const failure=await response.json().catch(()=>({}));
       if(response.status===400 && failure.error?.code==='invalid_prompt')return declinedReading();
-      return respond({error:'서버 AI 연결을 확인해야 합니다. 잠시 후 다시 시도해주세요.'},502);
+      return failure('provider_http_'+response.status,'AI 서비스에 연결할 수 없어요. 잠시 뒤 다시 시도해주세요.');
     }
+    stage='response_body';
     const output=await response.json();
-    const content=output.output?.flatMap(part=>part.content||[])||[];
+    const content=Array.isArray(output?.output) ? output.output.flatMap(part=>part?.content||[]) : [];
     if(content.some(part=>part.type==='refusal'))return declinedReading();
+    if(output?.incomplete_details?.reason==='content_filter')return declinedReading();
+    if(output?.status==='incomplete'){
+      const lengthLimited=output.incomplete_details?.reason==='max_output_tokens';
+      return failure(lengthLimited?'output_limit':'incomplete','AI가 이야기를 끝까지 쓰지 못했어요. 같은 입력으로 다시 시도할 수 있어요.');
+    }
+    stage='story_format';
     const raw=content.filter(part=>part.type==='output_text').map(part=>part.text).join('');
     const reading=raw&&resultData(JSON.parse(raw),profile);
-    if(!reading)return respond({error:'AI가 완성된 기록을 보내지 못했어요. 다시 시도해주세요.'},502);
+    if(!reading)return failure('invalid_story','AI가 결과 카드의 일부 항목을 채우지 못했어요. 다시 집필해주세요.');
     return respond({reading});
-  }catch{return respond({error:'서버 AI의 응답을 마치지 못했어요. 잠시 후 다시 시도해주세요.'},502);}
+  }catch(error){
+    if(request.signal.aborted)return failure('client_closed','풀이 요청이 중단됐어요.',499,false);
+    if(deadline.aborted || error?.name==='TimeoutError')return failure('timeout','AI 집필 시간이 길어져 멈췄어요. 다시 집필해주세요.',504);
+    if(stage==='story_format' || (stage==='response_body' && error instanceof SyntaxError))return failure('invalid_response','AI의 응답이 온전한 형식으로 도착하지 않았어요. 다시 집필해주세요.');
+    return failure('connection_lost','AI와의 연결이 끊겼어요. 잠시 뒤 다시 집필해주세요.',503);
+  }
 }
 
