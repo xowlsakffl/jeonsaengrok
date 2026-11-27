@@ -4,6 +4,7 @@ import { birthDate } from './profile.js';
 import { example } from './sample.js';
 import { describePersonality, mountTraitPicker } from './traits.js';
 import { readSession, writeSession, readingVersion } from './reading-session.js';
+import { listSavedReadings, removeSavedReading } from './saved-readings.js';
 
 const $ = id => document.getElementById(id);
 const traitPicker = mountTraitPicker(() => {
@@ -199,10 +200,44 @@ for (const button of document.querySelectorAll('[data-example]')) {
   });
 }
 restoreDraft(readSession()?.draft);
+const savedDate = new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+function renderSavedList() {
+  const list = $('savedList'), notice = $('savedNotice');
+  list.replaceChildren();
+  list.hidden = true;
+  try {
+    const records = listSavedReadings();
+    notice.textContent = records.length ? '이 브라우저에서 펼친 기록이에요.' : '아직 펼친 전생이 없어요. 첫 풀이를 마치면 여기에 보관돼요.';
+    list.hidden = !records.length;
+    for (const {id,created,reading} of records) {
+      const row = document.createElement('li'), link = document.createElement('a'), remove = document.createElement('button');
+      link.href = './result.html#saved/'+id;
+      const title = document.createElement('strong'), info = document.createElement('span'), date = document.createElement('time');
+      title.textContent = reading.title;
+      info.textContent = [reading.era,reading.role].filter(Boolean).join(' · ');
+      date.dateTime = new Date(created).toISOString();
+      date.textContent = savedDate.format(created);
+      link.append(title,info,date);
+      remove.type = 'button';
+      remove.textContent = '삭제';
+      remove.setAttribute('aria-label',reading.title+' 삭제');
+      remove.addEventListener('click',()=>{
+        if (!window.confirm('‘'+reading.title+'’을 이 기기의 내 전생 목록에서 삭제할까요?')) return;
+        try { removeSavedReading(id); renderSavedList(); $('pastLivesHeading').focus(); }
+        catch { notice.textContent='기록을 삭제하지 못했어요. 브라우저의 저장 공간 설정을 확인해주세요.'; }
+      });
+      row.append(link,remove);
+      list.append(row);
+    }
+  } catch { notice.textContent = '이 브라우저의 저장 공간에 접근할 수 없어요.'; }
+}
+renderSavedList();
+window.addEventListener('storage',renderSavedList);
 if (location.hash === '#example') location.replace('./result.html#example');
 else if (location.hash === '#result') location.replace('./result.html');
 else if (location.hash === '#loading') location.replace('./loading.html');
 window.addEventListener('pageshow', event => {
+  if (event.persisted) renderSavedList();
   if (event.persisted && !readSession()) {
     $('profileForm').reset();
     traitPicker.restore();

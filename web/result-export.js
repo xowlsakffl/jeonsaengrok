@@ -60,7 +60,7 @@ const string = value => typeof value === 'string' ? value : '';
 function namedPairs(values, first, second) {
   return Array.isArray(values) ? values.filter(Boolean).map(value => ({[first]: string(value[first]), [second]: string(value[second])})) : [];
 }
-function shareSnapshot(reading, pick, observations) {
+export function readingSnapshot(reading, pick, observations) {
   const fields = Object.fromEntries(readingFields.map(key => [key, string(reading[key])]));
   return {reading: {...fields, reverseChoices: reading.reverseChoices === true, faceIndex: Number.isInteger(reading.faceIndex) ? reading.faceIndex : 0,
     paragraphs: Array.isArray(reading.paragraphs) ? reading.paragraphs.filter(p => typeof p === 'string') : [],
@@ -73,7 +73,7 @@ const maxBytes = 96000;
 export async function fullRecordLink(reading, pick, observations, isExample = false) {
   const base = 'https://jeonsaengrok.com/result.html#';
   if (isExample) return base + 'read-example' + (['choiceMade','choiceOther'].includes(pick) ? '-' + pick : '');
-  const snapshot = shareSnapshot(reading, pick, observations);
+  const snapshot = readingSnapshot(reading, pick, observations);
   const bytes = new TextEncoder().encode(JSON.stringify(snapshot));
   if (bytes.length > maxBytes) throw new Error('Record too large');
   const zip = typeof CompressionStream === 'function';
@@ -100,6 +100,6 @@ export async function readFullRecord(hash) {
     }
     const value = await new Response(new Blob(chunks)).json();
     if (!value?.reading?.title || !value.reading.role || !Array.isArray(value.reading.paragraphs) || !value.reading.paragraphs.length) return null;
-    return shareSnapshot(value.reading, value.pick, value.observations);
+    return readingSnapshot(value.reading, value.pick, value.observations);
   } catch { return null; }
 }

@@ -3,6 +3,7 @@ import { readSession, clearSession, writeSession } from './reading-session.js';
 import { example } from './sample.js';
 import { fullRecordLink, readFullRecord } from './result-export.js';
 import { recordImage } from './record-image.js';
+import { savedReading, saveReadingPick } from './saved-readings.js';
 const $ = id => document.getElementById(id);
 let activeReading = null;
 let activeExample = false;
@@ -10,6 +11,7 @@ let activePick = null;
 let faceObservations = [];
 let savingCard = false;
 let sharedView = false;
+let savedView = false;
 let currentLink;
 let opening = 0;
 function node(tag,text,className){
@@ -63,9 +65,10 @@ function revealScene(pick,fromButton=false) {
   $('fortuneCard').hidden = !$('fortuneText').textContent;
   if (fromButton) {
     $('comparison').focus();
-    if (!activeExample) {
+    if (!activeExample && !sharedView && !savedView) {
       const session=readSession();
       if (session?.reading?.title === reading.title && session.reading.place === reading.place) {
+        saveReadingPick(session.savedId,pick);
         try { writeSession({...session,scenePick:pick}); } catch {}
       }
     }
@@ -74,8 +77,11 @@ function revealScene(pick,fromButton=false) {
 $('skipChoice').addEventListener('click',()=>revealScene('skip',true));
 $('fortuneSource').append($('fortuneReference').content.cloneNode(true));
 
-function showReading(reading,isExample,session,shared = false) {
+function showReading(reading,isExample,session,view = 'own') {
+  const shared = view === 'shared';
   sharedView = shared;
+  savedView = view === 'saved';
+  const expanded = shared || savedView;
   $('unavailableRecord').hidden=true;
   activeReading = reading;
   activeExample = isExample;
@@ -85,7 +91,7 @@ function showReading(reading,isExample,session,shared = false) {
   $('resultBack').hidden=shared;
   $('resultView').hidden = false;
   document.title=reading.role+' · 전생록';
-  $('resultKind').textContent=shared?'친구가 보낸 전생 인물첩':isExample?'전생 인물첩 · 예시':'전생 인물첩 · '+reading.engine+' 집필';
+  $('resultKind').textContent=shared?'친구가 보낸 전생 인물첩':savedView?'내 전생 목록에 보관한 기록':isExample?'전생 인물첩 · 예시':'전생 인물첩 · '+reading.engine+' 집필';
   $('resultTitle').textContent=reading.title;
   $('resultEra').textContent=reading.era;
   $('resultPlace').textContent=reading.place;
@@ -127,7 +133,7 @@ function showReading(reading,isExample,session,shared = false) {
     if (clue.label==='얼굴 관상') description.append($('faceReference').content.cloneNode(true));
     const measurements=faceObservations;
     if (clue.label==='얼굴 관상' && !isExample && measurements?.length===4) {
-      if(shared){
+      if(expanded){
         const list=node('ul');
         for(const item of measurements)list.append(node('li',item.name+' · '+item.reading));
         description.append(list);
@@ -138,24 +144,24 @@ function showReading(reading,isExample,session,shared = false) {
   }));
   $('historyText').textContent=reading.history;
   $('sourceLinks').replaceChildren(...reading.sources.filter(s=>/^https:\/\//.test(s.url)).map(s=>{const a=node('a',s.label);a.href=s.url;a.target='_blank';a.rel='noopener noreferrer';return a;}));
-  $('resultBack').querySelector('span').textContent=isExample?'풀이로 돌아가기':'입력 수정하기';
+  $('resultBack').querySelector('span').textContent=savedView?'내 전생 목록으로':isExample?'풀이로 돌아가기':'입력 수정하기';
   $('again').textContent=isExample?'내 전생 풀이하기':'새 전생 풀이 시작';
-  $('resultMessage').textContent='';
+  $('resultMessage').textContent=!expanded && !isExample && !session?.savedId ? '이 브라우저에 기록을 보관하지 못했어요. 전체 기록 이미지로 저장할 수 있어요.' : '';
   const sharedChoices=$('sharedChoices');
   sharedChoices.replaceChildren();
-  sharedChoices.hidden=!shared || !(reading.choiceMade || reading.choiceOther);
+  sharedChoices.hidden=!expanded || !(reading.choiceMade || reading.choiceOther);
   if(!sharedChoices.hidden){
     const picked=session?.scenePick;
-    for(const [label,answer] of [['전생 인물이 고른 쪽',reading.choiceMade],['또 다른 갈림길',reading.choiceOther],['공유한 사람이 고른 쪽',['choiceMade','choiceOther'].includes(picked) && reading[picked]]]){
+    for(const [label,answer] of [['전생 인물이 고른 쪽',reading.choiceMade],['또 다른 갈림길',reading.choiceOther],[savedView?'당시 내가 고른 쪽':'공유한 사람이 고른 쪽',['choiceMade','choiceOther'].includes(picked) && reading[picked]]]){
       if(answer)sharedChoices.append(node('dt',label),node('dd',answer));
     }
   }
-  $('explain').open=shared;
-  if(shared){
+  $('explain').open=expanded;
+  if(expanded){
     revealScene(session?.scenePick || 'skip');
     $('otherPath').open=true;
     for(const detail of document.querySelectorAll('#explain details, #fortuneCard details')) detail.open=true;
-    $('again').textContent='나도 전생 테스트 하기';
+    if(shared)$('again').textContent='나도 전생 테스트 하기';
   }
   prepareLink();
   $('readingNav').classList.toggle('nav-current',!isExample);
@@ -273,18 +279,22 @@ async function openRecord() {
   const version=++opening;
   const hash=location.hash;
   const sharedExample=/^#read-example(?:-(choiceMade|choiceOther))?$/.exec(hash);
-  if(sharedExample){showReading(example,true,{scenePick:sharedExample[1] || 'skip'},true);return;}
-  if(hash.startsWith('#record.')){
+  if(sharedExample){showReading(example,true,{scenePick:sharedExample[1] || 'skip'},'shared');return;}
+  const archived=hash.startsWith('#saved/');
+  if(archived || hash.startsWith('#record.')){
     $('resultView').hidden=true;
-    const snapshot=await readFullRecord(hash);
+    const snapshot=archived ? savedReading(hash.slice(7)) : await readFullRecord(hash);
     if(version!==opening)return;
     if(!snapshot){
       activeReading=null;
       $('unavailableRecord').hidden=false;
-      document.title='공유 기록을 열 수 없어요 · 전생록';
+      const message=archived?'이 기기에서 기록을 찾을 수 없어요':'공유 기록을 열 수 없어요';
+      $('unavailableTitle').textContent=message;
+      $('unavailableHelp').textContent=archived?'풀이를 만든 브라우저의 내 전생 목록을 확인해주세요.':'받은 링크가 끝까지 복사됐는지 확인해주세요.';
+      document.title=message+' · 전생록';
       return;
     }
-    showReading(snapshot.reading,false,{scenePick:snapshot.pick,profile:{face:{observations:snapshot.observations}}},true);
+    showReading(snapshot.reading,false,{scenePick:snapshot.pick,profile:{face:{observations:snapshot.observations}}},archived?'saved':'shared');
     return;
   }
   const session=readSession();
@@ -293,9 +303,9 @@ async function openRecord() {
   if(!reading){location.replace('./#reading');return;}
   showReading(reading,isExample,session);
 }
-$('resultBack').addEventListener('click', () => location.assign('./#reading'));
+$('resultBack').addEventListener('click', () => location.assign(savedView?'./#past-lives':'./#reading'));
 $('again').addEventListener('click', () => {
-  if (!sharedView && location.hash !== '#example') clearSession();
+  if (!sharedView && !savedView && location.hash !== '#example') clearSession();
   location.assign('./#reading');
 });
 document.querySelector('[data-example]').addEventListener('click', () => {

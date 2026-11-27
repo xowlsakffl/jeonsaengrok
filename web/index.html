@@ -33,6 +33,7 @@
       <a class="brand" href="#home" aria-label="전생록 처음으로"><img src="./assets/seal.svg" alt="" width="36" height="36"><span>전생록</span></a>
       <nav aria-label="주 메뉴">
         <a href="#reading" class="nav-current" id="readingNav">전생 풀이</a>
+        <a href="#past-lives">내 전생 목록</a>
         <button type="button" data-example>예시 기록</button>
         <button type="button" id="guideOpen">이용 안내</button>
       </nav>
@@ -111,11 +112,19 @@
               <small class="field-help">이야기를 펼치면 얼굴 비율을 설명한 문장과 입력한 직업·성격 등 풀이 단서를 OpenAI에 보냅니다. 사진과 생년월일 여섯 자리는 전송하지 않아요.</small>
               <small class="field-help">새 AI 집필은 하루 최대 2회이며, 일시적인 AI 오류가 나면 남은 한도 안에서 한 번 자동으로 다시 시도해요. 같은 인터넷 연결에서는 횟수를 공유해요. 공개 이야기는 언제든 읽을 수 있어요.</small>
               <p id="errTwo" class="error" role="alert" hidden></p>
+              <small class="field-help">완성된 풀이는 이 브라우저의 ‘내 전생 목록’에 보관돼요.</small>
               <div class="actions"><button type="button" class="secondary" id="backBtn">이전 단계</button><button type="submit" class="primary" id="revealBtn"><i data-icon="book"></i> 내 전생 펼치기</button></div>
             </div>
           </form>
         </section>
         <aside class="aside">
+          <section id="past-lives" aria-labelledby="pastLivesHeading">
+            <div class="section-title"><div class="heading-wrap"><i data-icon="book"></i><h2 id="pastLivesHeading" tabindex="-1">내 전생 목록</h2></div></div>
+            <div class="personal-shelf">
+              <p id="savedNotice">이 브라우저에 보관한 기록을 확인하고 있어요.</p>
+              <ul id="savedList" hidden></ul>
+            </div>
+          </section>
           <div class="section-title"><div class="heading-wrap"><i data-icon="scroll"></i><h2>예시 기록</h2></div></div>
           <button type="button" data-example class="example-card">
             <div class="example-image"><img src="./assets/scribe.jpg" alt="붓을 들고 장부를 기록하는 옛 서기의 초상"><span class="folio-seal" aria-hidden="true">前<br>生</span></div>

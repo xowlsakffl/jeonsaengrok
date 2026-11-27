@@ -1,3 +1,5 @@
+import { rememberCompleted } from './saved-readings.js';
+
 // This tab carries form fields and measurement descriptions between pages.
 const key = 'jeonsaeng.reading-session.v1';
 const maxAge = 60 * 60 * 1000;
@@ -21,8 +23,10 @@ function withoutLegacyPhoto(value) {
 export function readSession() {
   try {
     const value = JSON.parse(sessionStorage.getItem(key));
-    if (value?.draft && Date.now() - value.updated < maxAge) {
-      const clean = withoutLegacyPhoto(value);
+    if (value?.draft) {
+      // Migrate the last completed result even if its temporary input draft has expired.
+      const clean = rememberCompleted(withoutLegacyPhoto(value));
+      if (Date.now() - value.updated >= maxAge) { clearSession(); return null; }
       if (clean!==value) {
         clearSession();
         sessionStorage.setItem(key,JSON.stringify(clean));
