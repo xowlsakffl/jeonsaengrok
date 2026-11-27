@@ -1,6 +1,7 @@
 import './site.js';
 import { analyzeFace } from './face.js';
 import { birthDate } from './profile.js';
+import { shortRole } from './history.js';
 import { example } from './sample.js';
 import { describePersonality, mountTraitPicker } from './traits.js';
 import { readSession, writeSession, readingVersion } from './reading-session.js';
@@ -214,7 +215,7 @@ function renderSavedList() {
       link.href = './result.html#saved/'+id;
       const title = document.createElement('strong'), info = document.createElement('span'), date = document.createElement('time');
       title.textContent = reading.title;
-      info.textContent = [reading.era,reading.role].filter(Boolean).join(' · ');
+      info.textContent = [reading.era,shortRole(reading.role,reading.place)].filter(Boolean).join(' · ');
       date.dateTime = new Date(created).toISOString();
       date.textContent = savedDate.format(created);
       link.append(title,info,date);

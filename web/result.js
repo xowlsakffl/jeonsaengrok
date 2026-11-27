@@ -1,6 +1,7 @@
 import './site.js';
 import { readSession, clearSession, writeSession } from './reading-session.js';
 import { example } from './sample.js';
+import { shortRole } from './history.js';
 import { fullRecordLink, readFullRecord } from './result-export.js';
 import { recordImage } from './record-image.js';
 import { savedReading, saveReadingPick } from './saved-readings.js';
@@ -77,7 +78,8 @@ function revealScene(pick,fromButton=false) {
 $('skipChoice').addEventListener('click',()=>revealScene('skip',true));
 $('fortuneSource').append($('fortuneReference').content.cloneNode(true));
 
-function showReading(reading,isExample,session,view = 'own') {
+function showReading(record,isExample,session,view = 'own') {
+  const reading={...record,role:shortRole(record.role,record.place)};
   const shared = view === 'shared';
   sharedView = shared;
   $('sharedStart').hidden = !shared;

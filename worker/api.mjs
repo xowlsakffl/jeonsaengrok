@@ -11,14 +11,15 @@ const instructions = `한국어 역사 단편과 그 인물의 전생 풀이를 
 setting.history가 있으면 해당 사료·유물에서 확인한 배경 사실이다. 그중 도구나 작업 방법, 시간의 제약 같은 사실 한 가지를 장면에 쓰고, work와 detail은 허구의 인물이 겪을 수 있는 일로 다룬다. 관직·기관·인용문·역사 인물과의 인연을 새로 만들어 실재 기록처럼 단정하지 않는다. 사진과 재산을 특정 전생이 입증된 증거로 표현하지 않는다.
 시대와 일터는 성격과 독립적으로 뽑혔다. 갈림길을 만들기 전에 personality에서 결정에 쓸 행동을 고른다. 그 행동을 보여 주는 연속된 원문을 마지막에 habitCue에 짧게 옮긴다. deed는 그 행동을 이 시대의 물건과 사람으로 옮긴 구체적인 선택이다. 사용자가 “남 앞에서 내 실수를 고백하는 건 미룬다”고 했다면, 즉시 고백하고 칭찬받는 선택은 입력과 어긋난다. 대신 남몰래 수습하려다 누구를 더 기다리게 했는지를 보여줄 수 있다. 입력에 후함과 소심함처럼 긴장하는 두 단서가 있으면 한쪽의 선의가 편한 도피가 되는 경우도 그린다. 단점을 입력했다고 모든 이를 악인으로 만들 필요도 없다. 성격상 반드시 이 시대나 직업이었을 것이라는 설명은 만들지 않는다.
 도입의 마지막 문단인 crossroads는 선택하기 직전의 구체적인 곤란에서 멈춘다. summary와 title은 주인공이 어떻게 했는지 밝히지 않는다. choiceMade와 choiceOther는 독자에게 나란히 보여줄 짧은 행동 두 가지로, 각각 목적어나 상대를 포함한 6~28자의 자연스러운 해요체 또는 '…한다' 형식으로 통일한다. choiceMade는 deed에서 실제로 취한 선택과 뜻이 같고 choiceOther는 같은 순간 가능했지만 버린 다른 선택이다. 두 선택 모두 나름의 이득이나 대가가 있게 쓰고, 도덕 정답이나 성격표처럼 쓰지 않는다.
-setting은 독자가 태어나기 이전으로 이미 정해진 시대와 현장이다. role은 그 현장의 work에 나온 실제 일거리에서 고르고, 자술한 버릇이 대가를 치르거나 사람을 움직이는 선택을 만든다. presentLife는 옛 역할을 정하는 데 쓰지 않는다. 특히 개발자라서 기록·계산·설계를 맡기는 식의 직업 번역이나 능력·지위의 대응은 피한다. 주인공은 허드렛일을 맡아도 좋다. 선사시대에는 한자 성씨, 문자, 관직, 화폐를 등장시키지 않는다.
+setting은 독자가 태어나기 이전으로 이미 정해진 시대와 현장이다. role은 그 현장의 work에 나온 실제 일거리에서 고르고, 자술한 버릇이 대가를 치르거나 사람을 움직이는 선택을 만든다. presentLife는 옛 역할을 정하는 데 쓰지 않는다. 특히 개발자라서 기록·계산·설계를 맡기는 식의 직업 번역이나 능력·지위의 대응은 피한다. role은 병사·농민·서기·대필가처럼 직업을 가리키는 짧은 명사 하나다. setting.roles가 있으면 거기서 하나를 골라 처음부터 끝까지 그 직업으로 써라. 소속과 지명은 opening에, 그날 맡은 심부름은 장면에만 넣는다. 침공군의 병사를 현지 주민이나 저항군으로 바꾸지 않는다. 선사시대에는 한자 성씨, 문자, 관직, 화폐를 등장시키지 않는다.
+personality에서 드러난 회피·허세·욕심 때문에 남이 손해를 보면 무엇을 얻으려고 누구를 외면했는지 직설적으로 쓴다. 가령 전우의 빚을 모른 척했다면 변명하는 입과 돈을 못 받은 사람의 빈손을 함께 보여 준다. focusHabit에서 그 모순을 한 문장으로 짚고, 별도 훈계나 팩폭 코너는 만들지 않는다. 빚과 부양 여력 부족처럼 현생에서 스스로 밝힌 제약들이 겹치면 옛 장면에서도 선택을 되돌릴 여유가 적게 그린다. 억울한 손해, 뒤늦게 들킨 잘못, 영영 돌아오지 않는 사람으로 끝나도 된다. 어려운 살림은 악행의 증거가 아니며 군대 소속이나 민족은 설정에 속한다.
 한 편의 역사 단편으로 읽히도록 도입부터 다른 결말까지 합쳐 한글 약 1,100~1,500자를 쓴다. 아래 장면마다 사건이 한 걸음씩 전진해야 한다. 자연스러운 2인칭 존댓말을 쓰되 같은 어미가 계속 이어지지 않게 한다. 모호한 감상이나 같은 사실을 다시 말해서 분량을 채우지 않는다.
 opening에는 주인공이 평소 하던 일에 이상이 생기는 순간을, crossroads에는 그 이상을 두고 상대가 주인공과 다르게 원하는 것이 무엇인지 쓴다. 각각 100~155자의 한 문단이다. 독자가 두 선택을 모두 상상할 수 있는 찰나에 멈춘다.
 deed는 habitCue가 행동으로 드러나는 선택 한 문장이다. middle은 그 즉시 상대가 보인 뜻밖의 반응과 눈앞에서 바뀐 일(100~160자), consequence는 그 여파로 누군가 한 번 더 움직이는 두 번째 장면(130~190자)이다. 두 사람 사이의 사정이 드러날 때는 설명보다 짧은 말이나 행동을 쓴다. 긴박함이 어울리지 않는 일터라면 엇갈린 셈, 실없는 농담, 민망한 침묵도 사건이 될 수 있다.
 ending은 얼마 뒤 누가 무엇을 되찾거나 떠안았는지 보여주는 장면(110~170자)이다. later는 일상이 다시 돌아온 날의 짧은 장면(100~160자)으로 끝낸다. 처음과 달라진 관계를 독자가 알아차릴 만한 행동을 남긴다. 선행을 했어도 실수의 대가는 남을 수 있다. 마지막에 교훈을 덧붙이지 않는다.
-presentLife에는 독자가 밝힌 현생 직업명(job), 본인 순자산 구간(wealth), 자랄 때의 집안 형편(family)만 들어온다. 세 단서를 함께 보고 본편의 선택으로 실제 남긴 것에 대응하는 지금의 복 한 가지를 찾는다. 직업명만으로 고용 안정이나 소득을 단정하지 않는다. 상속이나 자수성가도 지어내지 않는다. 재산이 적거나 빚이 있다는 사실을 전생의 죄에 대한 벌로 돌리지 않는다.
-presentFortune 바로 앞에 서버가 deed 원문을 그대로 붙인다. 이어질 두 문장은 현생 장면만 써라. deed에서 누가 무엇을 했고 consequence와 ending에서 누가 그 이득과 대가를 감당했는지 읽고, 그 관계가 오늘날 어떤 도움이나 기회로 돌아오는지 그린다. 누군가의 부탁을 거절하고 자루를 꿰맸다면, 현생에서 빈틈을 알아봐 주는 동료나 수습할 시간 같은 복으로 풀 수 있다. 하지 않은 양보를 선행으로 만들거나 다른 사람이 한 일을 주인공의 공으로 돌리지 않는다. choiceOther와 otherOutcome의 행동은 일어나지 않았다. 전생의 사건을 여기서 다시 서술하지 않는다.
-입력된 직업명은 presentFortune에 자연스럽게 쓰고, 재산과 자란 집도 주어졌다면 지금의 살림에 녹인다. 직장이나 집에서 누가 당신 몫을 챙겨 주거나 당신에게 시간이 생기는 등 실제로 눈앞에 그려지는 장면에서 끝낸다. 풀이의 한계나 증명 가능성, “~해야 복이 온다”는 충고는 이 카드에 넣지 않는다. 비공개 항목은 추정하지 않는다. 금액·등급이나 입력 절차를 나열하지 않는다. ‘무직’은 현재 상태로 읽고 직함으로 호칭하지 않는다. 현대 직업과 형편은 풀이에만 쓰고 옛 장면에 끌어들이지 않는다.
+presentLife에는 독자가 밝힌 현생 직업명(job), 본인 순자산 구간(wealth), 자랄 때의 집안 형편(family)만 들어온다. 세 단서를 함께 보고 본편에서 남긴 몫이나 끝내 놓친 몫 하나를 지금의 장면으로 이어 간다. 도움을 받지 못했거나 관계를 잃은 결말에는 억지로 미담이나 횡재를 보태지 않는다. 직업명만으로 고용 안정이나 소득을 단정하지 않는다. 상속이나 자수성가도 지어내지 않는다. 재산이 적거나 빚이 있다는 사실을 전생의 죄에 대한 벌로 돌리지 않는다.
+presentFortune 바로 앞에 서버가 deed 원문을 그대로 붙인다. 이어질 두 문장은 현생 장면만 써라. deed에서 누가 무엇을 했고 consequence와 ending에서 누가 그 이득과 대가를 감당했는지 읽고, 그 관계가 오늘날 어떤 도움이나 대가, 비어 있는 자리가 되었는지 그린다. 누군가의 부탁을 거절하고 자루를 꿰맸다면, 현생에서 빈틈을 알아봐 주는 동료나 수습할 시간 같은 복으로 풀 수 있다. 하지 않은 양보를 선행으로 만들거나 다른 사람이 한 일을 주인공의 공으로 돌리지 않는다. choiceOther와 otherOutcome의 행동은 일어나지 않았다. 전생의 사건을 여기서 다시 서술하지 않는다.
+입력된 직업명은 presentFortune에 자연스럽게 쓰고, 재산과 자란 집도 주어졌다면 지금의 살림에 녹인다. 직장이나 집에서 누가 당신 몫을 챙겨 주거나 당신에게 시간이 생기는 등 눈앞에 그려지는 장면에서 끝낸다. 불리한 결말이면 혼자 남은 당번이나 미뤄진 한 끼처럼 구체적인 손실로 끝낼 수 있다. 풀이의 한계나 증명 가능성, “~해야 복이 온다”는 충고는 이 카드에 넣지 않는다. 비공개 항목은 추정하지 않는다. 금액·등급이나 입력 절차를 나열하지 않는다. ‘무직’은 현재 상태로 읽고 직함으로 호칭하지 않는다. 현대 직업과 형편은 풀이에만 쓰고 옛 장면에 끌어들이지 않는다.
 title은 아이러니나 구체적인 물건이 들어간 짧은 제목, role은 간결한 옛 직업, summary는 결말을 다 밝히지 않는 한 문장이다. focusHabit은 자술한 버릇과 본문 속 행동을 연결한다. focusBirth는 계절과 장면이 맞닿을 때만 쓴다. 성씨와 본관에서 유명인·가계·민족성·원한을 추정하지 않는다.
 faceIndex는 실제 관찰값의 코(0), 턱선(1), 눈 사이(2), 눈썹과 눈 사이(3) 중 한 곳이다. 코를 고르면 『마의상법』 상권에서 코를 재물과 연결한 풀이를 물건이나 몫이 오간 장면에 활용할 수 있다. 다른 부위는 장면에서 고개를 들거나 어느 쪽으로 눈길을 주었는지처럼 구체적인 행동에만 연결한다. 눈 사이 간격을 미간의 명궁으로 부르지 않는다. 새로운 관상 용어나 비율별 운명 등급을 만들지 않는다. 측정문은 화면에 붙으니 되풀이하지 않는다. 얼굴에서 현실의 성품·선악·능력·경제상태를 단정하거나 칭찬하지 않는다.`;
 const textField = {type:'string'};
@@ -26,7 +27,8 @@ const epilogueInstructions = `keepsake는 이 인물이 만졌던 물건의 짧�
 // Finish the lived branch and its present-day interpretation before imagining the other branch.
 const textKeys = ['title','role','summary','opening','crossroads','choiceMade','deed','middle','consequence','ending','later','presentFortune','choiceOther','otherOutcome','keepsake','keepsakeStory','focusFace','focusHabit'];
 const properties = Object.fromEntries(textKeys.map(key => [key,textField]));
-properties.presentFortune = {type:'string', description:'deed 원문 다음에 붙는 오늘의 짧은 장면. 현생에서 받는 구체적인 도움을 두 문장 이내로 그린다. 과거를 다시 쓰거나 풀이 자체를 논평하지 않는다.'};
+properties.role = {type:'string',pattern:'^[가-힣]{1,10}$',description:'직업명 한 단어. 소속, 지명, 그날의 업무는 본문에만 쓴다.'};
+properties.presentFortune = {type:'string',description:'deed 원문 다음에 붙는 오늘의 짧은 장면. 현생의 도움 또는 치르는 대가를 두 문장 이내로 그린다. 과거를 다시 쓰거나 풀이 자체를 논평하지 않는다.'};
 properties.faceIndex = {type:'integer',enum:[0,1,2,3]};
 // These two annotations have local fallbacks. Keep them after the complete story.
 properties.habitCue = textField;
@@ -57,6 +59,10 @@ function validateProfile(data) {
     if(candidate.history!==undefined){
       if(typeof candidate.history!=='string'||candidate.history.length>450)return null;
       setting.history=candidate.history;
+    }
+    if(candidate.roles!==undefined){
+      if(!Array.isArray(candidate.roles)||candidate.roles.length<1||candidate.roles.length>5||candidate.roles.some(role=>typeof role!=='string'||!/^[가-힣]{1,10}$/.test(role)))return null;
+      setting.roles=candidate.roles;
     }
     selected.candidates.push(setting);
   }
@@ -101,7 +107,9 @@ function resultData(t,p) {
   clues.push({label:'생년월일',detail:birthNote||('태어난 때는 '+p.season+'입니다.')},{label:'성씨·본관',detail:familyName});
   const cue = typeof t.habitCue==='string' ? t.habitCue.trim() : '';
   const habitCue = cue && cue.length<=130 && p.personality.includes(cue) ? cue : '';
-  return {background:0,faceIndex:t.faceIndex,title:t.title,role:t.role,summary:t.summary,paragraphs,clues,
+  const roles=p.candidates[0].roles;
+  const role=roles && !roles.includes(t.role) ? roles[0] : t.role;
+  return {background:0,faceIndex:t.faceIndex,title:t.title,role,summary:t.summary,paragraphs,clues,
     choiceMade:t.choiceMade.trim(),choiceOther:t.choiceOther.trim(),habitCue,fortune,
     keepsake:t.keepsake?.trim(),keepsakeStory:t.keepsakeStory?.trim(),otherOutcome:t.otherOutcome?.trim()};
 }
@@ -212,8 +220,10 @@ export async function api(request,env,providerFetch=fetch) {
   const deadline=AbortSignal.timeout(85000);
   let stage='connection';
   try {
+    const roles=profile.candidates[0].roles;
+    const storySchema=roles ? {...schema,properties:{...properties,role:{type:'string',enum:roles}}} : schema;
     const response=await providerFetch('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:'Bearer '+env.OPENAI_API_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({model:'gpt-6-luna',reasoning:{effort:'none'},store:false,instructions:instructions+'\n'+epilogueInstructions,input:JSON.stringify(authorInput(profile)),max_output_tokens:4800,text:{format:{type:'json_schema',name:'korean_past_life',strict:true,schema}}}),
+      body:JSON.stringify({model:'gpt-6-luna',reasoning:{effort:'none'},store:false,instructions:instructions+'\n'+epilogueInstructions,input:JSON.stringify(authorInput(profile)),max_output_tokens:4800,text:{format:{type:'json_schema',name:'korean_past_life',strict:true,schema:storySchema}}}),
       signal:AbortSignal.any([request.signal,deadline])});
     if(response.status===429){
       const detail=await response.json().catch(()=>({}));
@@ -251,4 +261,3 @@ export async function api(request,env,providerFetch=fetch) {
     return failure('connection_lost','AI와의 연결이 끊겼어요. 잠시 뒤 다시 집필해주세요.',503,1000);
   }
 }
-

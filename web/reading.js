@@ -1,8 +1,8 @@
 import { describeProfile } from './profile.js';
 
 async function fetchReading(profile,context,signal,requestId) {
-  const {era,place,work,detail,history} = context;
-  const candidates=[{era,place,work,detail,history}];
+  const {era,place,roles,work,detail,history} = context;
+  const candidates=[{era,place,roles,work,detail,history}];
   let response;
   try {
     response=await fetch('./api/reading',{

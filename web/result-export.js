@@ -1,3 +1,4 @@
+import { shortRole } from './history.js';
 const quizFields={title:80,role:64,era:120,place:160,summary:240,period:16,choiceMade:80,choiceOther:80};
 
 export function quizCard(reading) {
@@ -13,7 +14,7 @@ export function readQuiz(hash) {
     const card=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Uint8Array.from(raw,c=>c.charCodeAt(0))));
     if(!card || Object.entries(quizFields).some(([key,max])=>typeof card[key]!=='string' || card[key].length>max))return null;
     if(!card.title.trim() || !card.role.trim())return null;
-    return quizCard(card);
+    return quizCard({...card,role:shortRole(card.role,card.place)});
   }catch{return null;}
 }
 

@@ -1,7 +1,7 @@
 export const example = {
   title: '장부에서 사라진 세 줄',
   period: 'joseon',
-  era: '조선 후기 · 정조 때', place: '수원 화성', role: '품삯을 셈하는 서기',
+  era: '조선 후기 · 정조 때', place: '수원 화성', role: '서기',
   summary: '돈궤는 하나, 장부에서 이름이 빠진 일꾼은 셋. 열쇠를 쥔 감독이 당신 앞을 지나갑니다.',
   choiceMade: '내 쌀로 세 집의 저녁부터 챙긴다',
   choiceOther: '감독을 붙잡고 내 실수를 밝힌다',

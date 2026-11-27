@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://jeonsaengrok.com/</loc><lastmod>2026-11-27</lastmod></url>
-  <url><loc>https://jeonsaengrok.com/past-life.html</loc></url>
+  <url><loc>https://jeonsaengrok.com/past-life.html</loc><lastmod>2026-11-27</lastmod></url>
   <url><loc>https://jeonsaengrok.com/privacy.html</loc><lastmod>2026-11-27</lastmod></url>
-  <url><loc>https://jeonsaengrok.com/records.html</loc></url>
+  <url><loc>https://jeonsaengrok.com/records.html</loc><lastmod>2026-11-27</lastmod></url>
   <url><loc>https://jeonsaengrok.com/stories/jeongokri-stone-flake.html</loc></url>
   <url><loc>https://jeonsaengrok.com/stories/dongsam-tide.html</loc></url>
   <url><loc>https://jeonsaengrok.com/stories/songguk-ri-seed.html</loc></url>
@@ -54,4 +54,8 @@
   <url><loc>https://jeonsaengrok.com/stories/pyeonghwa-blue-chalk.html</loc></url>
   <url><loc>https://jeonsaengrok.com/stories/hitel-reply-one.html</loc></url>
   <url><loc>https://jeonsaengrok.com/stories/sangam-photo-back.html</loc></url>
+  <url><loc>https://jeonsaengrok.com/stories/salsu-last-letter.html</loc><lastmod>2026-11-27</lastmod></url>
+  <url><loc>https://jeonsaengrok.com/stories/gwiju-missing-bell.html</loc><lastmod>2026-11-27</lastmod></url>
+  <url><loc>https://jeonsaengrok.com/stories/jurchen-doorpost.html</loc><lastmod>2026-11-27</lastmod></url>
+  <url><loc>https://jeonsaengrok.com/stories/chungju-rice-bowl.html</loc><lastmod>2026-11-27</lastmod></url>
 </urlset>

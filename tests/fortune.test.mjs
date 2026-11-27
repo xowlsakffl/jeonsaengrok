@@ -4,7 +4,7 @@ import { api } from '../worker/api.mjs';
 import { localD1 } from './local-d1.mjs';
 import { describeProfile } from '../web/profile.js';
 import { generateReading } from '../web/reading.js';
-import { drawContext } from '../web/history.js';
+import { drawContext, shortRole } from '../web/history.js';
 import { describePersonality, traitGroups } from '../web/traits.js';
 
 const base = {
@@ -213,22 +213,42 @@ test('one extra attempt follows an upstream failure while duplicate and daily li
   assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM reading_attempts').first()).n,3);
 });
 
-test('equal-sized draw intervals reach every eligible period and all thirty settings, including the Paleolithic', ()=>{
+test('all 34 settings have simple occupation names and every eligible period has the same draw interval', ()=>{
   const visited=new Set(), counts=new Map();
   for (let i=0; i<100; i++) {
-    for (let j=0; j<10; j++) {
-      const sample=[(i+0.5)/100,(j+0.5)/10];
-      const {place,period}=drawContext('2024-01-01',()=>sample.shift());
+    for (let j=0; j<20; j++) {
+      const sample=[(i+0.5)/100,(j+0.5)/20];
+      const {place,period,roles}=drawContext('2024-01-01',()=>sample.shift());
+      assert.ok(roles.length && roles.every(role=>/^[가-힣]{1,10}$/.test(role)));
       visited.add(place);
       counts.set(period,(counts.get(period)||0)+1);
     }
   }
-  assert.equal(visited.size,30);
-  assert.deepEqual([...counts.values()],[200,200,200,200,200]);
+  assert.equal(visited.size,34);
+  assert.deepEqual([...counts.values()],[400,400,400,400,400]);
+  for(const side of ['수나라 군대','거란군','여진 마을','일본군'])assert.ok([...visited].some(place=>place.includes(side)));
   assert.match(drawContext(base.birth,()=>0).era,/구석기/);
   assert.match(drawContext('1900-01-01',()=>0.999).era,/1898/);
   assert.match(drawContext('1996-03-01',()=>0.999).era,/1983/);
   assert.match(drawContext('2024-03-01',()=>0.999).era,/2023/);
+});
+
+test('the current client constrains the writer and the returned card to the short roles for the selected setting',async ()=>{
+  const body=await makeRequest(base).json();
+  body.candidates[0].roles=['병사'];
+  const db=localD1();
+  try {
+    const response=await api(new Request('https://site.test/api/reading',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}),{DB:db,OPENAI_API_KEY:'test'},async(_url,options)=>{
+      const payload=JSON.parse(options.body);
+      assert.deepEqual(JSON.parse(payload.input).setting.roles,['병사']);
+      assert.deepEqual(payload.text.format.schema.properties.role.enum,['병사']);
+      return Response.json({output:[{content:[{type:'output_text',text:JSON.stringify({...generated,role:'젖은 말을 돌보는 병사'})}]}]});
+    });
+    assert.equal(response.status,200);
+    assert.equal((await response.json()).reading.role,'병사');
+  } finally {db.close();}
+  assert.equal(shortRole('품삯을 셈하는 서기','수원 화성'),'서기');
+  assert.equal(shortRole('벽보를 붙이는 사람','서울 여의도 방송국 앞, 이산가족을 찾는 벽보가 붙은 광장'),'자원봉사자');
 });
 
 test('changing personality reaches the writer while the same independent draw keeps its setting', async ()=>{
