@@ -18,7 +18,7 @@ deed는 habitCue가 행동으로 드러나는 선택 한 문장이다. middle은
 ending은 얼마 뒤 누가 무엇을 되찾거나 떠안았는지 보여주는 장면(110~170자)이다. later는 일상이 다시 돌아온 날의 짧은 장면(100~160자)으로 끝낸다. 처음과 달라진 관계를 독자가 알아차릴 만한 행동을 남긴다. 선행을 했어도 실수의 대가는 남을 수 있다. 마지막에 교훈을 덧붙이지 않는다.
 presentLife에는 독자가 밝힌 현생 직업명(job), 본인 순자산 구간(wealth), 자랄 때의 집안 형편(family)만 들어온다. 세 단서를 함께 보고 본편의 선택으로 실제 남긴 것에 대응하는 지금의 복 한 가지를 찾는다. 직업명만으로 고용 안정이나 소득을 단정하지 않는다. 상속이나 자수성가도 지어내지 않는다. 재산이 적거나 빚이 있다는 사실을 전생의 죄에 대한 벌로 돌리지 않는다.
 presentFortune 바로 앞에 서버가 deed 원문을 그대로 붙인다. 이어질 두 문장은 현생 장면만 써라. deed에서 누가 무엇을 했고 consequence와 ending에서 누가 그 이득과 대가를 감당했는지 읽고, 그 관계가 오늘날 어떤 도움이나 기회로 돌아오는지 그린다. 누군가의 부탁을 거절하고 자루를 꿰맸다면, 현생에서 빈틈을 알아봐 주는 동료나 수습할 시간 같은 복으로 풀 수 있다. 하지 않은 양보를 선행으로 만들거나 다른 사람이 한 일을 주인공의 공으로 돌리지 않는다. choiceOther와 otherOutcome의 행동은 일어나지 않았다. 전생의 사건을 여기서 다시 서술하지 않는다.
-입력된 직업명은 presentFortune에 자연스럽게 쓰고, 재산과 자란 집도 주어졌다면 지금의 살림에 녹인다. 비공개 항목은 추정하지 않는다. 금액·등급이나 입력 절차를 나열하지 않는다. ‘무직’은 현재 상태로 읽고 직함으로 호칭하지 않는다. 현대 직업과 형편은 풀이에만 쓰고 옛 장면에 끌어들이지 않는다.
+입력된 직업명은 presentFortune에 자연스럽게 쓰고, 재산과 자란 집도 주어졌다면 지금의 살림에 녹인다. 직장이나 집에서 누가 당신 몫을 챙겨 주거나 당신에게 시간이 생기는 등 실제로 눈앞에 그려지는 장면에서 끝낸다. 풀이의 한계나 증명 가능성, “~해야 복이 온다”는 충고는 이 카드에 넣지 않는다. 비공개 항목은 추정하지 않는다. 금액·등급이나 입력 절차를 나열하지 않는다. ‘무직’은 현재 상태로 읽고 직함으로 호칭하지 않는다. 현대 직업과 형편은 풀이에만 쓰고 옛 장면에 끌어들이지 않는다.
 title은 아이러니나 구체적인 물건이 들어간 짧은 제목, role은 간결한 옛 직업, summary는 결말을 다 밝히지 않는 한 문장이다. focusHabit은 자술한 버릇과 본문 속 행동을 연결한다. focusBirth는 계절과 장면이 맞닿을 때만 쓴다. 성씨와 본관에서 유명인·가계·민족성·원한을 추정하지 않는다.
 faceIndex는 실제 관찰값의 코(0), 턱선(1), 눈 사이(2), 눈썹과 눈 사이(3) 중 한 곳이다. 코를 고르면 『마의상법』 상권에서 코를 재물과 연결한 풀이를 물건이나 몫이 오간 장면에 활용할 수 있다. 다른 부위는 장면에서 고개를 들거나 어느 쪽으로 눈길을 주었는지처럼 구체적인 행동에만 연결한다. 눈 사이 간격을 미간의 명궁으로 부르지 않는다. 새로운 관상 용어나 비율별 운명 등급을 만들지 않는다. 측정문은 화면에 붙으니 되풀이하지 않는다. 얼굴에서 현실의 성품·선악·능력·경제상태를 단정하거나 칭찬하지 않는다.`;
 const textField = {type:'string'};
@@ -26,6 +26,7 @@ const epilogueInstructions = `keepsake는 이 인물이 만졌던 물건의 짧�
 // Finish the lived branch and its present-day interpretation before imagining the other branch.
 const textKeys = ['title','role','summary','opening','crossroads','choiceMade','deed','middle','consequence','ending','later','presentFortune','choiceOther','otherOutcome','keepsake','keepsakeStory','focusFace','focusHabit'];
 const properties = Object.fromEntries(textKeys.map(key => [key,textField]));
+properties.presentFortune = {type:'string', description:'deed 원문 다음에 붙는 오늘의 짧은 장면. 현생에서 받는 구체적인 도움을 두 문장 이내로 그린다. 과거를 다시 쓰거나 풀이 자체를 논평하지 않는다.'};
 properties.faceIndex = {type:'integer',enum:[0,1,2,3]};
 // These two annotations have local fallbacks. Keep them after the complete story.
 properties.habitCue = textField;
